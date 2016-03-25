@@ -2,7 +2,7 @@
 
 Gebaut mit Android Studio.
 
-App zur Wiederbelegung seltener Worte im alltäglichen Sprachgebrauch.
+App zur Wiederbelebung seltener Worte im alltäglichen Sprachgebrauch.
 Team BookingEngine empfiehlt:
 Pro Tag min. 3 der Worte nutzen, am besten vor den Mahlzeiten.
 Gerne auch in Meetings, Telkos, Commit-Kommentaren und/oder Dokumentationen.
