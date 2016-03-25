@@ -4,6 +4,12 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <string name="share_body">Ich habe gerade folgenden Ausdruck genutzt: \n\"%s\"\nSponsored by LostWords for Android</string>
+    <string name="share_subject">Oldschool Begriff Alert!</string>
+    <string name="share_chooser">Teile via</string>
+
+    <string name="init_words">Reloade ok, %d  Wörter geladen.</string>
+
     <string name="ueber_title">Über LostWords</string>
     <string-array name="ueber_content">
         <item>App zur Wiederbelebung seltener Worte im alltäglichen Sprachgebrauch.</item>

@@ -27,9 +27,9 @@ import android.speech.tts.TextToSpeech;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private List<LostWord> m_listWoerter = new ArrayList();
+    private List<LostWord> m_listWords = new ArrayList();
     private Random m_rnd = new Random(System.nanoTime());
-    private int m_nCurrentPosition = 0;
+    private int m_nCurrentPositionInWordlist = 0;
     private TextToSpeech m_tts = null;
 
     @Override
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                generateNewIndex(IndexType.RANDOM);
+                generateNewPosition(IndexType.RANDOM);
                 showWord();
             }
         });
@@ -75,13 +75,13 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 if (m_tts != null) {
-                    LostWord lw = m_listWoerter.get(m_nCurrentPosition);
-                    m_tts.speak(lw.getWort(), TextToSpeech.QUEUE_FLUSH, null, lw.getWort());
+                    LostWord lw = m_listWords.get(m_nCurrentPositionInWordlist);
+                    m_tts.speak(lw.getWord(), TextToSpeech.QUEUE_FLUSH, null, lw.getWord());
                 }
             }
         });
 
-        initWoerter();
+        initializeWordlist();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -92,46 +92,49 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        generateNewIndex(IndexType.RANDOM);
+        generateNewPosition(IndexType.RANDOM);
         showWord();
     }
 
     // zieht die Liste aus den String Ressourcen (strings.xml)
-    private void initWoerter() {
+    private void initializeWordlist() {
         String[] strArrWord;
         String[] strArrWords = getResources().getStringArray(R.array.words);
         for (String strWord: strArrWords) {
             strArrWord = strWord.split("-");
-            this.m_listWoerter.add(new LostWord(strArrWord[0].trim(), strArrWord[1].trim()));
+            this.m_listWords.add(new LostWord(strArrWord[0].trim(), strArrWord[1].trim()));
         }
 
-        Toast.makeText(getApplicationContext(), "Reloade ok, " + this.m_listWoerter.size() + " Wörter geladen", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(),
+                getResources().getString(R.string.init_words, this.m_listWords.size()),
+                Toast.LENGTH_SHORT).show();
     }
 
-    private void generateNewIndex(IndexType i) {
+    private void generateNewPosition(final IndexType i) {
         if (i == IndexType.RANDOM) {
-            m_nCurrentPosition = m_rnd.nextInt(m_listWoerter.size() - 1);
+            m_nCurrentPositionInWordlist = m_rnd.nextInt(m_listWords.size() - 1);
         } else if (i == IndexType.NEXT) {
-            m_nCurrentPosition++;
+            m_nCurrentPositionInWordlist++;
         } else if (i == IndexType.PREV) {
-            m_nCurrentPosition--;
+            m_nCurrentPositionInWordlist--;
         }
 
-        if (m_nCurrentPosition < 0) {
-            m_nCurrentPosition = m_listWoerter.size() -1;
-        } else if (m_nCurrentPosition >= m_listWoerter.size()) {
-            m_nCurrentPosition = 0;
+        /** Umlauf in beide Richtungen */
+        if (m_nCurrentPositionInWordlist < 0) {
+            m_nCurrentPositionInWordlist = m_listWords.size() -1;
+        } else if (m_nCurrentPositionInWordlist >= m_listWords.size()) {
+            m_nCurrentPositionInWordlist = 0;
         }
     }
 
     private void showWord() {
         TextView textAnzahl = (TextView) findViewById(R.id.textAnzahl);
-        textAnzahl.setText((m_nCurrentPosition + 1) + " / " + m_listWoerter.size());
+        textAnzahl.setText((m_nCurrentPositionInWordlist + 1) + " / " + m_listWords.size());
 
-        LostWord lw = m_listWoerter.get(m_nCurrentPosition);
+        LostWord lw = m_listWords.get(m_nCurrentPositionInWordlist);
 
         TextView textWort = (TextView) findViewById(R.id.textWortcontent);
-        textWort.setText(lw.getWort() + "\n\n - - - \n\n" + lw.getErklaerung());
+        textWort.setText(lw.getWord() + "\n\n - - - \n\n" + lw.getMeaning());
     }
 
     @Override
@@ -152,12 +155,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void buttonNext(View v) {
-        generateNewIndex(IndexType.NEXT);
+        generateNewPosition(IndexType.NEXT);
         showWord();
     }
 
     public void buttonPrev(View v) {
-        generateNewIndex(IndexType.PREV);
+        generateNewPosition(IndexType.PREV);
         showWord();
     }
 
@@ -185,17 +188,17 @@ public class MainActivity extends AppCompatActivity
 
             builder.create().show();
         } else if (id == R.id.nav_close) {
+            /** nicht empgfehlenswert. Mir aber egal, darf der User entscheiden */
             finish();
             android.os.Process.killProcess(android.os.Process.myPid());
         } else if (id == R.id.nav_share) {
-            LostWord lw = m_listWoerter.get(m_nCurrentPosition);
+            LostWord lw = m_listWords.get(m_nCurrentPositionInWordlist);
 
             Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
             sharingIntent.setType("text/plain");
-            String shareBody = "Ich habe gerade folgenden Ausdruck genutzt: \n\"" + lw.getWort() + "\"\nSponsored by LostWords for Android";
-            sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Oldschool Begriff Alert!");
-            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-            startActivity(Intent.createChooser(sharingIntent, "Teile via"));
+            sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_subject));
+            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, getResources().getString(R.string.share_body, lw.getWord()));
+            startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share_chooser)));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
