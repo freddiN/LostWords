@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item android:title="Applikation">
+             <menu>
+            <!--<item-->
+                <!--android:id="@+id/nav_generator"-->
+                <!--android:icon="@android:drawable/ic_media_play"-->
+                <!--android:title="Generator" />-->
+
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:actionProviderClass="android.widget.ShareActionProvider"
+                android:title="Teilen" />
+
+             <item
+                 android:id="@+id/nav_ueber"
+                 android:icon="@android:drawable/ic_dialog_info"
+                 android:title="Über LostWords" />
+
+             </menu>
+        </item>
+
+        <item
+            android:id="@+id/nav_close"
+            android:icon="@android:drawable/ic_delete"
+            android:title="Beenden" />
+    </group>
+
+    <!--<item android:title="Communicate">-->
+        <!--<menu>-->
+            <!--<item-->
+                <!--android:id="@+id/nav_share"-->
+                <!--android:icon="@drawable/ic_menu_share"-->
+                <!--android:actionProviderClass="android.widget.ShareActionProvider"-->
+                <!--android:title="Share" />-->
+            <!--&lt;!&ndash;<item&ndash;&gt;-->
+                <!--&lt;!&ndash;android:id="@+id/nav_send"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:icon="@drawable/ic_menu_send"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:title="Send" />&ndash;&gt;-->
+        <!--</menu>-->
+    <!--</item>-->
+
+</menu>

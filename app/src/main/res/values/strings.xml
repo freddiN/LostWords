@@ -1,0 +1,82 @@
+<resources>
+    <string name="app_name">LostWords</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="ueber_title">Über LostWords</string>
+    <string-array name="ueber_content">
+        <item>App zur Wiederbelegung seltener Worte im alltäglichen Sprachgebrauch.</item>
+        <item></item>
+        <item>Team BookingEngine empfiehlt:</item>
+        <item>Pro Tag min. 3 der Worte nutzen, am besten vor den Mahlzeiten.</item>
+        <item>Gerne auch in Meetings, Telkos, Commit-Kommentaren und/oder Dokumentationen.</item>
+        <item></item>
+        <item>Die Worterklärungen stammen grösstenteils von duden.de, Wikipedia und Freddi.</item>
+        <item></item>
+        <item>Mad creditz @ Team BookingEngine, Jo und Ellen</item>
+    </string-array>
+
+    <string-array name="words">
+        <item>aufmüpfig - aufsässig</item>
+        <item>Bengel - ungezogenes Kind</item>
+        <item>betuppen - jemanden betrügen</item>
+        <item>bonfortionös - eindrucksvoll</item>
+        <item>Bredouille - Bedrängnis</item>
+        <item>ei der Daus! - grosse Verwunderung</item>
+        <item>Ein X für ein U vormachen - jemanden betrügen</item>
+        <item>Einfaltspinsel - Trottel</item>
+        <item>famos - hervorragend</item>
+        <item>Faxen machen - sich nicht ernst verhalten</item>
+        <item>Firlefanzereien - nicht benötigtes Zeug</item>
+        <item>Fisimatenten machen - Quatsch machen</item>
+        <item>flink - schnell</item>
+        <item>flunkern - lügen</item>
+        <item>formidabel - aussergewöhnlich</item>
+        <item>Gutdünken - Einschätzung</item>
+        <item>Hallodri - unzuverlässiger junger Mann</item>
+        <item>Halunke - schlechter Mensch</item>
+        <item>Handlanger - Gehilfe</item>
+        <item>Heidewitzka! - grosses Erstaunen</item>
+        <item>Heiermann - Fünf - DM Münze</item>
+        <item>Heureka! - Ausdruck grosser Freude</item>
+        <item>Humbug - törichte Äusserung oder Handlung</item>
+        <item>Ich glaub\' es hackt! - das missfällt mir ausserordentlich</item>
+        <item>Klamauk - billige Komik</item>
+        <item>Kokolores - Mist</item>
+        <item>krakeelen - laut schreien</item>
+        <item>Lausbub - freches Kind</item>
+        <item>Lümmel - ungezogenes Kind</item>
+        <item>mannigfaltig - vielerlei</item>
+        <item>meschugge - verrückt</item>
+        <item>Mumpitz - Unsinn</item>
+        <item>Murks - keine gute Lösung</item>
+        <item>Obacht! - Vorsicht!</item>
+        <item>Potzblitz - grosse Verwunderung</item>
+        <item>Rabauke - rüpelhafter Mensch</item>
+        <item>Rabatz - Krawall</item>
+        <item>Racker - aufgewecktes Kind</item>
+        <item>rasch - schnell</item>
+        <item>renitent - widerspenstig</item>
+        <item>Rüffel - Zurechtweisung</item>
+        <item>Sammelsurium - unsortiertes Gemisch</item>
+        <item>salopp - zwanglos</item>
+        <item>sauertöpfisch - griesgrämig</item>
+        <item>Schabernack - Streich</item>
+        <item>Scherge - böser Handlanger</item>
+        <item>Scheusal - widerlicher Mensch</item>
+        <item>Schlingel - Spassmacher</item>
+        <item>schmuck - hübsch</item>
+        <item>sich grämen - bekümmert sein</item>
+        <item>Sperenzchen - Schwierigkeiten</item>
+        <item>spinksen - heimlich nachgucken</item>
+        <item>Spökes - Spass</item>
+        <item>Springinsfeld - unreifer junger Mann</item>
+        <item>Tausendsassa - begabter Mensch</item>
+        <item>Tinnef - kitschiger Kram</item>
+        <item>Ulk - Witz</item>
+        <item>vermaledeit - verflucht</item>
+        <item>Wie bei Hempels unterm Sofa - unordentlich</item>
+        <item>Zinnober - wertloses Zeug</item>
+    </string-array>
+</resources>
