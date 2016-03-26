@@ -15,7 +15,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textAnzahl"
+        android:id="@+id/textWordCounts"
         android:textSize="@dimen/font_size"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
@@ -24,31 +24,34 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textWortcontent"
+        android:id="@+id/textWordContent"
         android:textSize="@dimen/font_size"
         android:layout_marginTop="110dp"
         android:gravity="center"
-        android:layout_below="@+id/textAnzahl"
+        android:layout_below="@+id/textWordCounts"
         android:layout_centerHorizontal="true" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=" &gt; "
+        android:text="@string/button_next"
         android:id="@+id/buttonNext"
-        android:layout_alignBottom="@+id/textAnzahl"
-        android:layout_alignParentEnd="true"
-        android:onClick="buttonNext" />
+        android:onClick="buttonNext"
+        android:layout_alignBottom="@+id/textWordCounts"
+        android:layout_alignParentEnd="true" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=" &lt; "
+        android:text="@string/button_prev"
         android:id="@+id/buttonPrev"
-        android:layout_alignBottom="@+id/textAnzahl"
-        android:layout_alignParentStart="true"
-        android:onClick="buttonPrev" />
+        android:onClick="buttonPrev"
+        android:layout_alignBottom="@+id/textWordCounts"
+        android:layout_alignParentStart="true" />
+        android:layout_above="@+id/textWortcontent"
+        android:layout_alignParentEnd="true" />
+
 
 </RelativeLayout>

@@ -32,7 +32,7 @@ import android.speech.tts.TextToSpeech;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private List<LostWord> m_listWords = new ArrayList();
+    private List<LostWord> m_listWords = new ArrayList<LostWord>();
     private Random m_rnd = new Random(System.nanoTime());
     private int m_nCurrentPositionInWordlist = 0;
     private TextToSpeech m_tts = null;
@@ -126,19 +126,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showWord() {
-        TextView textAnzahl = (TextView) findViewById(R.id.textAnzahl);
+        TextView textAnzahl = (TextView) findViewById(R.id.textWordCounts);
         textAnzahl.setText((m_nCurrentPositionInWordlist + 1) + " / " + m_listWords.size());
 
         LostWord lw = m_listWords.get(m_nCurrentPositionInWordlist);
 
-        TextView textWort = (TextView) findViewById(R.id.textWortcontent);
+        TextView textWort = (TextView) findViewById(R.id.textWordContent);
         textWort.setText(lw.getWord() + "\n\n - - - \n\n" + lw.getMeaning());
     }
 
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
@@ -225,10 +225,10 @@ public class MainActivity extends AppCompatActivity
         public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
             //Log.d("Gestures", "onFling:\n" + event1.toString() + "\n" + event2.toString() + "\n" + velocityX + "\n" + velocityY);
 
-            float flLimit = 3000;
-            if (velocityX > flLimit) {
+            final int nGestureMinimumSpeed = getResources().getInteger(R.integer.gesture_min_speed);
+            if (velocityX > nGestureMinimumSpeed) {
                 buttonNext(null);
-            } else if (velocityX < -flLimit) {
+            } else if (velocityX < -nGestureMinimumSpeed) {
                 buttonPrev(null);
             }
 

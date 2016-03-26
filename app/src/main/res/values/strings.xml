@@ -11,15 +11,22 @@
     <string name="init_words">Reloade ok, %d  Wörter geladen.</string>
 
     <string name="ueber_title">Über LostWords</string>
+
+    <string name="nav_topstring">LostWords by BookingEngine</string>
+    <string name="nav_substring">\'cause \'betuppen\' just sounds awesome!</string>
+
+    <string name="button_next"> &gt; </string>
+    <string name="button_prev"> &lt; </string>
+
     <string-array name="ueber_content">
-        <item>App zur Wiederbelebung seltener Worte im alltäglichen Sprachgebrauch.</item>
+        <item>App zur Wiederbelebung seltener Wörter im alltäglichen Sprachgebrauch.</item>
         <item></item>
         <item>Benutzung:</item>
         <item>Swipe = nächster/vorheriger Begriff</item>
         <item>DoubleTap = zufälliger Begriff</item>
         <item></item>
         <item>Team BookingEngine empfiehlt:</item>
-        <item>Pro Tag min. 3 der Worte nutzen, am besten vor den Mahlzeiten.</item>
+        <item>Pro Tag min. 3 der Wörter nutzen, am besten vor den Mahlzeiten.</item>
         <item>Gerne auch in Meetings, Telkos, Commit-Kommentaren und/oder Dokumentationen.</item>
         <item></item>
         <item>Die Worterklärungen stammen grösstenteils von duden.de, Wikipedia und Freddi.</item>
