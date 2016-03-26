@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity
     private Random m_rnd = new Random(System.nanoTime());
     private int m_nCurrentPositionInWordlist = 0;
     private TextToSpeech m_tts = null;
+    private ProgressBar m_progressBar = null;
 
     private GestureDetectorCompat m_gestureDetector = null;
 
@@ -81,7 +82,6 @@ public class MainActivity extends AppCompatActivity
         });
         fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
 
-
         initializeWordlist();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -92,6 +92,9 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        m_progressBar = (ProgressBar) findViewById(R.id.progess);
+        m_progressBar.setMax(m_listWords.size() - 1);
 
         generateNewPosition(IndexType.RANDOM);
         showWord();
@@ -171,9 +174,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showProgress() {
-        ProgressBar progress = (ProgressBar) findViewById(R.id.progess);
-        progress.setMax(m_listWords.size()-1);
-        progress.setProgress(m_nCurrentPositionInWordlist);
+        m_progressBar.setProgress(m_nCurrentPositionInWordlist);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
