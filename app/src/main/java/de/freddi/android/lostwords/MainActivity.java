@@ -20,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,11 +72,14 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            if (m_tts != null) {
-                LostWord lw = m_listWords.get(m_nCurrentPositionInWordlist);
-                m_tts.speak(lw.getWord(), TextToSpeech.QUEUE_FLUSH, null, lw.getWord());
+                if (m_tts != null) {
+                    LostWord lw = m_listWords.get(m_nCurrentPositionInWordlist);
+                    m_tts.speak(lw.getWord(), TextToSpeech.QUEUE_FLUSH, null, lw.getWord());
+                }
             }
-        }});
+        });
+        fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
+
 
         initializeWordlist();
 
