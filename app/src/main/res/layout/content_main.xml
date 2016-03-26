@@ -53,13 +53,15 @@
         android:layout_above="@+id/textWortcontent"
         android:layout_alignParentEnd="true" />
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="2dp"
-        android:background="#c0c0c0"
+    <ProgressBar
+        android:id="@+id/progess"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@android:style/Widget.Material.Light.ProgressBar.Horizontal"
+        android:layout_marginRight="5dp"
+        android:layout_alignParentStart="true"
         android:layout_marginTop="25dp"
         android:layout_below="@+id/textWordCounts"
-        android:layout_alignParentStart="true" />
-
+        android:layout_alignEnd="@+id/buttonNext" />
 
 </RelativeLayout>

@@ -21,6 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.animation.AnimationUtils;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -94,6 +95,7 @@ public class MainActivity extends AppCompatActivity
 
         generateNewPosition(IndexType.RANDOM);
         showWord();
+        showProgress();
 
         this.m_gestureDetector = new GestureDetectorCompat(this, new LostwordsGestureListener());
     }
@@ -159,11 +161,19 @@ public class MainActivity extends AppCompatActivity
     public void buttonNext(View v) {
         generateNewPosition(IndexType.NEXT);
         showWord();
+        showProgress();
     }
 
     public void buttonPrev(View v) {
         generateNewPosition(IndexType.PREV);
         showWord();
+        showProgress();
+    }
+
+    private void showProgress() {
+        ProgressBar progress = (ProgressBar) findViewById(R.id.progess);
+        progress.setMax(m_listWords.size()-1);
+        progress.setProgress(m_nCurrentPositionInWordlist);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -231,9 +241,11 @@ public class MainActivity extends AppCompatActivity
 
             final int nGestureMinimumSpeed = getResources().getInteger(R.integer.gesture_min_speed);
             if (velocityX > nGestureMinimumSpeed) {
-                buttonPrev(null);
-            } else if (velocityX < -nGestureMinimumSpeed) {
                 buttonNext(null);
+                showProgress();
+            } else if (velocityX < -nGestureMinimumSpeed) {
+                buttonPrev(null);
+                showProgress();
             }
 
             return true;
@@ -250,6 +262,7 @@ public class MainActivity extends AppCompatActivity
                 !fromWithinButton(pTouch, findViewById(R.id.buttonNext))) {
                 generateNewPosition(IndexType.RANDOM);
                 showWord();
+                showProgress();
             }
 
             return true;

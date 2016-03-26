@@ -18,8 +18,8 @@
     <string name="nav_about">Über LostWords</string>
     <string name="nav_exit">Beenden</string>
 
-    <string name="button_next"> &gt; </string>
-    <string name="button_prev"> &lt; </string>
+    <string name="button_next"> <b>&gt;</b> </string>
+    <string name="button_prev"> <b>&lt;</b> </string>
 
     <string-array name="ueber_content">
         <item>App zur Wiederbelebung seltener Wörter im alltäglichen Sprachgebrauch.</item>
