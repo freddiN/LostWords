@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity
 
         /** Umlauf in beide Richtungen */
         if (m_nCurrentPositionInWordlist < 0) {
-            m_nCurrentPositionInWordlist = m_listWords.size() -1;
+            m_nCurrentPositionInWordlist = m_listWords.size() - 1;
         } else if (m_nCurrentPositionInWordlist >= m_listWords.size()) {
             m_nCurrentPositionInWordlist = 0;
         }
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity
             final Point pTouch = new Point((int)e.getAxisValue(0), (int)e.getAxisValue(1));
             if (!fromWithinButton(pTouch, findViewById(R.id.fab)) &&
                 !fromWithinButton(pTouch, findViewById(R.id.buttonPrev)) &&
-                !fromWithinButton(pTouch, (findViewById(R.id.buttonNext)))) {
+                !fromWithinButton(pTouch, findViewById(R.id.buttonNext))) {
                 generateNewPosition(IndexType.RANDOM);
                 showWord();
             }
