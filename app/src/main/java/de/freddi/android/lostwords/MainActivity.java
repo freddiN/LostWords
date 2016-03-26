@@ -3,10 +3,13 @@ package de.freddi.android.lostwords;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -25,7 +28,6 @@ import java.util.Locale;
 import java.util.Random;
 import android.speech.tts.TextToSpeech;
 
-
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -33,6 +35,8 @@ public class MainActivity extends AppCompatActivity
     private Random m_rnd = new Random(System.nanoTime());
     private int m_nCurrentPositionInWordlist = 0;
     private TextToSpeech m_tts = null;
+
+    private GestureDetectorCompat m_gestureDetector = null;
 
     @Override
     public void onDestroy() {
@@ -61,25 +65,15 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        // FloatButton random
+        // FloatButton TTS
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                generateNewPosition(IndexType.RANDOM);
-                showWord();
+            if (m_tts != null) {
+                LostWord lw = m_listWords.get(m_nCurrentPositionInWordlist);
+                m_tts.speak(lw.getWord(), TextToSpeech.QUEUE_FLUSH, null, lw.getWord());
             }
-        });
-
-        // FloatButton TTS
-        FloatingActionButton fabSpeak = (FloatingActionButton) findViewById(R.id.fabSpeak);
-        fabSpeak.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (m_tts != null) {
-                    LostWord lw = m_listWords.get(m_nCurrentPositionInWordlist);
-                    m_tts.speak(lw.getWord(), TextToSpeech.QUEUE_FLUSH, null, lw.getWord());
-                }
             }
         });
 
@@ -96,6 +90,8 @@ public class MainActivity extends AppCompatActivity
 
         generateNewPosition(IndexType.RANDOM);
         showWord();
+
+        this.m_gestureDetector = new GestureDetectorCompat(this, new LostwordsGestureListener());
     }
 
     // zieht die Liste aus den String Ressourcen (strings.xml)
@@ -193,7 +189,7 @@ public class MainActivity extends AppCompatActivity
             // Make the textview clickable. Must be called after show()
             ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
         } else if (id == R.id.nav_close) {
-            /** nicht empgfehlenswert. Mir aber egal, darf der User entscheiden */
+            /** nicht empfehlenswert. Mir aber egal, darf der User entscheiden */
             finish();
             android.os.Process.killProcess(android.os.Process.myPid());
         } else if (id == R.id.nav_share) {
@@ -209,5 +205,42 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (m_gestureDetector != null) {
+            m_gestureDetector.onTouchEvent(ev);
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
+    class LostwordsGestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onDown(MotionEvent event) {
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
+            //Log.d("Gestures", "onFling:\n" + event1.toString() + "\n" + event2.toString() + "\n" + velocityX + "\n" + velocityY);
+
+            float flLimit = 3000;
+            if (velocityX > flLimit) {
+                buttonNext(null);
+            } else if (velocityX < -flLimit) {
+                buttonPrev(null);
+            }
+
+            return true;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            generateNewPosition(IndexType.RANDOM);
+            showWord();
+
+            return true;
+        }
     }
 }

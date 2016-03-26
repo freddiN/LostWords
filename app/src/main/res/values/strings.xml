@@ -14,6 +14,10 @@
     <string-array name="ueber_content">
         <item>App zur Wiederbelebung seltener Worte im alltäglichen Sprachgebrauch.</item>
         <item></item>
+        <item>Benutzung:</item>
+        <item>Swipe = nächster/vorheriger Begriff:</item>
+        <item>DoubleTap = neuer Zufallsbegriff</item>
+        <item></item>
         <item>Team BookingEngine empfiehlt:</item>
         <item>Pro Tag min. 3 der Worte nutzen, am besten vor den Mahlzeiten.</item>
         <item>Gerne auch in Meetings, Telkos, Commit-Kommentaren und/oder Dokumentationen.</item>
