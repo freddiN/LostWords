@@ -1,6 +1,8 @@
 package de.freddi.android.lostwords;
 
 import android.content.Intent;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GestureDetectorCompat;
@@ -8,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -237,10 +240,43 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            generateNewPosition(IndexType.RANDOM);
-            showWord();
+            //Log.d("Gestures", "onDoubleTap:\n" + e.toString());
+
+            Point pTouch = new Point((int)e.getAxisValue(0), (int)e.getAxisValue(1));
+
+            Point pButtonFloatCenter = getCenterPointOfButton(findViewById(R.id.fab));
+            Point pButtonPrev = getCenterPointOfButton(findViewById(R.id.buttonPrev));
+            Point pButtonNext = getCenterPointOfButton(findViewById(R.id.buttonNext));
+
+            if (!nearButton(pButtonFloatCenter, pTouch) &&
+                !nearButton(pButtonPrev, pTouch) &&
+                !nearButton(pButtonNext, pTouch)) {
+                generateNewPosition(IndexType.RANDOM);
+                showWord();
+            }
 
             return true;
         }
+    }
+
+    private boolean nearButton(Point pButton, Point pTouch) {
+        int nDistance = calcDistance(pButton.x, pButton.y,
+                pTouch.x, pTouch.y);
+
+        //Log.d("Gestures", "nDistance=" + nDistance);
+
+        return nDistance < 150;
+    }
+
+    private Point getCenterPointOfButton(View view) {
+        int[] location = new int[2];
+        view.getLocationInWindow(location);
+        int x = location[0] + view.getWidth() / 2;
+        int y = location[1] + view.getHeight() / 2;
+        return new Point(x, y);
+    }
+
+    private int calcDistance(int x1, int y1, int x2, int y2){
+        return (int)Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
     }
 }
