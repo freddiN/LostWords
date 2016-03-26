@@ -1,11 +1,12 @@
 package de.freddi.android.lostwords;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-
 import android.support.v7.app.AlertDialog;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -170,23 +171,26 @@ public class MainActivity extends AppCompatActivity
 
         final int id = item.getItemId();
         if (id == R.id.nav_ueber) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(getResources().getString(R.string.ueber_title));
-
             StringBuffer buff = new StringBuffer(512);
             String[] strArrLines = getResources().getStringArray(R.array.ueber_content);
             for (String strLine: strArrLines) {
                 buff.append(strLine).append("\n");
             }
 
-            builder.setMessage(buff.toString());
-            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    // User clicked OK button
-                }
-            });
+            // Linkify the message
+            final SpannableString s = new SpannableString(buff);
+            Linkify.addLinks(s, Linkify.WEB_URLS);
 
-            builder.create().show();
+            final AlertDialog d = new AlertDialog
+                .Builder(this)
+                .setPositiveButton(android.R.string.ok, null)
+                .setTitle(getResources().getString(R.string.ueber_title))
+                .setMessage(s)
+                .create();
+            d.show();
+
+            // Make the textview clickable. Must be called after show()
+            ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
         } else if (id == R.id.nav_close) {
             /** nicht empgfehlenswert. Mir aber egal, darf der User entscheiden */
             finish();
