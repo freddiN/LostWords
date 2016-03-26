@@ -14,6 +14,9 @@
 
     <string name="nav_topstring">LostWords by BookingEngine</string>
     <string name="nav_substring">\'cause \'betuppen\' just sounds awesome!</string>
+    <string name="nav_share">Teilen</string>
+    <string name="nav_about">Über LostWords</string>
+    <string name="nav_exit">Beenden</string>
 
     <string name="button_next"> &gt; </string>
     <string name="button_prev"> &lt; </string>
