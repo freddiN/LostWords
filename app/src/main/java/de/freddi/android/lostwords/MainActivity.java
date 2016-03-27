@@ -72,9 +72,9 @@ public class MainActivity extends AppCompatActivity
         m_tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                if(status != TextToSpeech.ERROR && m_tts != null) {
-                    m_tts.setLanguage(Locale.GERMAN);
-                }
+            if(status != TextToSpeech.ERROR && m_tts != null) {
+                m_tts.setLanguage(Locale.GERMAN);
+            }
             }
         });
 
@@ -83,13 +83,13 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (m_tts != null) {
-                    m_tts.speak(
-                            m_wordHandler.getCurrentWord().getWord(),
-                            TextToSpeech.QUEUE_FLUSH,
-                            null,
-                            m_wordHandler.getCurrentWord().getWord());
-                }
+            if (m_tts != null) {
+                m_tts.speak(
+                        m_wordHandler.getCurrentWord().getWord(),
+                        TextToSpeech.QUEUE_FLUSH,
+                        null,
+                        m_wordHandler.getCurrentWord().getWord());
+            }
             }
         });
         fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity
             ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
         } else if (id == R.id.nav_close) {
             /** Navigation: Beenden
-                "Nicht empfehlenswert", sagt Google. "Mir egal", sagt Freddi.
+             * "Nicht empfehlenswert", sagt Google. "Mir egal", sagt Freddi.
              */
             finish();
             android.os.Process.killProcess(android.os.Process.myPid());
@@ -286,10 +286,11 @@ public class MainActivity extends AppCompatActivity
         public boolean onDoubleTap(MotionEvent e) {
 
             final Point pTouch = new Point((int)e.getAxisValue(0), (int)e.getAxisValue(1));
-            if (!wasTouchWithinButton(pTouch, findViewById(R.id.fab)) &&
-                !wasTouchWithinButton(pTouch, findViewById(R.id.fab_fav)) &&
-                !wasTouchWithinButton(pTouch, findViewById(R.id.buttonPrev)) &&
-                !wasTouchWithinButton(pTouch, findViewById(R.id.buttonNext))) {
+            if (!isTouchWithinButtons(pTouch,
+                    findViewById(R.id.fab),
+                    findViewById(R.id.fab_fav),
+                    findViewById(R.id.buttonPrev),
+                    findViewById(R.id.buttonNext))) {
                 m_wordHandler.generateNewPosition(IndexType.RANDOM);
                 displayCurrentWord();
                 showProgress();
@@ -299,16 +300,23 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private boolean wasTouchWithinButton(final Point pTouch, final View button) {
+    private boolean isTouchWithinButtons(final Point pTouch, final View... buttons) {
 
-        /** Buttons posi */
         int[] location = new int[2];
-        button.getLocationInWindow(location);
+        boolean bXinButton, bYinButton;
+        for (View button: buttons) {
+            /** Button posi */
+            button.getLocationInWindow(location);
 
-        /** Touch innerhalb? */
-        final boolean bXinButton = pTouch.x >= location[0] && pTouch.x <= location[0] + button.getWidth();
-        final boolean bYinButton = pTouch.y >= location[1] && pTouch.y <= location[1] + button.getHeight();
-        return bXinButton && bYinButton;
+            /** Touch innerhalb? */
+            bXinButton = pTouch.x >= location[0] && pTouch.x <= location[0] + button.getWidth();
+            bYinButton = pTouch.y >= location[1] && pTouch.y <= location[1] + button.getHeight();
+            if (bXinButton && bYinButton) {
+                return true;
+            };
+        }
+
+        return false;
     }
 
     private void showSnackbar(final String strText) {
