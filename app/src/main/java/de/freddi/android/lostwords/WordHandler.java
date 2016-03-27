@@ -15,22 +15,23 @@ public class WordHandler {
     private int m_nCurrentPositionInWordlist = 0;
     private List<LostWord> m_listWords = new ArrayList<LostWord>();
 
-    // zieht die Liste aus den String Ressourcen (strings.xml)
+    /** zieht die Liste aus den String Ressourcen (strings.xml) */
     public WordHandler(final String[] strArrWords) {
         String[] strArrWord;
         for (String strWord: strArrWords) {
             strArrWord = strWord.split("-");
-            this.m_listWords.add(new LostWord(strArrWord[0].trim(), strArrWord[1].trim()));
+            m_listWords.add(new LostWord(strArrWord[0].trim(), strArrWord[1].trim()));
         }
     }
 
     public void generateNewPosition(final IndexType i) {
-        if (i == IndexType.RANDOM) {
-            m_nCurrentPositionInWordlist = m_rnd.nextInt(m_listWords.size() - 1);
-        } else if (i == IndexType.NEXT) {
+        if (i == IndexType.NEXT) {
             m_nCurrentPositionInWordlist++;
         } else if (i == IndexType.PREV) {
             m_nCurrentPositionInWordlist--;
+        } else {
+            /** Random */
+            m_nCurrentPositionInWordlist = m_rnd.nextInt(m_listWords.size() - 1);
         }
 
         /** Umlauf in beide Richtungen */
@@ -40,23 +41,26 @@ public class WordHandler {
             m_nCurrentPositionInWordlist = 0;
         }
     }
-
+    /** Anzahl Wörter */
     public int getWordCount() {
-        return this.m_listWords.size();
+        return m_listWords.size();
     }
 
+    /** derzeitiger Wörter Index */
     public int getCurrentWordIndex() {
-        return this.m_nCurrentPositionInWordlist;
+        return m_nCurrentPositionInWordlist;
     }
 
+    /** derzeitiges Wort */
     public LostWord getCurrentWord() {
-        return this.m_listWords.get(this.m_nCurrentPositionInWordlist);
+        return m_listWords.get(m_nCurrentPositionInWordlist);
     }
 
+    /** Favorites: derzeitiges Wort auf den Bildschirm holen */
     public void selectGivenWord(final String strWord) {
         for (int i=0; i<this.m_listWords.size(); i++) {
             if (m_listWords.get(i).getWord().equals(strWord)) {
-                this.m_nCurrentPositionInWordlist = i;
+                m_nCurrentPositionInWordlist = i;
             }
         }
     }

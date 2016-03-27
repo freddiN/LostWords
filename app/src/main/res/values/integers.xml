@@ -1,4 +1,3 @@
 <resources>
     <integer name="gesture_min_speed">3000</integer >
-
 </resources>

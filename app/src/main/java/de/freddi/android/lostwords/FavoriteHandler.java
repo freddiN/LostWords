@@ -3,7 +3,7 @@ package de.freddi.android.lostwords;
 import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
 import android.util.ArraySet;
-import android.util.Log;
+
 import java.util.Iterator;
 import java.util.Set;
 
@@ -14,12 +14,12 @@ public class FavoriteHandler {
 
     private FloatingActionButton m_fabFlav;
     private SharedPreferences m_settings;
-    private String m_strSettingsFav;
+    private String m_strSettingsNameFavorites;
 
     public FavoriteHandler(FloatingActionButton fabFlav, SharedPreferences settings, final String strSettingsFav) {
         this.m_fabFlav = fabFlav;
         this.m_settings = settings;
-        this.m_strSettingsFav = strSettingsFav;
+        this.m_strSettingsNameFavorites = strSettingsFav;
     }
 
     public boolean checkFavorite(final LostWord lw) {
@@ -48,40 +48,46 @@ public class FavoriteHandler {
             strReturn = "\"" + lw.getWord() + "\" zu Favoriten hinzugefügt";
         }
 
+        /** nach der Änderung: Nochmal checken, dadurch wird der Floatbutton aktualisiert */
         checkFavorite(lw);
         return strReturn;
     }
 
+    /** für die Favoritenliste */
     public Set<String> getFavorites() {
-        return m_settings.getStringSet(m_strSettingsFav, new ArraySet<String>());
+        return m_settings.getStringSet(m_strSettingsNameFavorites, new ArraySet<String>());
     }
 
     private void addToFavorites(final LostWord lw) {
         //Log.d("FAV", "addToFavorites " + lw.getWord());
 
-        Set<String> setFavs = m_settings.getStringSet(m_strSettingsFav, new ArraySet<String>());
+        Set<String> setFavs = getSetFromSettings();
         setFavs.add(lw.getWord());
 
-        pesistSet(setFavs);
+        pesistSetToSettings(setFavs);
     }
 
     private void removeFromFavorites(final LostWord lw) {
         //Log.d("FAV", "removeFromFavorites " + lw.getWord());
 
-        Set<String> setFavs = m_settings.getStringSet(m_strSettingsFav, new ArraySet<String>());
-        Iterator<String> iterator = setFavs.iterator();
-        while (iterator.hasNext()) {
-            String element = iterator.next();
+        Set<String> setFavs = getSetFromSettings();
+        Iterator<String> iterFavs = setFavs.iterator();
+        while (iterFavs.hasNext()) {
+            String element = iterFavs.next();
             if (element.equals(lw.getWord())) {
-                iterator.remove();
+                iterFavs.remove();
             }
         }
-        pesistSet(setFavs);
+        pesistSetToSettings(setFavs);
     }
 
-    private void pesistSet(final Set<String> setFavs) {
+    private Set<String> getSetFromSettings() {
+        return m_settings.getStringSet(m_strSettingsNameFavorites, new ArraySet<String>());
+    }
+
+    private void pesistSetToSettings(final Set<String> setFavs) {
         SharedPreferences.Editor editor = m_settings.edit();
-        editor.putStringSet(m_strSettingsFav, setFavs);
+        editor.putStringSet(m_strSettingsNameFavorites, setFavs);
         editor.commit();
     }
 }
