@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
@@ -112,9 +113,10 @@ public class MainActivity extends AppCompatActivity
             this.m_listWords.add(new LostWord(strArrWord[0].trim(), strArrWord[1].trim()));
         }
 
-        Toast.makeText(getApplicationContext(),
+        Snackbar.make(findViewById(android.R.id.content),
                 getResources().getString(R.string.init_words, this.m_listWords.size()),
-                Toast.LENGTH_SHORT).show();
+                Snackbar.LENGTH_SHORT)
+                .show();
     }
 
     private void generateNewPosition(final IndexType i) {
