@@ -1,5 +1,6 @@
 package de.freddi.android.lostwords;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,26 +24,24 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.animation.AnimationUtils;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-import java.util.Random;
+import java.util.Set;
+
 import android.speech.tts.TextToSpeech;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private List<LostWord> m_listWords = new ArrayList<LostWord>();
-    private Random m_rnd = new Random(System.nanoTime());
-    private int m_nCurrentPositionInWordlist = 0;
     private TextToSpeech m_tts = null;
     private ProgressBar m_progressBar = null;
 
     private GestureDetectorCompat m_gestureDetector = null;
+
+    private FavoriteHandler m_favHandler = null;
+    private WordHandler m_wordHandler = null;
 
     @Override
     public void onDestroy() {
@@ -60,13 +60,15 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        this.m_wordHandler = new WordHandler(getResources().getStringArray(R.array.words));
+
         // TTS setup
         m_tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                if(status != TextToSpeech.ERROR && m_tts != null) {
-                    m_tts.setLanguage(Locale.GERMAN);
-                }
+            if(status != TextToSpeech.ERROR && m_tts != null) {
+                m_tts.setLanguage(Locale.GERMAN);
+            }
             }
         });
 
@@ -76,14 +78,34 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 if (m_tts != null) {
-                    LostWord lw = m_listWords.get(m_nCurrentPositionInWordlist);
-                    m_tts.speak(lw.getWord(), TextToSpeech.QUEUE_FLUSH, null, lw.getWord());
+                    m_tts.speak(
+                            m_wordHandler.getCurrentWord().getWord(),
+                            TextToSpeech.QUEUE_FLUSH,
+                            null,
+                            m_wordHandler.getCurrentWord().getWord());
                 }
             }
         });
         fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
 
-        initializeWordlist();
+        // FloatButton Favorites
+        FloatingActionButton fab_fav = (FloatingActionButton) findViewById(R.id.fab_fav);
+        fab_fav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String strReturn = m_favHandler.handleFavoriteFloatbuttonClick(m_wordHandler.getCurrentWord());
+                Snackbar.make(findViewById(android.R.id.content),
+                        strReturn,
+                        Snackbar.LENGTH_SHORT)
+                        .show();
+            }
+        });
+        fab_fav.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
+
+        Snackbar.make(findViewById(android.R.id.content),
+                    getResources().getString(R.string.init_words, this.m_wordHandler.getWordCount()),
+                    Snackbar.LENGTH_SHORT)
+                .show();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -95,52 +117,24 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         m_progressBar = (ProgressBar) findViewById(R.id.progess);
-        m_progressBar.setMax(m_listWords.size() - 1);
+        m_progressBar.setMax(this.m_wordHandler.getWordCount() - 1);
 
-        generateNewPosition(IndexType.RANDOM);
-        showWord();
+        m_favHandler = new FavoriteHandler(fab_fav, getPreferences(0),
+                getResources().getString(R.string.settings_fav));
+
+        m_wordHandler.generateNewPosition(IndexType.RANDOM);
+        displayCurrentWord();
         showProgress();
+        m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
 
         this.m_gestureDetector = new GestureDetectorCompat(this, new LostwordsGestureListener());
     }
 
-    // zieht die Liste aus den String Ressourcen (strings.xml)
-    private void initializeWordlist() {
-        String[] strArrWord;
-        String[] strArrWords = getResources().getStringArray(R.array.words);
-        for (String strWord: strArrWords) {
-            strArrWord = strWord.split("-");
-            this.m_listWords.add(new LostWord(strArrWord[0].trim(), strArrWord[1].trim()));
-        }
-
-        Snackbar.make(findViewById(android.R.id.content),
-                getResources().getString(R.string.init_words, this.m_listWords.size()),
-                Snackbar.LENGTH_SHORT)
-                .show();
-    }
-
-    private void generateNewPosition(final IndexType i) {
-        if (i == IndexType.RANDOM) {
-            m_nCurrentPositionInWordlist = m_rnd.nextInt(m_listWords.size() - 1);
-        } else if (i == IndexType.NEXT) {
-            m_nCurrentPositionInWordlist++;
-        } else if (i == IndexType.PREV) {
-            m_nCurrentPositionInWordlist--;
-        }
-
-        /** Umlauf in beide Richtungen */
-        if (m_nCurrentPositionInWordlist < 0) {
-            m_nCurrentPositionInWordlist = m_listWords.size() - 1;
-        } else if (m_nCurrentPositionInWordlist >= m_listWords.size()) {
-            m_nCurrentPositionInWordlist = 0;
-        }
-    }
-
-    private void showWord() {
+    private void displayCurrentWord() {
         TextView textAnzahl = (TextView) findViewById(R.id.textWordCounts);
-        textAnzahl.setText((m_nCurrentPositionInWordlist + 1) + " / " + m_listWords.size());
+        textAnzahl.setText((m_wordHandler.getCurrentWordIndex() + 1) + " / " + m_wordHandler.getWordCount());
 
-        LostWord lw = m_listWords.get(m_nCurrentPositionInWordlist);
+        final LostWord lw = m_wordHandler.getCurrentWord();
 
         TextView textWort = (TextView) findViewById(R.id.textWordContent);
         textWort.setText(lw.getWord() + "\n\n - - - \n\n" + lw.getMeaning());
@@ -164,28 +158,54 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void buttonNext(View v) {
-        generateNewPosition(IndexType.NEXT);
-        showWord();
+        this.m_wordHandler.generateNewPosition(IndexType.NEXT);
+        displayCurrentWord();
         showProgress();
+        m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
     }
 
     public void buttonPrev(View v) {
-        generateNewPosition(IndexType.PREV);
-        showWord();
+        this.m_wordHandler.generateNewPosition(IndexType.PREV);
+        displayCurrentWord();
         showProgress();
+        m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
     }
 
     private void showProgress() {
-        m_progressBar.setProgress(m_nCurrentPositionInWordlist);
+        if (m_progressBar != null) {
+            m_progressBar.setProgress(this.m_wordHandler.getCurrentWordIndex());
+        }
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         final int id = item.getItemId();
-        if (id == R.id.nav_ueber) {
+        if (id == R.id.nav_favorites) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Favoriten");
+            builder.setIcon(android.R.drawable.btn_star_big_on);
+            builder.setPositiveButton("Ok", null);
+
+            final Set<String> setFavs = m_favHandler.getFavorites();
+            final String[] stringArray = setFavs.toArray(new String[setFavs.size()]);
+
+            builder.setItems(stringArray, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int nID) {
+                    //Log.d("FAV", "SELECTED " + nID + " " + stringArray[nID]);
+                    m_wordHandler.selectGivenWord(stringArray[nID]);
+                    displayCurrentWord();
+                    showProgress();
+                    m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
+                }
+            });
+
+            builder.setView(new ListView(this));
+            builder.create().show();
+        } else if (id == R.id.nav_ueber) {
             StringBuffer buff = new StringBuffer(512);
-            String[] strArrLines = getResources().getStringArray(R.array.ueber_content);
+            final String[] strArrLines = getResources().getStringArray(R.array.ueber_content);
             for (String strLine: strArrLines) {
                 buff.append(strLine).append("\n");
             }
@@ -209,7 +229,7 @@ public class MainActivity extends AppCompatActivity
             finish();
             android.os.Process.killProcess(android.os.Process.myPid());
         } else if (id == R.id.nav_share) {
-            LostWord lw = m_listWords.get(m_nCurrentPositionInWordlist);
+            final LostWord lw = this.m_wordHandler.getCurrentWord();
 
             Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
             sharingIntent.setType("text/plain");
@@ -256,15 +276,14 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            //Log.d("Gestures", "onDoubleTap:\n" + e.toString());
-
-            /** DoubleTaps aus den Buttons ignorieren */
+                /** DoubleTaps aus den Buttons ignorieren */
             final Point pTouch = new Point((int)e.getAxisValue(0), (int)e.getAxisValue(1));
             if (!fromWithinButton(pTouch, findViewById(R.id.fab)) &&
+                !fromWithinButton(pTouch, findViewById(R.id.fab_fav)) &&
                 !fromWithinButton(pTouch, findViewById(R.id.buttonPrev)) &&
                 !fromWithinButton(pTouch, findViewById(R.id.buttonNext))) {
-                generateNewPosition(IndexType.RANDOM);
-                showWord();
+                m_wordHandler.generateNewPosition(IndexType.RANDOM);
+                displayCurrentWord();
                 showProgress();
             }
 
@@ -276,8 +295,8 @@ public class MainActivity extends AppCompatActivity
         int[] location = new int[2];
         button.getLocationInWindow(location);
 
-        boolean bXinButton = pTouch.x >= location[0] && pTouch.x <= location[0] + button.getWidth();
-        boolean bYinButton = pTouch.y >= location[1] && pTouch.y <= location[1] + button.getHeight();
+        final boolean bXinButton = pTouch.x >= location[0] && pTouch.x <= location[0] + button.getWidth();
+        final boolean bYinButton = pTouch.y >= location[1] && pTouch.y <= location[1] + button.getHeight();
         return bXinButton && bYinButton;
     }
 }
