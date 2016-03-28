@@ -1,12 +1,10 @@
 package de.freddi.android.lostwords;
 
-import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
-import android.util.ArraySet;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created by freddi on 27.03.2016.
@@ -14,7 +12,7 @@ import java.util.Set;
 public class FavoriteHandler {
 
     private FloatingActionButton m_fabFlav;
-    private Set<String> m_setFavs = new HashSet<String>();
+    private Set<String> m_setFavs = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 
     public FavoriteHandler(FloatingActionButton fabFlav, final Set<String> setFavs) {
         this.m_fabFlav = fabFlav;
@@ -51,7 +49,6 @@ public class FavoriteHandler {
         return strReturn;
     }
 
-
     private void addToFavorites(final LostWord lw) {
         //Log.d("FAV", "addToFavorites " + lw.getWord());
         m_setFavs.add(lw.getWord());
@@ -69,6 +66,7 @@ public class FavoriteHandler {
         }
     }
 
+    /** Anzeige im Menü */
     public Set<String> getFavorites() {
         return this.m_setFavs;
     }
