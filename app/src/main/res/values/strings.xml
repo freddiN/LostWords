@@ -25,6 +25,8 @@
     <string name="button_prev"> <b>&lt;</b> </string>
 
     <string name="settings_fav">setting_favorites</string>
+    <string name="search_title">Suche</string>
+    <string name="search_hint">Suchbegriff</string>
 
     <string-array name="ueber_content">
         <item>App zur Wiederbelebung seltener Wörter im alltäglichen Sprachgebrauch.</item>

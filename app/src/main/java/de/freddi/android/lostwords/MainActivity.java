@@ -1,5 +1,6 @@
 package de.freddi.android.lostwords;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
@@ -11,7 +12,6 @@ import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,16 +21,18 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.GestureDetector;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -47,6 +49,8 @@ public class MainActivity extends AppCompatActivity
 
     private FavoriteHandler m_favHandler = null;
     private WordHandler m_wordHandler = null;
+
+    private SearchView searchView = null;
 
     /** beim Beenden der Activity */
     @Override
@@ -156,6 +160,8 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (!searchView.isIconified()) {
+            resetSearchView();
         } else {
             super.onBackPressed();
         }
@@ -163,9 +169,22 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        final MenuInflater menuInflater = getMenuInflater();
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        menuInflater.inflate(R.menu.main, menu);
+
+        // Associate searchable configuration with the SearchView
+        final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextListener(new SearchViewOnQueryTextListener());
+
         return true;
+    }
+
+    private void resetSearchView() {
+        searchView.clearFocus();
+        searchView.setIconified(true);
     }
 
     /** Button < gedrückt */
@@ -197,35 +216,25 @@ public class MainActivity extends AppCompatActivity
         final int id = item.getItemId();
         if (id == R.id.nav_favorites) {
             /** Navigation: Favoriten */
-            final Set<String> setFavs = m_favHandler.getFavorites();
-              final String[] stringArray = setFavs.toArray(new String[setFavs.size()]);
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Favoriten");
             builder.setIcon(android.R.drawable.btn_star_big_on);
             builder.setPositiveButton("Ok", null);
-            builder.setTitle("Favoriten");
 
-            View convertView = (View) getLayoutInflater().inflate(R.layout.fav_listview, null);
-            builder.setView(convertView);
+            final Set<String> setFavs = m_favHandler.getFavorites();
+            final String[] stringArray = setFavs.toArray(new String[setFavs.size()]);
 
-            ListView lv = (ListView) convertView.findViewById(R.id.lv);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                    android.R.layout.simple_list_item_1,
-                    stringArray);
-            lv.setAdapter(adapter);
-            final AlertDialog dialog = builder.show();
-
-            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            builder.setItems(stringArray, new DialogInterface.OnClickListener() {
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view, int nID, long id) {
+                public void onClick(DialogInterface dialog, int nID) {
                     //Log.d("FAV", "SELECTED " + nID + " " + stringArray[nID]);
                     m_wordHandler.selectGivenWord(stringArray[nID]);
-                    displayCurrentWord();
-                    showProgress();
-                    m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
-                    dialog.dismiss();
+                    updateView();
                 }
             });
+
+            builder.setView(new ListView(this));
+            builder.create().show();
         } else if (id == R.id.nav_ueber) {
             /** Navigation: Über LostWords */
             StringBuffer buff = new StringBuffer(512);
@@ -272,6 +281,12 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private void updateView() {
+        displayCurrentWord();
+        showProgress();
+        m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
+    }
+
     /** alle Touch Events erstmal durch den GestureDetector leiten */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
@@ -315,8 +330,7 @@ public class MainActivity extends AppCompatActivity
                     findViewById(R.id.buttonPrev),
                     findViewById(R.id.buttonNext))) {
                 m_wordHandler.generateNewPosition(IndexType.RANDOM);
-                displayCurrentWord();
-                showProgress();
+                updateView();
             }
 
             return true;
@@ -359,6 +373,30 @@ public class MainActivity extends AppCompatActivity
         editor.putStringSet(getResources().getString(R.string.settings_fav), setFavs);
         if (!editor.commit()) {
             showSnackbar("error writing favorites");
+        }
+    }
+
+    private final class SearchViewOnQueryTextListener implements SearchView.OnQueryTextListener {
+        @Override
+        public boolean onQueryTextSubmit(final String s) {
+            search(s);
+            resetSearchView();
+            return true;
+        }
+
+        @Override
+        public boolean onQueryTextChange(final String s) {
+            return search(s);
+        }
+
+        private boolean search(final String s) {
+            if (s.length() < 3) {
+                return false;
+            }
+
+            m_wordHandler.searchAndSelectFirst(s);
+            updateView();
+            return true;
         }
     }
 }
