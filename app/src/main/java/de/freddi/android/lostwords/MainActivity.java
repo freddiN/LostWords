@@ -177,9 +177,7 @@ public class MainActivity extends AppCompatActivity
 
     private void defaultWordProgressFavHandling(final IndexType i) {
         m_wordHandler.generateNewPosition(i);   //Next, Prev, Random
-        displayCurrentWord();
-        showProgress();
-        m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
+        updateView();
     }
 
     private void showProgress() {
@@ -207,9 +205,7 @@ public class MainActivity extends AppCompatActivity
                 public void onClick(DialogInterface dialog, int nID) {
                     //Log.d("FAV", "SELECTED " + nID + " " + stringArray[nID]);
                     m_wordHandler.selectGivenWord(stringArray[nID]);
-                    displayCurrentWord();
-                    showProgress();
-                    m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
+                    updateView();
                 }
             });
 
@@ -261,6 +257,12 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private void updateView() {
+        displayCurrentWord();
+        showProgress();
+        m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
+    }
+
     /** alle Touch Events erstmal durch den GestureDetector leiten */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
@@ -304,8 +306,7 @@ public class MainActivity extends AppCompatActivity
                     findViewById(R.id.buttonPrev),
                     findViewById(R.id.buttonNext))) {
                 m_wordHandler.generateNewPosition(IndexType.RANDOM);
-                displayCurrentWord();
-                showProgress();
+                updateView();
             }
 
             return true;
