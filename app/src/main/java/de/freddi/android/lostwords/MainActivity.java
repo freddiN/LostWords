@@ -1,5 +1,7 @@
 package de.freddi.android.lostwords;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,20 +14,22 @@ import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.GestureDetector;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import java.util.HashSet;
@@ -44,6 +48,8 @@ public class MainActivity extends AppCompatActivity
 
     private FavoriteHandler m_favHandler = null;
     private WordHandler m_wordHandler = null;
+
+    private SearchView searchView = null;
 
     /** beim Beenden der Activity */
     @Override
@@ -153,6 +159,8 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (!searchView.isIconified()) {
+            resetSearchView();
         } else {
             super.onBackPressed();
         }
@@ -160,9 +168,22 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        final MenuInflater menuInflater = getMenuInflater();
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        menuInflater.inflate(R.menu.main, menu);
+
+        // Associate searchable configuration with the SearchView
+        final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextListener(new SearchViewOnQueryTextListener());
+
         return true;
+    }
+
+    private void resetSearchView() {
+        searchView.clearFocus();
+        searchView.setIconified(true);
     }
 
     /** Button < gedrückt */
@@ -177,9 +198,7 @@ public class MainActivity extends AppCompatActivity
 
     private void defaultWordProgressFavHandling(final IndexType i) {
         m_wordHandler.generateNewPosition(i);   //Next, Prev, Random
-        displayCurrentWord();
-        showProgress();
-        m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
+        updateView();
     }
 
     private void showProgress() {
@@ -207,9 +226,7 @@ public class MainActivity extends AppCompatActivity
                 public void onClick(DialogInterface dialog, int nID) {
                     //Log.d("FAV", "SELECTED " + nID + " " + stringArray[nID]);
                     m_wordHandler.selectGivenWord(stringArray[nID]);
-                    displayCurrentWord();
-                    showProgress();
-                    m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
+                    updateView();
                 }
             });
 
@@ -261,6 +278,12 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private void updateView() {
+        displayCurrentWord();
+        showProgress();
+        m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
+    }
+
     /** alle Touch Events erstmal durch den GestureDetector leiten */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
@@ -304,8 +327,7 @@ public class MainActivity extends AppCompatActivity
                     findViewById(R.id.buttonPrev),
                     findViewById(R.id.buttonNext))) {
                 m_wordHandler.generateNewPosition(IndexType.RANDOM);
-                displayCurrentWord();
-                showProgress();
+                updateView();
             }
 
             return true;
@@ -348,6 +370,30 @@ public class MainActivity extends AppCompatActivity
         editor.putStringSet(getResources().getString(R.string.settings_fav), setFavs);
         if (!editor.commit()) {
             showSnackbar("error writing favorites");
+        }
+    }
+
+    private final class SearchViewOnQueryTextListener implements SearchView.OnQueryTextListener {
+        @Override
+        public boolean onQueryTextSubmit(final String s) {
+            search(s);
+            resetSearchView();
+            return true;
+        }
+
+        @Override
+        public boolean onQueryTextChange(final String s) {
+            return search(s);
+        }
+
+        private boolean search(final String s) {
+            if (s.length() < 3) {
+                return false;
+            }
+
+            m_wordHandler.searchAndSelectFirst(s);
+            updateView();
+            return true;
         }
     }
 }

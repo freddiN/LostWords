@@ -1,10 +1,9 @@
 package de.freddi.android.lostwords;
 
-import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 /**
  * Created by freddi on 27.03.2016.
@@ -63,5 +62,18 @@ public class WordHandler {
                 m_nCurrentPositionInWordlist = i;
             }
         }
+    }
+
+    public boolean searchAndSelectFirst(String term) {
+        final Pattern pattern = Pattern.compile(Pattern.quote(term), Pattern.CASE_INSENSITIVE);
+        for (int i = 0; i < m_listWords.size(); i++) {
+            final LostWord cur = m_listWords.get(i);
+
+            if (pattern.matcher(cur.getWord()).find() || pattern.matcher(cur.getMeaning()).find()) {
+                m_nCurrentPositionInWordlist = i;
+                return true;
+            }
+        }
+        return false;
     }
 }
