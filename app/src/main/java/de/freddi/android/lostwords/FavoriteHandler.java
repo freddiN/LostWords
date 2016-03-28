@@ -36,11 +36,9 @@ public class FavoriteHandler {
         String strReturn = "";
         final boolean bIsPresent = checkFavorite(lw);
         if (bIsPresent) {
-            removeFromFavorites(lw);
-            strReturn = res.getString(R.string.favorites_remove, lw.getWord());
+            strReturn = removeFromFavorites(lw, res);
         } else {
-            addToFavorites(lw);
-            strReturn = res.getString(R.string.favorites_add, lw.getWord());
+            strReturn = addToFavorites(lw, res);
         }
 
         /** nach der Änderung: Nochmal checken, dadurch wird der Floatbutton aktualisiert */
@@ -48,19 +46,20 @@ public class FavoriteHandler {
         return strReturn;
     }
 
-    private void addToFavorites(final LostWord lw) {
+    private String addToFavorites(final LostWord lw, final Resources res) {
         m_setFavs.add(lw.getWord());
+        return res.getString(R.string.favorites_add, lw.getWord());
     }
 
-    private void removeFromFavorites(final LostWord lw) {
-
+    private String removeFromFavorites(final LostWord lw, final Resources res) {
         Iterator<String> iterFavs = m_setFavs.iterator();
         while (iterFavs.hasNext()) {
-            String element = iterFavs.next();
-            if (element.equals(lw.getWord())) {
+            if (iterFavs.next().equals(lw.getWord())) {
                 iterFavs.remove();
             }
         }
+
+        return res.getString(R.string.favorites_remove, lw.getWord());
     }
 
     /** Anzeige im Menü */
