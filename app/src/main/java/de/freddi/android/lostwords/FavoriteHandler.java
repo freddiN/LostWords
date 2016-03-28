@@ -1,5 +1,6 @@
 package de.freddi.android.lostwords;
 
+import android.content.res.Resources;
 import android.support.design.widget.FloatingActionButton;
 
 import java.util.Iterator;
@@ -23,25 +24,23 @@ public class FavoriteHandler {
         if (m_setFavs.contains(lw.getWord()) ) {
             /** ist in der Liste --> Button hat Entfernen Funktionalität */
             m_fabFlav.setImageResource(android.R.drawable.btn_star_big_off);
-            //Log.d("FAV", "vorhanden");
             return true;
         } else {
             /** ist nicht in der Liste --> Button hat Hinzufügen Funktionalität */
             m_fabFlav.setImageResource(android.R.drawable.btn_star_big_on);
-            //Log.d("FAV", "nicht vorhanden");
             return false;
         }
     }
 
-    public String handleFavoriteFloatbuttonClick(final LostWord lw) {
+    public String handleFavoriteFloatbuttonClick(final LostWord lw, Resources res) {
         String strReturn = "";
         final boolean bIsPresent = checkFavorite(lw);
         if (bIsPresent) {
             removeFromFavorites(lw);
-            strReturn = "\"" + lw.getWord() + "\" aus Favoriten entfernt";
+            strReturn = res.getString(R.string.favorites_remove, lw.getWord());
         } else {
             addToFavorites(lw);
-            strReturn = "\"" + lw.getWord() + "\" zu Favoriten hinzugefügt";
+            strReturn = res.getString(R.string.favorites_add, lw.getWord());
         }
 
         /** nach der Änderung: Nochmal checken, dadurch wird der Floatbutton aktualisiert */
@@ -50,12 +49,10 @@ public class FavoriteHandler {
     }
 
     private void addToFavorites(final LostWord lw) {
-        //Log.d("FAV", "addToFavorites " + lw.getWord());
         m_setFavs.add(lw.getWord());
     }
 
     private void removeFromFavorites(final LostWord lw) {
-        //Log.d("FAV", "removeFromFavorites " + lw.getWord());
 
         Iterator<String> iterFavs = m_setFavs.iterator();
         while (iterFavs.hasNext()) {

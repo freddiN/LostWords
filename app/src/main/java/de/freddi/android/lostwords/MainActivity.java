@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity
         fab_fav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String strReturn = m_favHandler.handleFavoriteFloatbuttonClick(m_wordHandler.getCurrentWord());
+                final String strReturn = m_favHandler.handleFavoriteFloatbuttonClick(m_wordHandler.getCurrentWord(), getResources());
                 showSnackbar(strReturn);
             }
         });

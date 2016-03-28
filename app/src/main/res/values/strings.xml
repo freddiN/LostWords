@@ -28,6 +28,9 @@
     <string name="search_title">Suche</string>
     <string name="search_hint">Suchbegriff</string>
 
+    <string name="favorites_add">\"%s\" zu Favoriten hinzugefügt</string>
+    <string name="favorites_remove">\"%s\" aus Favoriten entfernt</string>
+
     <string-array name="ueber_content">
         <item>App zur Wiederbelebung seltener Wörter im alltäglichen Sprachgebrauch.</item>
         <item></item>
