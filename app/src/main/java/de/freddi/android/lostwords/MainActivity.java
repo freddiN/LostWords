@@ -2,7 +2,6 @@ package de.freddi.android.lostwords;
 
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
@@ -23,12 +22,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -59,7 +55,7 @@ public class MainActivity extends AppCompatActivity
     /** beim Beenden der Activity */
     @Override
     public void onDestroy() {
-        // TTS shutdown!
+        /** TTS schliessen */
         if (m_tts != null) {
             m_tts.stop();
             m_tts.shutdown();
@@ -71,7 +67,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPause() {
         /** Favs speichern */
-        pesistFavoritesToSettings(m_favHandler.getFavorites());
+        persistFavoritesToSettings(m_favHandler.getFavorites());
 
         super.onPause();
     }
@@ -95,9 +91,9 @@ public class MainActivity extends AppCompatActivity
         m_tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-            if(status != TextToSpeech.ERROR && m_tts != null) {
-                m_tts.setLanguage(Locale.GERMAN);
-            }
+                if(status != TextToSpeech.ERROR && m_tts != null) {
+                    m_tts.setLanguage(Locale.GERMAN);
+                }
             }
         });
 
@@ -122,8 +118,7 @@ public class MainActivity extends AppCompatActivity
         fab_fav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String strReturn = m_favHandler.handleFavoriteFloatbuttonClick(m_wordHandler.getCurrentWord(), getResources());
-                showSnackbar(strReturn);
+                showSnackbar(m_favHandler.handleFavoriteFloatbuttonClick(m_wordHandler.getCurrentWord(), getResources()));
             }
         });
         fab_fav.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
@@ -146,7 +141,7 @@ public class MainActivity extends AppCompatActivity
         m_favHandler = new FavoriteHandler(fab_fav, readFavoritesFromSettings());
 
         /** Nach dem Start: Erstes zufälliges Wort anzeigen */
-        defaultWordProgressFavHandling(IndexType.RANDOM);
+        newWordAndUpdateView(IndexType.RANDOM);
     }
 
     private void displayCurrentWord() {
@@ -193,25 +188,17 @@ public class MainActivity extends AppCompatActivity
 
     /** Button < gedrückt */
     public void buttonPrev(View v) {
-        defaultWordProgressFavHandling(IndexType.PREV);
+        newWordAndUpdateView(IndexType.PREV);
     }
 
     /** Button > gedrückt */
     public void buttonNext(View v) {
-        defaultWordProgressFavHandling(IndexType.NEXT);
+        newWordAndUpdateView(IndexType.NEXT);
     }
 
-    private void defaultWordProgressFavHandling(final IndexType i) {
+    private void newWordAndUpdateView(final IndexType i) {
         m_wordHandler.generateNewPosition(i);   //Next, Prev, Random
-        displayCurrentWord();
-        showProgress();
-        m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
-    }
-
-    private void showProgress() {
-        if (m_progressBar != null) {
-            m_progressBar.setProgress(this.m_wordHandler.getCurrentWordIndex());
-        }
+        updateView();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -243,9 +230,7 @@ public class MainActivity extends AppCompatActivity
                 public void onItemClick(AdapterView<?> parent, View view, int nID, long id) {
                     //Log.d("FAV", "SELECTED " + nID + " " + stringArray[nID]);
                     m_wordHandler.selectGivenWord(stringArray[nID]);
-                    displayCurrentWord();
-                    showProgress();
-                    m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
+                    updateView();
                     dialog.dismiss();
                 }
             });
@@ -275,7 +260,7 @@ public class MainActivity extends AppCompatActivity
             /** Navigation: Beenden
              * "Nicht empfehlenswert", sagt Google. "Mir egal", sagt Freddi.
              */
-            pesistFavoritesToSettings(m_favHandler.getFavorites());
+            persistFavoritesToSettings(m_favHandler.getFavorites());
             finish();
             android.os.Process.killProcess(android.os.Process.myPid());
         } else if (id == R.id.nav_share) {
@@ -295,9 +280,14 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /** Wort anzeigen, Progressbar updaten, Fav.FLoatbutton ggfs. updaten */
     private void updateView() {
         displayCurrentWord();
-        showProgress();
+
+        if (m_progressBar != null) {
+            m_progressBar.setProgress(this.m_wordHandler.getCurrentWordIndex());
+        }
+
         m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
     }
 
@@ -382,7 +372,7 @@ public class MainActivity extends AppCompatActivity
         return settings.getStringSet(getResources().getString(R.string.settings_fav), new HashSet<String>());
     }
 
-    private void pesistFavoritesToSettings(final Set<String> setFavs) {
+    private void persistFavoritesToSettings(final Set<String> setFavs) {
         SharedPreferences.Editor editor = getPreferences(0).edit();
         editor.putStringSet(getResources().getString(R.string.settings_fav), setFavs);
         if (!editor.commit()) {

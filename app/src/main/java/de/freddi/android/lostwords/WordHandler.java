@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  */
 public class WordHandler {
 
-    private Random m_rnd = new Random(System.nanoTime());
+    final private Random m_rnd = new Random(System.nanoTime());
     private int m_nCurrentPositionInWordlist = 0;
     private List<LostWord> m_listWords = new ArrayList<LostWord>();
 
