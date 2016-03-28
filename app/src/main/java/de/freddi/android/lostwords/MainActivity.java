@@ -4,6 +4,8 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -249,7 +251,7 @@ public class MainActivity extends AppCompatActivity
             final AlertDialog d = new AlertDialog
                 .Builder(this)
                 .setPositiveButton(android.R.string.ok, null)
-                .setTitle(getResources().getString(R.string.ueber_title))
+                .setTitle(getResources().getString(R.string.ueber_title) + getVersionSuffix(" - "))
                 .setMessage(s)
                 .create();
             d.show();
@@ -278,6 +280,18 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private String getVersionSuffix(final String strSpacer) {
+        String strSuffix = "";
+        try {
+            final PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            strSuffix += strSpacer + pInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            //e.printStackTrace();
+        }
+
+        return strSuffix;
     }
 
     /** Wort anzeigen, Progressbar updaten, Fav.FLoatbutton ggfs. updaten */
