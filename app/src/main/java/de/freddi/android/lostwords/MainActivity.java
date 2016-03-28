@@ -2,6 +2,7 @@ package de.freddi.android.lostwords;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -26,6 +27,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
@@ -51,6 +54,15 @@ public class MainActivity extends AppCompatActivity
             m_tts.shutdown();
         }
         super.onDestroy();
+    }
+
+    /** beim Überdecken der Activity */
+    @Override
+    public void onPause() {
+        /** Favs speichern */
+        pesistFavoritesToSettings(m_favHandler.getFavorites());
+
+        super.onPause();
     }
 
     @Override
@@ -120,8 +132,7 @@ public class MainActivity extends AppCompatActivity
         m_progressBar.setMax(this.m_wordHandler.getWordCount() - 1);
 
         /** Vavoritenhandler Init */
-        m_favHandler = new FavoriteHandler(fab_fav, getPreferences(0),
-                getResources().getString(R.string.settings_fav));
+        m_favHandler = new FavoriteHandler(fab_fav, readFavoritesFromSettings());
 
         /** Nach dem Start: Erstes zufälliges Wort anzeigen */
         defaultWordProgressFavHandling(IndexType.RANDOM);
@@ -230,6 +241,7 @@ public class MainActivity extends AppCompatActivity
             /** Navigation: Beenden
              * "Nicht empfehlenswert", sagt Google. "Mir egal", sagt Freddi.
              */
+            pesistFavoritesToSettings(m_favHandler.getFavorites());
             finish();
             android.os.Process.killProcess(android.os.Process.myPid());
         } else if (id == R.id.nav_share) {
@@ -324,5 +336,18 @@ public class MainActivity extends AppCompatActivity
                     strText,
                     Snackbar.LENGTH_SHORT)
                 .show();
+    }
+
+    private Set<String> readFavoritesFromSettings() {
+        SharedPreferences settings = getPreferences(0);
+        return settings.getStringSet(getResources().getString(R.string.settings_fav), new HashSet<String>());
+    }
+
+    private void pesistFavoritesToSettings(final Set<String> setFavs) {
+        SharedPreferences.Editor editor = getPreferences(0).edit();
+        editor.putStringSet(getResources().getString(R.string.settings_fav), setFavs);
+        if (!editor.commit()) {
+            showSnackbar("error writing favorites");
+        }
     }
 }
