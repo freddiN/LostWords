@@ -1,6 +1,5 @@
 package de.freddi.android.lostwords;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
@@ -12,6 +11,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,10 +24,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -194,27 +197,35 @@ public class MainActivity extends AppCompatActivity
         final int id = item.getItemId();
         if (id == R.id.nav_favorites) {
             /** Navigation: Favoriten */
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Favoriten");
+            final Set<String> setFavs = m_favHandler.getFavorites();
+              final String[] stringArray = setFavs.toArray(new String[setFavs.size()]);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setIcon(android.R.drawable.btn_star_big_on);
             builder.setPositiveButton("Ok", null);
+            builder.setTitle("Favoriten");
 
-            final Set<String> setFavs = m_favHandler.getFavorites();
-            final String[] stringArray = setFavs.toArray(new String[setFavs.size()]);
+            View convertView = (View) getLayoutInflater().inflate(R.layout.fav_listview, null);
+            builder.setView(convertView);
 
-            builder.setItems(stringArray, new DialogInterface.OnClickListener() {
+            ListView lv = (ListView) convertView.findViewById(R.id.lv);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_list_item_1,
+                    stringArray);
+            lv.setAdapter(adapter);
+            final AlertDialog dialog = builder.show();
+
+            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int nID) {
+                public void onItemClick(AdapterView<?> parent, View view, int nID, long id) {
                     //Log.d("FAV", "SELECTED " + nID + " " + stringArray[nID]);
                     m_wordHandler.selectGivenWord(stringArray[nID]);
                     displayCurrentWord();
                     showProgress();
                     m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
+                    dialog.dismiss();
                 }
             });
-
-            builder.setView(new ListView(this));
-            builder.create().show();
         } else if (id == R.id.nav_ueber) {
             /** Navigation: Über LostWords */
             StringBuffer buff = new StringBuffer(512);
