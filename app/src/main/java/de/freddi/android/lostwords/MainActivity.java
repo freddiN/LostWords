@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity
         });
 
         /**  FloatButton TTS */
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -110,13 +110,14 @@ public class MainActivity extends AppCompatActivity
                         TextToSpeech.QUEUE_FLUSH,
                         null,
                         m_wordHandler.getCurrentWord().getWord());
+                fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate));
             }
             }
         });
         fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
 
         /** FloatButton Favorites */
-        FloatingActionButton fab_fav = (FloatingActionButton) findViewById(R.id.fab_fav);
+        final FloatingActionButton fab_fav = (FloatingActionButton) findViewById(R.id.fab_fav);
         fab_fav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
