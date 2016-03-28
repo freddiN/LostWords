@@ -30,6 +30,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
@@ -218,25 +220,35 @@ public class MainActivity extends AppCompatActivity
         final int id = item.getItemId();
         if (id == R.id.nav_favorites) {
             /** Navigation: Favoriten */
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Favoriten");
-            builder.setIcon(android.R.drawable.btn_star_big_on);
-            builder.setPositiveButton("Ok", null);
-
             final Set<String> setFavs = m_favHandler.getFavorites();
             final String[] stringArray = setFavs.toArray(new String[setFavs.size()]);
 
-            builder.setItems(stringArray, new DialogInterface.OnClickListener() {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setIcon(android.R.drawable.btn_star_big_on);
+            builder.setPositiveButton("Ok", null);
+            builder.setTitle("Favoriten");
+
+            View convertView = (View) getLayoutInflater().inflate(R.layout.fav_listview, null);
+            builder.setView(convertView);
+
+            ListView lv = (ListView) convertView.findViewById(R.id.lv);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_list_item_1,
+                    stringArray);
+            lv.setAdapter(adapter);
+            final AlertDialog dialog = builder.show();
+
+            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int nID) {
+                public void onItemClick(AdapterView<?> parent, View view, int nID, long id) {
                     //Log.d("FAV", "SELECTED " + nID + " " + stringArray[nID]);
                     m_wordHandler.selectGivenWord(stringArray[nID]);
-                    updateView();
+                    displayCurrentWord();
+                    showProgress();
+                    m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
+                    dialog.dismiss();
                 }
             });
-
-            builder.setView(new ListView(this));
-            builder.create().show();
         } else if (id == R.id.nav_ueber) {
             /** Navigation: Über LostWords */
             StringBuffer buff = new StringBuffer(512);
