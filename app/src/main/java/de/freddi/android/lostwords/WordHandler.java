@@ -18,11 +18,12 @@ public class WordHandler {
 
     /** zieht die Liste aus den String Ressourcen (strings.xml) */
     public WordHandler(final String[] strArrWords) {
-        String[] strArrWord;
         int nIdx;
         for (String strWord: strArrWords) {
             nIdx = strWord.indexOf("-");
-            m_listWords.add(new LostWord(strWord.substring(0, nIdx).trim(), strWord.substring(nIdx+1).trim()));
+            if (nIdx != -1) {
+                m_listWords.add(new LostWord(strWord.substring(0, nIdx).trim(), strWord.substring(nIdx + 1).trim()));
+            }
         }
     }
 
