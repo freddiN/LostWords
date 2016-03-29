@@ -1,5 +1,7 @@
 package de.freddi.android.lostwords;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -17,9 +19,10 @@ public class WordHandler {
     /** zieht die Liste aus den String Ressourcen (strings.xml) */
     public WordHandler(final String[] strArrWords) {
         String[] strArrWord;
+        int nIdx;
         for (String strWord: strArrWords) {
-            strArrWord = strWord.split("-");
-            m_listWords.add(new LostWord(strArrWord[0].trim(), strArrWord[1].trim()));
+            nIdx = strWord.indexOf("-");
+            m_listWords.add(new LostWord(strWord.substring(0, nIdx).trim(), strWord.substring(nIdx+1).trim()));
         }
     }
 
