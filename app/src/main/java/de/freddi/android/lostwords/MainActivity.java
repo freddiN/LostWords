@@ -57,11 +57,8 @@ public class MainActivity extends AppCompatActivity
     /** beim Beenden der Activity */
     @Override
     public void onDestroy() {
-        /** TTS schliessen */
-        if (m_tts != null) {
-            m_tts.stop();
-            m_tts.shutdown();
-        }
+        shutdown();
+
         super.onDestroy();
     }
 
@@ -265,6 +262,7 @@ public class MainActivity extends AppCompatActivity
              */
             persistFavoritesToSettings(m_favHandler.getFavorites());
             finish();
+            shutdown();
             android.os.Process.killProcess(android.os.Process.myPid());
         } else if (id == R.id.nav_share) {
             /** Navigation: Teilen */
@@ -380,6 +378,14 @@ public class MainActivity extends AppCompatActivity
                     strText,
                     Snackbar.LENGTH_SHORT)
                 .show();
+    }
+
+    private void shutdown() {
+        /** TTS schliessen */
+        if (m_tts != null) {
+            m_tts.stop();
+            m_tts.shutdown();
+        }
     }
 
     private Set<String> readFavoritesFromSettings() {
