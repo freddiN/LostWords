@@ -27,6 +27,7 @@
     <string name="settings_fav">setting_favorites</string>
     <string name="search_title">Suche</string>
     <string name="search_hint">Suchbegriff</string>
+    <string name="search_multihit">%d Wörter getroffen, zeige den ersten Treffer</string>
 
     <string name="favorites_add">\"%s\" zu Favoriten hinzugefügt</string>
     <string name="favorites_remove">\"%s\" aus Favoriten entfernt</string>

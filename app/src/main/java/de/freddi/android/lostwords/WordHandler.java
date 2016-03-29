@@ -66,16 +66,20 @@ public class WordHandler {
         }
     }
 
-    public boolean searchAndSelectFirst(String term) {
+    public int searchAndSelectFirst(String term) {
+        int nHit = 0;
         final Pattern pattern = Pattern.compile(Pattern.quote(term), Pattern.CASE_INSENSITIVE);
         for (int i = 0; i < m_listWords.size(); i++) {
             final LostWord cur = m_listWords.get(i);
 
             if (pattern.matcher(cur.getWord()).find() || pattern.matcher(cur.getMeaning()).find()) {
-                m_nCurrentPositionInWordlist = i;
-                return true;
+                if (nHit == 0) {
+                    /** the first hit is the one that we want. uh uh uh, honey */
+                    m_nCurrentPositionInWordlist = i;
+                }
+                nHit++;
             }
         }
-        return false;
+        return nHit;
     }
 }

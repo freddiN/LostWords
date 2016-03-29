@@ -419,7 +419,10 @@ public class MainActivity extends AppCompatActivity
                 return false;
             }
 
-            m_wordHandler.searchAndSelectFirst(s);
+            final int nHits = m_wordHandler.searchAndSelectFirst(s);
+//            if (nHits > 1) {
+//                showSnackbar(getResources().getString(R.string.search_multihit, nHits));
+//            }
             updateView();
             return true;
         }
