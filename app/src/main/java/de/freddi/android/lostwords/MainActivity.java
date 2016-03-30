@@ -346,8 +346,7 @@ public class MainActivity extends AppCompatActivity
                     findViewById(R.id.fab_fav),
                     findViewById(R.id.buttonPrev),
                     findViewById(R.id.buttonNext))) {
-                m_wordHandler.generateNewPosition(IndexType.RANDOM);
-                updateView();
+                newWordAndUpdateView(IndexType.RANDOM);
             }
 
             return true;
