@@ -3,16 +3,11 @@ package de.freddi.android.lostwords;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.net.Uri;
-import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Pattern;
 
 /**
  * Created by freddi on 27.03.2016.
@@ -20,7 +15,7 @@ import java.util.regex.Pattern;
 public class WordHandler {
 
     final private Random m_rnd = new Random(System.nanoTime());
-    private int m_nCurrentID = 0;
+    private int m_nCurrentID = 0, m_nCount = 0;
     private ContentResolver m_resolver;
 
     /** zieht die Liste aus den String Ressourcen (strings.xml) */
@@ -52,6 +47,7 @@ public class WordHandler {
                 values.put(SelectionType.MEANING.name(), strWord.substring(nIdxDash + 1).trim());
 
                 m_resolver.insert(WordContentProvider.CONTENT_URI, values);
+                m_nCount++;
             }
         }
     }
@@ -77,14 +73,14 @@ public class WordHandler {
 
     /** Anzahl Wörter */
     public int getWordCount() {
-        int nCount = 0;
-        Cursor cursor = m_resolver.query(WordContentProvider.CONTENT_URI, null, null, null, null);
-        if (cursor != null && cursor.moveToFirst()) {
-            nCount = cursor.getCount();
-            cursor.close();
-        }
+//        int nCount = 0;
+//        Cursor cursor = m_resolver.query(WordContentProvider.CONTENT_URI, null, null, null, null);
+//        if (cursor != null && cursor.moveToFirst()) {
+//            nCount = cursor.getCount();
+//            cursor.close();
+//        }
 
-        return nCount;
+        return m_nCount;
     }
 
     /** derzeitiger Wörter Index */
