@@ -41,6 +41,10 @@ public class WordContentProvider extends ContentProvider {
 //            Log.d("CURSOR", "selection=" + selection + "-selectionArgs=" + selectionArgs);
 //        }
 
+        if (isSearchView(uri)) {
+            return matchForSearchView(uri);
+        }
+
         int nID = -1;
         if (selection == null || selectionArgs == null) {
             return matchEverything();
@@ -50,6 +54,36 @@ public class WordContentProvider extends ContentProvider {
         } else {
             return matchByWordOrMeaning(selection, selectionArgs[0]);
         }
+    }
+
+    private boolean isSearchView(final Uri uri) {
+        //TODO wie Search unterscheiden? android:searchSuggestPath="searchview" geht nicht :-(
+        String query = uri.getQuery();
+        String strPath = uri.getEncodedPath();
+        List<String> listPathSegments = uri.getPathSegments();
+
+        return false;
+    }
+
+    private MatrixCursor matchForSearchView(final Uri uri) {
+        String query = uri.getLastPathSegment().toLowerCase();
+
+        //TODO Fixme funzt matching nach query parameter? Theoretisch(tm) code complete ...
+        MatrixCursor matrixCursor = new MatrixCursor(COLUMNS);
+
+        Pattern matchPattern = Pattern.compile(Pattern.quote(query), Pattern.CASE_INSENSITIVE);
+
+        for (LostWord lw: m_listWords) {
+            if (isMatching(SelectionType.ANY.name(), lw, matchPattern)) {
+                /** Aufbau siehe hier: http://developer.android.com/guide/topics/search/adding-custom-suggestions.html */
+                MatrixCursor.RowBuilder builder = matrixCursor.newRow();
+                builder.add("_ID", lw.getID());
+                builder.add("SUGGEST_COLUMN_TEXT_1", lw.getWord()); //wird als Suggestion angezeigt
+                builder.add("SUGGEST_COLUMN_TEXT_2", lw.getMeaning()); //wird als Suggestion angezeigt
+            }
+        }
+
+       return matrixCursor;
     }
 
     private MatrixCursor matchByID(final int nID) {
