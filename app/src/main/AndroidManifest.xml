@@ -18,10 +18,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <meta-data android:name="android.app.searchable"
-                       android:resource="@xml/searchable"/>
-
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
         </activity>
+
+        <provider
+            android:name="WordContentProvider"
+            android:authorities="de.freddi.android.lostwords.Wordprovider" />
+
     </application>
 
 </manifest>

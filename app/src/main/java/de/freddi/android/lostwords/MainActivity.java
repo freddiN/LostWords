@@ -1,12 +1,17 @@
 package de.freddi.android.lostwords;
 
 import android.app.SearchManager;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,6 +20,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -80,7 +86,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         /** Wörter Init */
-        m_wordHandler = new WordHandler(getResources().getStringArray(R.array.words));
+        m_wordHandler = new WordHandler(getResources().getStringArray(R.array.words), getContentResolver());
         showSnackbar(getResources().getString(R.string.init_words, m_wordHandler.getWordCount()));
 
         /** Gestures Init */
@@ -425,5 +431,103 @@ public class MainActivity extends AppCompatActivity
             updateView();
             return true;
         }
+    }
+
+    public void test1() {
+        Log.d("CURSOR", "TEST1 START");
+        Uri uri = Uri.parse(WordContentProvider.URL);
+        ContentResolver cr = getContentResolver();
+//        * @param uri The URI, using the content:// scheme, for the content to retrieve.
+//        * @param projection A list of which columns to return. Passing null will return all columns, which is inefficient.
+//        * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause (excluding the WHERE itself). Passing null will return all rows for the given URI.
+//        * @param selectionArgs You may include ?s in selection, which will be
+//        *         replaced by the values from selectionArgs, in the order that they
+//        *         appear in the selection. The values will be bound as Strings.
+//                * @param sortOrder How to order the rows, formatted as an SQL ORDER BY
+//                *         clause (excluding the ORDER BY itself). Passing null will use the
+//                *         default sort order, which may be unordered.
+//                * @return A Cursor object, which is positioned before the first entry, or null
+//                * @see Cursor
+//                */
+//        public final @Nullable Cursor query(@NonNull Uri uri, @Nullable String[] projection,
+//                @Nullable String selection, @Nullable String[] selectionArgs,
+//                @Nullable String sortOrder) {
+        String[] strValues = new String[1];
+        strValues[0] = "MURKS";
+
+        Log.d("CURSOR", "Starte WORD");
+        Cursor cursor = cr.query(uri, null, SelectionType.WORD.name(), strValues, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                Log.d("CURSOR",
+                        cursor.getString(cursor.getColumnIndex(SelectionType.WORD.name())) +
+                        "-" +
+                        cursor.getString(cursor.getColumnIndex(SelectionType.MEANING.name()))
+                );
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+
+        Log.d("CURSOR", "Starte MEANING");
+        cursor = cr.query(uri, null, SelectionType.MEANING.name(), strValues, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                Log.d("CURSOR",
+                        cursor.getString(cursor.getColumnIndex(SelectionType.WORD.name())) +
+                        "-" +
+                        cursor.getString(cursor.getColumnIndex(SelectionType.MEANING.name()))
+                );
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+
+        Log.d("CURSOR", "Starte ANY");
+        cursor = cr.query(uri, null, SelectionType.ANY.name(), strValues, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                Log.d("CURSOR",
+                        cursor.getString(cursor.getColumnIndex(SelectionType.WORD.name())) +
+                        "-" +
+                        cursor.getString(cursor.getColumnIndex(SelectionType.MEANING.name()))
+                );
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+    }
+
+    public void test2() {
+        Log.d("CURSOR", "TEST2 START");
+
+        ContentResolver cr = getContentResolver();
+//        * @param uri The URI, using the content:// scheme, for the content to retrieve.
+//        * @param projection A list of which columns to return. Passing null will return all columns, which is inefficient.
+//        * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause (excluding the WHERE itself). Passing null will return all rows for the given URI.
+//        * @param selectionArgs You may include ?s in selection, which will be
+//        *         replaced by the values from selectionArgs, in the order that they
+//        *         appear in the selection. The values will be bound as Strings.
+//                * @param sortOrder How to order the rows, formatted as an SQL ORDER BY
+//                *         clause (excluding the ORDER BY itself). Passing null will use the
+//                *         default sort order, which may be unordered.
+//                * @return A Cursor object, which is positioned before the first entry, or null
+//                * @see Cursor
+//                */
+//        public final @Nullable Cursor query(@NonNull Uri uri, @Nullable String[] projection,
+//                @Nullable String selection, @Nullable String[] selectionArgs,
+//                @Nullable String sortOrder) {
+
+        Cursor cursor = cr.query(WordContentProvider.CONTENT_URI, null, null, null, null);
+
+
+        if (cursor != null && cursor.moveToFirst()) {
+            Log.d("CURSOR", " COUNT=" + cursor.getCount());
+           cursor.close();
+        }
+
     }
 }
