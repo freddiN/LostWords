@@ -7,8 +7,11 @@ import android.net.Uri;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 /**
@@ -17,25 +20,38 @@ import java.util.regex.Pattern;
 public class WordHandler {
 
     final private Random m_rnd = new Random(System.nanoTime());
-    private int m_nCurrentPositionInWordlist = 0;
+    private int m_nCurrentID = 0;
     private ContentResolver m_resolver;
-    //private List<LostWord> m_listWords = new ArrayList<LostWord>();
 
     /** zieht die Liste aus den String Ressourcen (strings.xml) */
     public WordHandler(final String[] strArrWords, ContentResolver resolver) {
         m_resolver = resolver;
-        int nIdx;
-        ContentValues values;
+
+        /**
+         * sicherheithalber: Wörterliste IMMER alphabetisch sortieren, wer weiss
+         * wie die aus den Ressourcen zurückkommen und dann im ContentProvider
+         * landen
+         */
+        Set<String> setWords = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
         for (String strWord: strArrWords) {
-            nIdx = strWord.indexOf("-");
-            if (nIdx != -1) {
+            setWords.add(strWord);
+        }
+
+        int nIdxDash, nID = 0;
+        String strWord;
+        ContentValues values;
+        Iterator<String> iter = setWords.iterator();
+        while (iter.hasNext()) {
+            strWord = iter.next();
+            nIdxDash = strWord.indexOf("-");
+
+            if (nIdxDash != -1) {
                 values = new ContentValues();
-                values.put(SelectionType.WORD.name(), strWord.substring(0, nIdx).trim());
-                values.put(SelectionType.MEANING.name(), strWord.substring(nIdx + 1).trim());
+                values.put(SelectionType.ID.name(), String.valueOf(nID++));
+                values.put(SelectionType.WORD.name(), strWord.substring(0, nIdxDash).trim());
+                values.put(SelectionType.MEANING.name(), strWord.substring(nIdxDash + 1).trim());
 
                 m_resolver.insert(WordContentProvider.CONTENT_URI, values);
-
-                //m_listWords.add(new LostWord(strWord.substring(0, nIdx).trim(), strWord.substring(nIdx + 1).trim()));
             }
         }
     }
@@ -43,19 +59,19 @@ public class WordHandler {
     public void generateNewPosition(final IndexType i) {
         int nSize = getWordCount();
         if (i == IndexType.NEXT) {
-            m_nCurrentPositionInWordlist++;
+            m_nCurrentID++;
         } else if (i == IndexType.PREV) {
-            m_nCurrentPositionInWordlist--;
+            m_nCurrentID--;
         } else {
             /** Random */
-            m_nCurrentPositionInWordlist = m_rnd.nextInt(nSize - 1);
+            m_nCurrentID = m_rnd.nextInt(nSize - 1);
         }
 
         /** Umlauf in beide Richtungen */
-        if (m_nCurrentPositionInWordlist < 0) {
-            m_nCurrentPositionInWordlist = nSize - 1;
-        } else if (m_nCurrentPositionInWordlist >= nSize) {
-            m_nCurrentPositionInWordlist = 0;
+        if (m_nCurrentID < 0) {
+            m_nCurrentID = nSize - 1;
+        } else if (m_nCurrentID >= nSize) {
+            m_nCurrentID = 0;
         }
     }
 
@@ -73,27 +89,26 @@ public class WordHandler {
 
     /** derzeitiger Wörter Index */
     public int getCurrentWordIndex() {
-        return m_nCurrentPositionInWordlist;
+        return m_nCurrentID;
     }
 
     /** derzeitiges Wort */
     public LostWord getCurrentWord() {
         LostWord wordReturn = null;
-        Cursor cursor = m_resolver.query(WordContentProvider.CONTENT_URI, null, null, null, null);
+        Cursor cursor = m_resolver.query(
+                WordContentProvider.CONTENT_URI,
+                null,
+                SelectionType.ID.name(),
+                getSelection(String.valueOf(m_nCurrentID)),
+                null);
 
-        int nIndex = 0;
         if (cursor != null && cursor.moveToFirst()) {
-            while (!cursor.isAfterLast()) {
-                if (nIndex == m_nCurrentPositionInWordlist) {
-                    wordReturn = new LostWord(
-                            cursor.getString(cursor.getColumnIndex(SelectionType.WORD.name())),
-                            cursor.getString(cursor.getColumnIndex(SelectionType.MEANING.name())))
-                    ;
-                    break;
-                }
-                nIndex++;
-                cursor.moveToNext();
-            }
+            wordReturn = new LostWord(
+                    cursor.getInt(cursor.getColumnIndex(SelectionType.ID.name())),
+                    cursor.getString(cursor.getColumnIndex(SelectionType.WORD.name())),
+                    cursor.getString(cursor.getColumnIndex(SelectionType.MEANING.name()))
+            );
+
             cursor.close();
         }
 
@@ -102,37 +117,41 @@ public class WordHandler {
 
     /** Favorites: derzeitiges Wort auf den Bildschirm holen */
     public void selectGivenWord(final String strWord) {
-        Cursor cursor = m_resolver.query(WordContentProvider.CONTENT_URI, null, null, null, null);
+        Cursor cursor = m_resolver.query(
+                WordContentProvider.CONTENT_URI,
+                null,
+                SelectionType.WORD.name(),
+                getSelection(strWord),
+                null);
 
-        int nIndex = 0;
         if (cursor != null && cursor.moveToFirst()) {
-            while (!cursor.isAfterLast()) {
-                if (cursor.getString(cursor.getColumnIndex(SelectionType.WORD.name())).equals(strWord)) {
-                    break;
-                }
-                nIndex++;
-                cursor.moveToNext();
-            }
+            m_nCurrentID = cursor.getInt(cursor.getColumnIndex(SelectionType.ID.name()));
             cursor.close();
         }
-
-        m_nCurrentPositionInWordlist = nIndex;
     }
 
     public int searchAndSelectFirst(String term) {
         int nHit = 0;
-//        final Pattern pattern = Pattern.compile(Pattern.quote(term), Pattern.CASE_INSENSITIVE);
-//        for (int i = 0; i < m_listWords.size(); i++) {
-//            final LostWord cur = m_listWords.get(i);
-//
-//            if (pattern.matcher(cur.getWord()).find() || pattern.matcher(cur.getMeaning()).find()) {
-//                if (nHit == 0) {
-//                    /** the first hit is the one that we want. uh uh uh, honey */
-//                    m_nCurrentPositionInWordlist = i;
-//                }
-//                nHit++;
-//            }
-//        }
+
+        Cursor cursor = m_resolver.query(
+                WordContentProvider.CONTENT_URI,
+                null,
+                SelectionType.ANY.name(),
+                getSelection(term),
+                null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            nHit = cursor.getCount();
+            m_nCurrentID = cursor.getInt(cursor.getColumnIndex(SelectionType.ID.name()));
+            cursor.close();
+        }
+
         return nHit;
+    }
+
+    private String[] getSelection(final String strTerm) {
+        String[] strValues = new String[1];
+        strValues[0] = strTerm;
+        return strValues;
     }
 }
