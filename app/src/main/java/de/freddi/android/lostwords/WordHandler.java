@@ -3,6 +3,8 @@ package de.freddi.android.lostwords;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
+
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
@@ -16,9 +18,11 @@ public class WordHandler {
     final private Random m_rnd = new Random(System.nanoTime());
     private int m_nCurrentID = 0, m_nCount = 0;
     private ContentResolver m_resolver;
+    private LostWord m_currentWord = null;
 
     /** zieht die Liste aus den String Ressourcen (strings.xml) */
     public WordHandler(final String[] strArrWords, ContentResolver resolver) {
+//        Log.d("WordHandler", "INIT");
         m_resolver = resolver;
 
         /**
@@ -68,17 +72,12 @@ public class WordHandler {
         } else if (m_nCurrentID >= nSize) {
             m_nCurrentID = 0;
         }
+
+        updateCurrentWord();
     }
 
     /** Anzahl Wörter */
     public int getWordCount() {
-//        int nCount = 0;
-//        Cursor cursor = m_resolver.query(WordContentProvider.CONTENT_URI, null, null, null, null);
-//        if (cursor != null && cursor.moveToFirst()) {
-//            nCount = cursor.getCount();
-//            cursor.close();
-//        }
-
         return m_nCount;
     }
 
@@ -87,8 +86,12 @@ public class WordHandler {
         return m_nCurrentID;
     }
 
-    /** derzeitiges Wort */
     public LostWord getCurrentWord() {
+        return m_currentWord;
+    }
+
+    /** derzeitiges Wort */
+    private void updateCurrentWord() {
 
         LostWord wordReturn = null;
         Cursor cursor = m_resolver.query(
@@ -99,7 +102,7 @@ public class WordHandler {
                 null);
 
         if (cursor != null && cursor.moveToFirst()) {
-            wordReturn = new LostWord(
+            m_currentWord = new LostWord(
                     cursor.getInt(cursor.getColumnIndex(SelectionType.ID.name())),
                     cursor.getString(cursor.getColumnIndex(SelectionType.WORD.name())),
                     cursor.getString(cursor.getColumnIndex(SelectionType.MEANING.name()))
@@ -107,8 +110,6 @@ public class WordHandler {
 
             cursor.close();
         }
-
-        return wordReturn;
     }
 
     /** Favorites: derzeitiges Wort auf den Bildschirm holen */
@@ -122,6 +123,12 @@ public class WordHandler {
 
         if (cursor != null && cursor.moveToFirst()) {
             m_nCurrentID = cursor.getInt(cursor.getColumnIndex(SelectionType.ID.name()));
+            m_currentWord = new LostWord(
+                    cursor.getInt(cursor.getColumnIndex(SelectionType.ID.name())),
+                    cursor.getString(cursor.getColumnIndex(SelectionType.WORD.name())),
+                    cursor.getString(cursor.getColumnIndex(SelectionType.MEANING.name()))
+            );
+
             cursor.close();
         }
     }

@@ -8,9 +8,12 @@ import android.database.MatrixCursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -26,7 +29,7 @@ public class WordContentProvider extends ContentProvider {
             SelectionType.WORD.name(),
             SelectionType.MEANING.name()};
 
-    private List<LostWord> m_listWords = new ArrayList<LostWord>();
+    private Map<Integer, LostWord> m_mapWords = new HashMap<Integer, LostWord>(100);
 
     @Override
     public boolean onCreate() {
@@ -83,10 +86,10 @@ public class WordContentProvider extends ContentProvider {
 
         Pattern matchPattern = Pattern.compile(Pattern.quote(query), Pattern.CASE_INSENSITIVE);
 
-        for (LostWord lw : m_listWords) {
+        for (LostWord lw: m_mapWords.values()) {
             if (isMatching(SelectionType.ANY.name(), lw, matchPattern)) {
                 /** Aufbau siehe hier: http://developer.android.com/guide/topics/search/adding-custom-suggestions.html */
-//                Log.d("CURSOR", "isMatching true für " + query + " Word=" + lw.getWord() + " Meaning=" + lw.getMeaning());
+//                Log.d("CURSOR", "isMatching true für " + query + " id=" + lw.getID() + " Word=" + lw.getWord() + " Meaning=" + lw.getMeaning() + " listsize=" + m_mapWords.size());
                 matrixCursor.addRow(new Object[]{lw.getID(), lw.getWord(), lw.getMeaning(), lw.getWord()});
 
                 nCounter++;
@@ -103,14 +106,12 @@ public class WordContentProvider extends ContentProvider {
 
     private MatrixCursor matchByID(final int nID) {
         MatrixCursor matrixCursor = new MatrixCursor(COLUMNS);
-        for (LostWord lw: m_listWords) {
-            if (lw.getID() == nID) {
-                MatrixCursor.RowBuilder builder = matrixCursor.newRow();
-                builder.add(SelectionType.ID.name(), lw.getID());
-                builder.add(SelectionType.WORD.name(), lw.getWord());
-                builder.add(SelectionType.MEANING.name(), lw.getMeaning());
-                break;
-            }
+        if (m_mapWords.containsKey(nID)) {
+            LostWord lw = m_mapWords.get(nID);
+            MatrixCursor.RowBuilder builder = matrixCursor.newRow();
+            builder.add(SelectionType.ID.name(), lw.getID());
+            builder.add(SelectionType.WORD.name(), lw.getWord());
+            builder.add(SelectionType.MEANING.name(), lw.getMeaning());
         }
 
         return matrixCursor;
@@ -118,7 +119,7 @@ public class WordContentProvider extends ContentProvider {
 
     private MatrixCursor matchEverything() {
         MatrixCursor matrixCursor = new MatrixCursor(COLUMNS);
-        for (LostWord lw: m_listWords) {
+        for (LostWord lw: m_mapWords.values()) {
             MatrixCursor.RowBuilder builder = matrixCursor.newRow();
             builder.add(SelectionType.ID.name(), lw.getID());
             builder.add(SelectionType.WORD.name(), lw.getWord());
@@ -132,7 +133,7 @@ public class WordContentProvider extends ContentProvider {
         Pattern matchPattern = Pattern.compile(Pattern.quote(strMatch), Pattern.CASE_INSENSITIVE);
 
         MatrixCursor matrixCursor = new MatrixCursor(COLUMNS);
-        for (LostWord lw: m_listWords) {
+        for (LostWord lw: m_mapWords.values()) {
             if (isMatching(strSelection, lw, matchPattern)) {
                 MatrixCursor.RowBuilder builder = matrixCursor.newRow();
                 builder.add(SelectionType.ID.name(), lw.getID());
@@ -144,15 +145,16 @@ public class WordContentProvider extends ContentProvider {
         return matrixCursor;
     }
 
-
     private boolean isMatching(final String strSelection, LostWord lw, Pattern pattern) {
          if ((strSelection.equals(SelectionType.WORD.name()) || strSelection.equals(SelectionType.ANY.name())) &&
                 pattern.matcher(lw.getWord()).find()) {
+             //Log.d("CURSOR", "isMatching 1 strSelection=" + strSelection + " id=" + lw.getID());
             return true;
         }
 
         if ((strSelection.equals(SelectionType.MEANING.name()) || strSelection.equals(SelectionType.ANY.name())) &&
                 pattern.matcher(lw.getMeaning()).find()) {
+            //Log.d("CURSOR", "isMatching 1 strSelection=" + strSelection + " id=" + lw.getID());
             return true;
         }
 
@@ -168,10 +170,14 @@ public class WordContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        m_listWords.add(new LostWord(
-                values.getAsInteger(SelectionType.ID.name()),
-                values.getAsString(SelectionType.WORD.name()),
-                values.getAsString(SelectionType.MEANING.name())));
+        final int nID = values.getAsInteger(SelectionType.ID.name());
+
+        if (!m_mapWords.containsKey(nID)) {
+            m_mapWords.put(nID, new LostWord(
+                    values.getAsInteger(SelectionType.ID.name()),
+                    values.getAsString(SelectionType.WORD.name()),
+                    values.getAsString(SelectionType.MEANING.name())));
+        }
         return null;
     }
 
