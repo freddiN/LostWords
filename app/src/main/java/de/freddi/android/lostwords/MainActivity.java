@@ -1,15 +1,12 @@
 package de.freddi.android.lostwords;
 
 import android.app.SearchManager;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Point;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -159,11 +156,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        resetSearchView();
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (!searchView.isIconified()) {
-            resetSearchView();
         } else {
             super.onBackPressed();
         }
@@ -173,13 +170,22 @@ public class MainActivity extends AppCompatActivity
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
 
-        if ("android.Intent.action.SEARCHED".equals(intent.getAction())) {
+        //Log.d("SEARCHED", "onNewIntent id=" + intent + " Action=" + intent.getAction());
+        final String strAction = intent.getAction();
+        if ("android.Intent.action.SEARCHED".equals(strAction)) {
             String strSelect = intent.getDataString();
-            //Log.d("SEARCHED", "SEARCHED id=" + strSelect);
+            //Log.d("SEARCHED", "SEARCHED wort=" + strSelect);
             if (strSelect != null) {
                 m_wordHandler.selectGivenWord(strSelect);
                 updateView();
+                resetSearchView();
+               // Log.d("SEARCHED", "SEARCHED id=" + strSelect);
             }
+        } else if ("android.intent.action.SEARCH".equals(strAction)) {
+            //Suche ohne Suggestions
+            //Log.d("SEARCHED", "SEARCH");
+            //showSnackbar("Bei der Suche muss eine Suggestion ausgewählt weren");
+            resetSearchView();
         }
     }
 
@@ -199,14 +205,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void resetSearchView() {
-        searchView.clearFocus();
-        searchView.setIconified(true);
+        if (searchView != null) {
+            searchView.clearFocus();
+            searchView.setIconified(true);
+            searchView.setIconified(true);
+        }
     }
 
     /** Button < gedrückt */
     public void buttonPrev(View v) {
         newWordAndUpdateView(IndexType.PREV);
-    }
+     }
 
     /** Button > gedrückt */
     public void buttonNext(View v) {
@@ -216,11 +225,14 @@ public class MainActivity extends AppCompatActivity
     private void newWordAndUpdateView(final IndexType i) {
         m_wordHandler.generateNewPosition(i);   //Next, Prev, Random
         updateView();
+        resetSearchView();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        resetSearchView();
+
         final int id = item.getItemId();
         if (id == R.id.nav_favorites) {
             /** Navigation: Favoriten */
@@ -364,6 +376,7 @@ public class MainActivity extends AppCompatActivity
                     findViewById(R.id.buttonPrev),
                     findViewById(R.id.buttonNext))) {
                 newWordAndUpdateView(IndexType.RANDOM);
+                resetSearchView();
             }
 
             return true;
@@ -371,7 +384,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private boolean isTouchWithinButtons(final Point pTouch, final View... buttons) {
-
         int[] location = new int[2];
         boolean bXinButton, bYinButton;
         for (View button: buttons) {
