@@ -315,8 +315,7 @@ public class MainActivity extends AppCompatActivity
         try {
             final PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             strSuffix += strSpacer + pInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            //e.printStackTrace();
+        } catch (final PackageManager.NameNotFoundException e) {
         }
 
         return strSuffix;
@@ -417,8 +416,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private Set<String> readFavoritesFromSettings() {
-        SharedPreferences settings = getPreferences(0);
-        return settings.getStringSet(getResources().getString(R.string.settings_fav), new HashSet<String>());
+        return getPreferences(0).getStringSet(getResources().getString(R.string.settings_fav), new HashSet<String>());
     }
 
     private void persistFavoritesToSettings(final Set<String> setFavs) {

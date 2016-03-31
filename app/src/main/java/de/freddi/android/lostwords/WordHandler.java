@@ -1,9 +1,10 @@
 package de.freddi.android.lostwords;
 
+import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.util.Log;
+import android.provider.BaseColumns;
 
 import java.util.Iterator;
 import java.util.Random;
@@ -16,9 +17,10 @@ import java.util.TreeSet;
 public class WordHandler {
 
     final private Random m_rnd = new Random(System.nanoTime());
-    private int m_nCurrentID = 0, m_nCount = 0;
     private ContentResolver m_resolver;
-    private LostWord m_currentWord = null;
+
+    private int m_nCachedID = 0, m_nCachedCount = 0;
+    private LostWord m_CachedWord = null;
 
     /** zieht die Liste aus den String Ressourcen (strings.xml) */
     public WordHandler(final String[] strArrWords, ContentResolver resolver) {
@@ -45,32 +47,32 @@ public class WordHandler {
 
             if (nIdxDash != -1) {
                 values = new ContentValues();
-                values.put(SelectionType.ID.name(), String.valueOf(nID++));
-                values.put(SelectionType.WORD.name(), strWord.substring(0, nIdxDash).trim());
-                values.put(SelectionType.MEANING.name(), strWord.substring(nIdxDash + 1).trim());
+                values.put(BaseColumns._ID, String.valueOf(nID++));
+                values.put(SearchManager.SUGGEST_COLUMN_TEXT_1, strWord.substring(0, nIdxDash).trim());
+                values.put(SearchManager.SUGGEST_COLUMN_TEXT_2, strWord.substring(nIdxDash + 1).trim());
 
                 m_resolver.insert(WordContentProvider.CONTENT_URI, values);
-                m_nCount++;
+                m_nCachedCount++;
             }
         }
     }
 
     public void generateNewPosition(final IndexType i) {
-        int nSize = getWordCount();
+        final int nSize = getWordCount();
         if (i == IndexType.NEXT) {
-            m_nCurrentID++;
+            m_nCachedID++;
         } else if (i == IndexType.PREV) {
-            m_nCurrentID--;
+            m_nCachedID--;
         } else {
             /** Random */
-            m_nCurrentID = m_rnd.nextInt(nSize - 1);
+            m_nCachedID = m_rnd.nextInt(nSize - 1);
         }
 
         /** Umlauf in beide Richtungen */
-        if (m_nCurrentID < 0) {
-            m_nCurrentID = nSize - 1;
-        } else if (m_nCurrentID >= nSize) {
-            m_nCurrentID = 0;
+        if (m_nCachedID < 0) {
+            m_nCachedID = nSize - 1;
+        } else if (m_nCachedID >= nSize) {
+            m_nCachedID = 0;
         }
 
         updateCurrentWord();
@@ -78,34 +80,33 @@ public class WordHandler {
 
     /** Anzahl Wörter */
     public int getWordCount() {
-        return m_nCount;
+        return m_nCachedCount;
     }
 
     /** derzeitiger Wörter Index */
     public int getCurrentWordIndex() {
-        return m_nCurrentID;
+        return m_nCachedID;
     }
 
     public LostWord getCurrentWord() {
-        return m_currentWord;
+        return m_CachedWord;
     }
 
     /** derzeitiges Wort */
     private void updateCurrentWord() {
-
         LostWord wordReturn = null;
         Cursor cursor = m_resolver.query(
                 WordContentProvider.CONTENT_URI,
                 null,
                 SelectionType.ID.name(),
-                getSelection(String.valueOf(m_nCurrentID)),
+                getSelection(String.valueOf(m_nCachedID)),
                 null);
 
         if (cursor != null && cursor.moveToFirst()) {
-            m_currentWord = new LostWord(
-                    cursor.getInt(cursor.getColumnIndex(SelectionType.ID.name())),
-                    cursor.getString(cursor.getColumnIndex(SelectionType.WORD.name())),
-                    cursor.getString(cursor.getColumnIndex(SelectionType.MEANING.name()))
+            m_CachedWord = new LostWord(
+                m_nCachedID,
+                cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1)),
+                cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_2))
             );
 
             cursor.close();
@@ -122,11 +123,11 @@ public class WordHandler {
                 null);
 
         if (cursor != null && cursor.moveToFirst()) {
-            m_nCurrentID = cursor.getInt(cursor.getColumnIndex(SelectionType.ID.name()));
-            m_currentWord = new LostWord(
-                    cursor.getInt(cursor.getColumnIndex(SelectionType.ID.name())),
-                    cursor.getString(cursor.getColumnIndex(SelectionType.WORD.name())),
-                    cursor.getString(cursor.getColumnIndex(SelectionType.MEANING.name()))
+            m_nCachedID = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
+            m_CachedWord = new LostWord(
+                    m_nCachedID,
+                    cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1)),
+                    cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_2))
             );
 
             cursor.close();

@@ -5,7 +5,5 @@ package de.freddi.android.lostwords;
  */
 public enum SelectionType {
     ID,
-    WORD,
-    MEANING,
-    ANY
+    WORD
 }
