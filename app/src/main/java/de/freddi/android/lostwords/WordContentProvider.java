@@ -1,12 +1,13 @@
 package de.freddi.android.lostwords;
 
+import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
+import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +37,9 @@ public class WordContentProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 //        if (selectionArgs != null) {
-//            Log.d("CURSOR", "selection=" + selection + "-selectionArgs[0]=" + selectionArgs[0]);
+//            Log.d("CURSOR", "selection=" + selection + "-selectionArgs[0]=" + selectionArgs[0] + " uri=" + uri);
 //        } else {
-//            Log.d("CURSOR", "selection=" + selection + "-selectionArgs=" + selectionArgs);
+//            Log.d("CURSOR", "selection=" + selection + "-selectionArgs=" + selectionArgs + " uri=" + uri);
 //        }
 
         if (isSearchView(uri)) {
@@ -57,33 +58,47 @@ public class WordContentProvider extends ContentProvider {
     }
 
     private boolean isSearchView(final Uri uri) {
-        //TODO wie Search unterscheiden? android:searchSuggestPath="searchview" geht nicht :-(
-        String query = uri.getQuery();
         String strPath = uri.getEncodedPath();
-        List<String> listPathSegments = uri.getPathSegments();
-
-        return false;
+//        Log.d("CURSOR", "Q=" + query + " strPath=" + strPath + "  uri.getLastPathSegment()=" + uri.getLastPathSegment());
+        return (strPath.startsWith("/suggestion/"));
     }
 
     private MatrixCursor matchForSearchView(final Uri uri) {
         String query = uri.getLastPathSegment().toLowerCase();
+//        Log.d("CURSOR", "matchForSearchView=" + query );
 
-        //TODO Fixme funzt matching nach query parameter? Theoretisch(tm) code complete ...
-        MatrixCursor matrixCursor = new MatrixCursor(COLUMNS);
+        if (query.equals("search_suggest_query") ||
+                query.length() < 3) {
+//            Log.d("CURSOR", "matchForSearchView ABBRUCH: " + query );
+            return null;
+        }
+
+        MatrixCursor matrixCursor = new MatrixCursor(new String[] {
+                BaseColumns._ID,
+                SearchManager.SUGGEST_COLUMN_TEXT_1,
+                SearchManager.SUGGEST_COLUMN_TEXT_2,
+                SearchManager.SUGGEST_COLUMN_INTENT_DATA
+        });
+        int nCounter = 0;
 
         Pattern matchPattern = Pattern.compile(Pattern.quote(query), Pattern.CASE_INSENSITIVE);
 
-        for (LostWord lw: m_listWords) {
+        for (LostWord lw : m_listWords) {
             if (isMatching(SelectionType.ANY.name(), lw, matchPattern)) {
                 /** Aufbau siehe hier: http://developer.android.com/guide/topics/search/adding-custom-suggestions.html */
-                MatrixCursor.RowBuilder builder = matrixCursor.newRow();
-                builder.add("_ID", lw.getID());
-                builder.add("SUGGEST_COLUMN_TEXT_1", lw.getWord()); //wird als Suggestion angezeigt
-                builder.add("SUGGEST_COLUMN_TEXT_2", lw.getMeaning()); //wird als Suggestion angezeigt
+//                Log.d("CURSOR", "isMatching true für " + query + " Word=" + lw.getWord() + " Meaning=" + lw.getMeaning());
+                matrixCursor.addRow(new Object[]{lw.getID(), lw.getWord(), lw.getMeaning(), lw.getWord()});
+
+                nCounter++;
             }
         }
 
-       return matrixCursor;
+//        Log.d("CURSOR", "matchForSearchView ANzahl= " + nCounter);
+        if (nCounter > 0) {
+            return matrixCursor;
+        } else {
+            return null;
+        }
     }
 
     private MatrixCursor matchByID(final int nID) {
@@ -126,7 +141,6 @@ public class WordContentProvider extends ContentProvider {
             }
         }
 
-        //matrixCursor.setNotificationUri(getContext().getContentResolver(),uri);   //TODO: nötig?
         return matrixCursor;
     }
 

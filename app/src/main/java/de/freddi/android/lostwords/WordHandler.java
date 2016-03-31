@@ -3,7 +3,6 @@ package de.freddi.android.lostwords;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
-
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
@@ -90,6 +89,7 @@ public class WordHandler {
 
     /** derzeitiges Wort */
     public LostWord getCurrentWord() {
+
         LostWord wordReturn = null;
         Cursor cursor = m_resolver.query(
                 WordContentProvider.CONTENT_URI,
@@ -124,25 +124,6 @@ public class WordHandler {
             m_nCurrentID = cursor.getInt(cursor.getColumnIndex(SelectionType.ID.name()));
             cursor.close();
         }
-    }
-
-    public int searchAndSelectFirst(String term) {
-        int nHit = 0;
-
-        Cursor cursor = m_resolver.query(
-                WordContentProvider.CONTENT_URI,
-                null,
-                SelectionType.ANY.name(),
-                getSelection(term),
-                null);
-
-        if (cursor != null && cursor.moveToFirst()) {
-            nHit = cursor.getCount();
-            m_nCurrentID = cursor.getInt(cursor.getColumnIndex(SelectionType.ID.name()));
-            cursor.close();
-        }
-
-        return nHit;
     }
 
     private String[] getSelection(final String strTerm) {

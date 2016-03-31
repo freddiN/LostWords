@@ -2,7 +2,7 @@
 <searchable xmlns:android="http://schemas.android.com/apk/res/android"
         android:label="@string/app_name"
         android:searchSuggestAuthority="de.freddi.android.lostwords.Wordprovider"
-        android:searchSuggestPath="searchview"
-        android:searchSuggestIntentAction="android.Intent.action.VIEW"
+        android:searchSuggestPath="suggestion"
+        android:searchSuggestIntentAction="android.Intent.action.SEARCHED"
         android:searchSuggestThreshold="3"
         android:hint="@string/search_hint" />

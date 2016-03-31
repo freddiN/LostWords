@@ -2,14 +2,12 @@ package de.freddi.android.lostwords;
 
 import android.app.SearchManager;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,7 +18,6 @@ import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -173,16 +170,30 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+
+        if ("android.Intent.action.SEARCHED".equals(intent.getAction())) {
+            String strSelect = intent.getDataString();
+            //Log.d("SEARCHED", "SEARCHED id=" + strSelect);
+            if (strSelect != null) {
+                m_wordHandler.selectGivenWord(strSelect);
+                updateView();
+            }
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         final MenuInflater menuInflater = getMenuInflater();
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu);
 
-        // Associate searchable configuration with the SearchView
+//         Associate searchable configuration with the SearchView
         final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setOnQueryTextListener(new SearchViewOnQueryTextListener());
+        searchView.setIconifiedByDefault(true);
 
         return true;
     }
@@ -404,130 +415,5 @@ public class MainActivity extends AppCompatActivity
         if (!editor.commit()) {
             showSnackbar("error writing favorites");
         }
-    }
-
-    private final class SearchViewOnQueryTextListener implements SearchView.OnQueryTextListener {
-        @Override
-        public boolean onQueryTextSubmit(final String s) {
-            search(s);
-            resetSearchView();
-            return true;
-        }
-
-        @Override
-        public boolean onQueryTextChange(final String s) {
-            return search(s);
-        }
-
-        private boolean search(final String s) {
-            if (s.length() < 3) {
-                return false;
-            }
-
-            final int nHits = m_wordHandler.searchAndSelectFirst(s);
-//            if (nHits > 1) {
-//                showSnackbar(getResources().getString(R.string.search_multihit, nHits));
-//            }
-            updateView();
-            return true;
-        }
-    }
-
-    public void test1() {
-        Log.d("CURSOR", "TEST1 START");
-        Uri uri = Uri.parse(WordContentProvider.URL);
-        ContentResolver cr = getContentResolver();
-//        * @param uri The URI, using the content:// scheme, for the content to retrieve.
-//        * @param projection A list of which columns to return. Passing null will return all columns, which is inefficient.
-//        * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause (excluding the WHERE itself). Passing null will return all rows for the given URI.
-//        * @param selectionArgs You may include ?s in selection, which will be
-//        *         replaced by the values from selectionArgs, in the order that they
-//        *         appear in the selection. The values will be bound as Strings.
-//                * @param sortOrder How to order the rows, formatted as an SQL ORDER BY
-//                *         clause (excluding the ORDER BY itself). Passing null will use the
-//                *         default sort order, which may be unordered.
-//                * @return A Cursor object, which is positioned before the first entry, or null
-//                * @see Cursor
-//                */
-//        public final @Nullable Cursor query(@NonNull Uri uri, @Nullable String[] projection,
-//                @Nullable String selection, @Nullable String[] selectionArgs,
-//                @Nullable String sortOrder) {
-        String[] strValues = new String[1];
-        strValues[0] = "MURKS";
-
-        Log.d("CURSOR", "Starte WORD");
-        Cursor cursor = cr.query(uri, null, SelectionType.WORD.name(), strValues, null);
-
-        if (cursor != null && cursor.moveToFirst()) {
-            while (!cursor.isAfterLast()) {
-                Log.d("CURSOR",
-                        cursor.getString(cursor.getColumnIndex(SelectionType.WORD.name())) +
-                        "-" +
-                        cursor.getString(cursor.getColumnIndex(SelectionType.MEANING.name()))
-                );
-                cursor.moveToNext();
-            }
-            cursor.close();
-        }
-
-        Log.d("CURSOR", "Starte MEANING");
-        cursor = cr.query(uri, null, SelectionType.MEANING.name(), strValues, null);
-
-        if (cursor != null && cursor.moveToFirst()) {
-            while (!cursor.isAfterLast()) {
-                Log.d("CURSOR",
-                        cursor.getString(cursor.getColumnIndex(SelectionType.WORD.name())) +
-                        "-" +
-                        cursor.getString(cursor.getColumnIndex(SelectionType.MEANING.name()))
-                );
-                cursor.moveToNext();
-            }
-            cursor.close();
-        }
-
-        Log.d("CURSOR", "Starte ANY");
-        cursor = cr.query(uri, null, SelectionType.ANY.name(), strValues, null);
-
-        if (cursor != null && cursor.moveToFirst()) {
-            while (!cursor.isAfterLast()) {
-                Log.d("CURSOR",
-                        cursor.getString(cursor.getColumnIndex(SelectionType.WORD.name())) +
-                        "-" +
-                        cursor.getString(cursor.getColumnIndex(SelectionType.MEANING.name()))
-                );
-                cursor.moveToNext();
-            }
-            cursor.close();
-        }
-    }
-
-    public void test2() {
-        Log.d("CURSOR", "TEST2 START");
-
-        ContentResolver cr = getContentResolver();
-//        * @param uri The URI, using the content:// scheme, for the content to retrieve.
-//        * @param projection A list of which columns to return. Passing null will return all columns, which is inefficient.
-//        * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause (excluding the WHERE itself). Passing null will return all rows for the given URI.
-//        * @param selectionArgs You may include ?s in selection, which will be
-//        *         replaced by the values from selectionArgs, in the order that they
-//        *         appear in the selection. The values will be bound as Strings.
-//                * @param sortOrder How to order the rows, formatted as an SQL ORDER BY
-//                *         clause (excluding the ORDER BY itself). Passing null will use the
-//                *         default sort order, which may be unordered.
-//                * @return A Cursor object, which is positioned before the first entry, or null
-//                * @see Cursor
-//                */
-//        public final @Nullable Cursor query(@NonNull Uri uri, @Nullable String[] projection,
-//                @Nullable String selection, @Nullable String[] selectionArgs,
-//                @Nullable String sortOrder) {
-
-        Cursor cursor = cr.query(WordContentProvider.CONTENT_URI, null, null, null, null);
-
-
-        if (cursor != null && cursor.moveToFirst()) {
-            Log.d("CURSOR", " COUNT=" + cursor.getCount());
-           cursor.close();
-        }
-
     }
 }
