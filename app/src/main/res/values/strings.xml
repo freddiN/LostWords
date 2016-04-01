@@ -42,73 +42,73 @@
         <item>Pro Tag min. 3 der Wörter nutzen, am besten vor den Mahlzeiten.</item>
         <item>Gerne auch in Meetings, Telkos, Commit-Kommentaren und/oder Dokumentationen.</item>
         <item></item>
-        <item>Die Worterklärungen stammen grösstenteils von Freddi, Wikipedia und aus dem Duden.</item>
+        <item>Die Worterklärungen stammen vom Autor, Bekannten und www.openthesaurus.de .</item>
         <item></item>
-        <item>Mad creditz @ Team BookingEngine, Jo und Ellen</item>
+        <item>Mad creditz @ Team BookingEngine, Jo und Ellen.</item>
         <item></item>
         <item>Sourcecode auf Github:</item>
         <item>https://github.com/freddiN/LostWords</item>
     </string-array>
 
     <string-array name="words">
-        <item>aufmüpfig - aufsässig</item>
+        <item>aufmüpfig - Anweisungen nicht folgen</item>
         <item>Bengel - ungezogenes Kind</item>
         <item>betuppen - jemanden betrügen</item>
         <item>bonfortionös - eindrucksvoll</item>
-        <item>Bredouille - Bedrängnis</item>
+        <item>Bredouille - missliche Situation</item>
         <item>ei der Daus! - grosse Verwunderung</item>
         <item>Ein X für ein U vormachen - jemanden betrügen</item>
-        <item>Einfaltspinsel - Trottel</item>
+        <item>Einfaltspinsel - unbedarfter Mensch</item>
         <item>famos - hervorragend</item>
-        <item>Faxen machen - sich nicht ernst verhalten</item>
-        <item>Firlefanzereien - nicht benötigtes Zeug</item>
-        <item>Fisimatenten machen - Quatsch machen</item>
+        <item>Faxen machen - herumalbern</item>
+        <item>Firlefanzereien - Unsinn</item>
+        <item>Fisimatenten machen - Ärger machen</item>
         <item>flink - schnell</item>
         <item>flunkern - lügen</item>
         <item>formidabel - aussergewöhnlich</item>
         <item>Gutdünken - Einschätzung</item>
-        <item>Hallodri - unzuverlässiger junger Mann</item>
-        <item>Halunke - schlechter Mensch</item>
+        <item>Hallodri - Nichtsnutz, Weiberheld</item>
+        <item>Halunke - Verbrecher</item>
         <item>Handlanger - Gehilfe</item>
-        <item>Heidewitzka! - grosses Erstaunen</item>
-        <item>Heiermann - Fünf - DM Münze</item>
-        <item>Heureka! - Ausdruck grosser Freude</item>
-        <item>Humbug - törichte Äusserung oder Handlung</item>
+        <item>Heidewitzka - grosses Erstaunen</item>
+        <item>Heiermann - Fünf-DM-Münze</item>
+        <item>Heureka - Ausdruck grosser Freude</item>
+        <item>Humbug - unsinnige Tat oder Aussage</item>
         <item>Ich glaub\' es hackt! - das missfällt mir ausserordentlich</item>
         <item>Klamauk - billige Komik</item>
-        <item>Kleinod - Schmuckstück</item> <!-- spnsored by Patricks Frau-->
-        <item>Kokolores - Mist</item>
-        <item>krakeelen - laut schreien</item>
+        <item>Kleinod - Kostbarkeit</item> <!-- spnsored by Patricks Frau-->
+        <item>Kokolores - Mist, Blödsinn</item>
+        <item>krakeelen - schreien, brüllen</item>
         <item>Lausbub - freches Kind</item>
-        <item>Lümmel - ungezogenes Kind</item>
-        <item>mannigfaltig - vielerlei</item>
+        <item>Lümmel - Rowdy</item>
+        <item>mannigfaltig - facettenreich</item>
         <item>meschugge - verrückt</item>
         <item>Mumpitz - Unsinn</item>
-        <item>Murks - keine gute Lösung</item>
-        <item>Obacht! - Vorsicht!</item>
-        <item>Panoptikum - Kuriositätenkabinett</item>  <!-- spnsored by Patricks Frau-->
+        <item>Murks - Gestümper</item>
+        <item>Obacht! - aufgepasst!</item>
+        <item>Panoptikum - Kuriositätenausstellung</item>  <!-- spnsored by Patricks Frau-->
         <item>Potzblitz - grosse Verwunderung</item>
-        <item>Rabauke - rüpelhafter Mensch</item>
-        <item>Rabatz - Krawall</item>
+        <item>Rabauke - rücksichtsloser Mensch</item>
+        <item>Rabatz - Krach, Krawall</item>
         <item>Racker - aufgewecktes Kind</item>
         <item>rasch - schnell</item>
         <item>renitent - widerspenstig</item>
         <item>Rüffel - Zurechtweisung</item>
         <item>Sammelsurium - unsortiertes Gemisch</item>
-        <item>salopp - zwanglos</item>
-        <item>sauertöpfisch - griesgrämig</item>
-        <item>Schabernack - Streich</item>
+        <item>salopp - ungezwungen</item>
+        <item>sauertöpfisch - schlecht gelaunt</item>
+        <item>Schabernack - lustiger Streich</item>
         <item>Scherge - böser Handlanger</item>
-        <item>Scheusal - widerlicher Mensch</item>
+        <item>Scheusal - Unmensch</item>
         <item>Schlingel - Spassmacher</item>    <!-- sponsored by Ellen -->
-        <item>schmuck - hübsch</item>
+        <item>schmuck - sehr ansehnlich</item>
         <item>sich grämen - bekümmert sein</item>
-        <item>Sperenzchen - Schwierigkeiten</item>
+        <item>Sperenzchen - Albernheit</item>
         <item>spinksen - heimlich nachgucken</item>
         <item>Spökes - Spass</item>
-        <item>Springinsfeld - unreifer junger Mann</item>
-        <item>Tausendsassa - begabter Mensch</item>
-        <item>Tinnef - kitschiger Kram</item>
+        <item>Springinsfeld - unerfahrener Jungspund</item>
+        <item>Tausendsassa - Multitalent</item>
+        <item>Tinnef - wertloses Zeugs, Unsinn</item>
         <item>Ulk - Witz</item>
         <item>vermaledeit - verflucht</item>
         <item>Wie bei Hempels unterm Sofa - unordentlich</item>
