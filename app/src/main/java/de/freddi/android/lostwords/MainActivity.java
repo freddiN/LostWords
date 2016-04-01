@@ -392,12 +392,18 @@ public class MainActivity extends AppCompatActivity
             /** Button posi */
             button.getLocationInWindow(location);
 
-            /** Touch innerhalb? */
-            bXinButton = pTouch.x >= location[0] && pTouch.x <= location[0] + button.getWidth();
-            bYinButton = pTouch.y >= location[1] && pTouch.y <= location[1] + button.getHeight();
-            if (bXinButton && bYinButton) {
-                return true;
-            };
+            if (button instanceof SearchView ) {
+                /** Double-Taps auf SearchView ignorieren */
+                bYinButton = pTouch.y >= location[1] && pTouch.y <= location[1] + button.getHeight();
+                return bYinButton;
+            } else {
+                /** Touch innerhalb des Buttons? */
+                bXinButton = pTouch.x >= location[0] && pTouch.x <= location[0] + button.getWidth();
+                bYinButton = pTouch.y >= location[1] && pTouch.y <= location[1] + button.getHeight();
+                if (bXinButton && bYinButton) {
+                    return true;
+                }
+            }
         }
 
         return false;
