@@ -1,12 +1,12 @@
 <resources>
     <string name="app_name">LostWords</string>
 
-    <string name="main_header">LostWords for Android</string>
+    <string name="main_header">LostWords für Android</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="share_body">Ich habe gerade folgenden Ausdruck genutzt: \n\"%s\"\nSponsored by LostWords for Android</string>
+    <string name="share_body">Ich habe gerade folgenden Ausdruck genutzt: \n\"%s\"\nSponsored by LostWords für Android</string>
     <string name="share_subject">Oldschool Begriff Alert!</string>
     <string name="share_chooser">Teile via</string>
 
@@ -42,7 +42,7 @@
         <item>Pro Tag min. 3 der Wörter nutzen, am besten vor den Mahlzeiten.</item>
         <item>Gerne auch in Meetings, Telkos, Commit-Kommentaren und/oder Dokumentationen.</item>
         <item></item>
-        <item>Die Worterklärungen stammen grösstenteils von Freddi, Wikipedia und dem Duden.</item>
+        <item>Die Worterklärungen stammen grösstenteils von Freddi, Wikipedia und aus dem Duden.</item>
         <item></item>
         <item>Mad creditz @ Team BookingEngine, Jo und Ellen</item>
         <item></item>
@@ -76,6 +76,7 @@
         <item>Humbug - törichte Äusserung oder Handlung</item>
         <item>Ich glaub\' es hackt! - das missfällt mir ausserordentlich</item>
         <item>Klamauk - billige Komik</item>
+        <item>Kleinod - Schmuckstück</item> <!-- spnsored by Patricks Frau-->
         <item>Kokolores - Mist</item>
         <item>krakeelen - laut schreien</item>
         <item>Lausbub - freches Kind</item>
@@ -85,6 +86,7 @@
         <item>Mumpitz - Unsinn</item>
         <item>Murks - keine gute Lösung</item>
         <item>Obacht! - Vorsicht!</item>
+        <item>Panoptikum - Kuriositätenkabinett</item>  <!-- spnsored by Patricks Frau-->
         <item>Potzblitz - grosse Verwunderung</item>
         <item>Rabauke - rüpelhafter Mensch</item>
         <item>Rabatz - Krawall</item>
@@ -98,7 +100,7 @@
         <item>Schabernack - Streich</item>
         <item>Scherge - böser Handlanger</item>
         <item>Scheusal - widerlicher Mensch</item>
-        <item>Schlingel - Spassmacher</item>
+        <item>Schlingel - Spassmacher</item>    <!-- sponsored by Ellen -->
         <item>schmuck - hübsch</item>
         <item>sich grämen - bekümmert sein</item>
         <item>Sperenzchen - Schwierigkeiten</item>
