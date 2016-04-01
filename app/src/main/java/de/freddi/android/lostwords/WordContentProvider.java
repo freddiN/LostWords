@@ -76,7 +76,7 @@ public class WordContentProvider extends ContentProvider {
         final Pattern matchPattern = Pattern.compile(Pattern.quote(query), Pattern.CASE_INSENSITIVE);
 
         for (LostWord lw: m_mapWords.values()) {
-            if (matchPattern.matcher(lw.getWord()).find() ||
+            if (lw.getWord().equalsIgnoreCase(query) ||
                     matchPattern.matcher(lw.getMeaning()).find()) {
                 /** Aufbau siehe hier: http://developer.android.com/guide/topics/search/adding-custom-suggestions.html */
                 matrixCursor.addRow(new Object[]{lw.getID(), lw.getWord(), lw.getMeaning(), lw.getWord()});
@@ -102,11 +102,9 @@ public class WordContentProvider extends ContentProvider {
     }
 
     private MatrixCursor matchByWord(final String strMatch) {
-        final Pattern matchPattern = Pattern.compile(Pattern.quote(strMatch), Pattern.CASE_INSENSITIVE);
-
         MatrixCursor matrixCursor = new MatrixCursor(COLUMNS);
         for (LostWord lw: m_mapWords.values()) {
-            if (matchPattern.matcher(lw.getWord()).find()) {
+            if (lw.getWord().equalsIgnoreCase(strMatch)) {
                 matrixCursor.addRow(new Object[]{lw.getID(), lw.getWord(), lw.getMeaning(), lw.getID()});
             }
         }
@@ -127,7 +125,7 @@ public class WordContentProvider extends ContentProvider {
 
         if (!m_mapWords.containsKey(nID)) {
             m_mapWords.put(nID, new LostWord(
-                    values.getAsInteger(BaseColumns._ID),
+                    nID,
                     values.getAsString(SearchManager.SUGGEST_COLUMN_TEXT_1),
                     values.getAsString(SearchManager.SUGGEST_COLUMN_TEXT_2)));
         }
