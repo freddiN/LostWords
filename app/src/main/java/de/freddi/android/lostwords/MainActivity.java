@@ -356,9 +356,9 @@ public class MainActivity extends AppCompatActivity
 
             final int nGestureMinimumSpeed = getResources().getInteger(R.integer.gesture_min_speed);
             if (velocityX > nGestureMinimumSpeed) {
-                buttonNext(null);
-            } else if (velocityX < -nGestureMinimumSpeed) {
                 buttonPrev(null);
+            } else if (velocityX < -nGestureMinimumSpeed) {
+                buttonNext(null);
             }
 
             return true;
