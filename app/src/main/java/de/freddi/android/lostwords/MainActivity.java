@@ -369,11 +369,14 @@ public class MainActivity extends AppCompatActivity
         public boolean onDoubleTap(MotionEvent e) {
 
             final Point pTouch = new Point((int)e.getAxisValue(0), (int)e.getAxisValue(1));
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             if (!isTouchWithinButtons(pTouch,
                     findViewById(R.id.fab),
                     findViewById(R.id.fab_fav),
                     findViewById(R.id.buttonPrev),
-                    findViewById(R.id.buttonNext))) {
+                    findViewById(R.id.buttonNext),
+                    findViewById(R.id.search)) &&
+                    !drawer.isDrawerOpen(GravityCompat.START)) {
                 newWordAndUpdateView(IndexType.RANDOM);
                 resetSearchView();
             }
