@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">LostWords</string>
 
-    <string name="main_header">LostWords for the Alltag</string>
+    <string name="main_header">LostWords for Android</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -14,7 +14,7 @@
 
     <string name="ueber_title">Über LostWords</string>
 
-    <string name="nav_topstring">LostWords by BookingEngine</string>
+    <string name="nav_topstring">LostWords</string>
     <string name="nav_substring">\'cause \'betuppen\' just sounds awesome!</string>
     <string name="nav_favorites">Favoriten</string>
     <string name="nav_share">Teilen</string>
@@ -27,7 +27,6 @@
     <string name="settings_fav">setting_favorites</string>
     <string name="search_title">Suche</string>
     <string name="search_hint">Suchbegriff</string>
-    <string name="search_multihit">%d Wörter getroffen, zeige den ersten Treffer</string>
 
     <string name="favorites_add">\"%s\" zu Favoriten hinzugefügt</string>
     <string name="favorites_remove">\"%s\" aus Favoriten entfernt</string>
@@ -39,11 +38,11 @@
         <item>Swipe = nächster/vorheriger Begriff</item>
         <item>DoubleTap = zufälliger Begriff</item>
         <item></item>
-        <item>Team BookingEngine empfiehlt:</item>
+        <item>Wir empfehlen:</item>
         <item>Pro Tag min. 3 der Wörter nutzen, am besten vor den Mahlzeiten.</item>
         <item>Gerne auch in Meetings, Telkos, Commit-Kommentaren und/oder Dokumentationen.</item>
         <item></item>
-        <item>Die Worterklärungen stammen grösstenteils von duden.de, Wikipedia und Freddi.</item>
+        <item>Die Worterklärungen stammen grösstenteils von Freddi, Wikipedia und dem Duden.</item>
         <item></item>
         <item>Mad creditz @ Team BookingEngine, Jo und Ellen</item>
         <item></item>
