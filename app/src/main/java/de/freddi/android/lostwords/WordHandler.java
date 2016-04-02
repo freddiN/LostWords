@@ -19,12 +19,11 @@ public class WordHandler {
     final private Random m_rnd = new Random(System.nanoTime());
     private ContentResolver m_resolver;
 
-    private int m_nCachedID = 0, m_nCachedCount = 0;
+    private int m_nCachedCount = 0;
     private LostWord m_CachedWord = null;
 
     /** zieht die Liste aus den String Ressourcen (strings.xml) */
     public WordHandler(final String[] strArrWords, ContentResolver resolver) {
-//        Log.d("WordHandler", "INIT");
         m_resolver = resolver;
 
         /**
@@ -58,24 +57,27 @@ public class WordHandler {
     }
 
     public void generateNewPosition(final IndexType i) {
-        final int nSize = getWordCount();
+        int nID = 0;
+        if (m_CachedWord != null) {
+            nID = m_CachedWord.getID();
+        }
         if (i == IndexType.NEXT) {
-            m_nCachedID++;
+            nID++;
         } else if (i == IndexType.PREV) {
-            m_nCachedID--;
+            nID--;
         } else {
             /** Random */
-            m_nCachedID = m_rnd.nextInt(nSize - 1);
+            nID = m_rnd.nextInt(m_nCachedCount - 1);
         }
 
         /** Umlauf in beide Richtungen */
-        if (m_nCachedID < 0) {
-            m_nCachedID = nSize - 1;
-        } else if (m_nCachedID >= nSize) {
-            m_nCachedID = 0;
+        if (nID < 0) {
+            nID = m_nCachedCount - 1;
+        } else if (nID >= m_nCachedCount) {
+            nID = 0;
         }
 
-        updateCurrentWord();
+        updateCurrentWord(nID);
     }
 
     /** Anzahl Wörter */
@@ -85,7 +87,7 @@ public class WordHandler {
 
     /** derzeitiger Wörter Index */
     public int getCurrentWordIndex() {
-        return m_nCachedID;
+        return m_CachedWord.getID();
     }
 
     public LostWord getCurrentWord() {
@@ -93,18 +95,18 @@ public class WordHandler {
     }
 
     /** derzeitiges Wort */
-    private void updateCurrentWord() {
+    private void updateCurrentWord(final int nID) {
         LostWord wordReturn = null;
         Cursor cursor = m_resolver.query(
                 WordContentProvider.CONTENT_URI,
                 null,
                 SelectionType.ID.name(),
-                getSelection(String.valueOf(m_nCachedID)),
+                getSelection(String.valueOf(nID)),
                 null);
 
         if (cursor != null && cursor.moveToFirst()) {
             m_CachedWord = new LostWord(
-                m_nCachedID,
+                nID,
                 cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1)),
                 cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_2))
             );
@@ -123,9 +125,8 @@ public class WordHandler {
                 null);
 
         if (cursor != null && cursor.moveToFirst()) {
-            m_nCachedID = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
             m_CachedWord = new LostWord(
-                    m_nCachedID,
+                    cursor.getInt(cursor.getColumnIndex(BaseColumns._ID)),
                     cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1)),
                     cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_2))
             );
