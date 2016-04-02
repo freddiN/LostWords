@@ -28,7 +28,7 @@
     <string name="settings_fav">setting_favorites</string>
     <string name="settings_shake">setting_shake</string>
     <string name="settings_shake_title">Schüttelfunktion</string>
-    <string name="settings_shake_summary">Schütteln für ein Zufallswort</string>
+    <string name="settings_shake_summary">Schütteln für ein Zufallswort mit Sprachausgabe</string>
     <string name="settings_shake_timeout">setting_shake_timeout</string>
     <string name="settings_shake_timeout_title">Schütteltimeout</string>
     <string name="settings_shake_timeout_summary">Mindestzeit zwischen zwei Schüttlern in Sekunden</string>

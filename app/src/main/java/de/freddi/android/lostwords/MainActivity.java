@@ -394,7 +394,7 @@ public class MainActivity extends AppCompatActivity
                     m_settings.getString(
                             getResources().getString(R.string.settings_shake_strength),
                             getResources().getString(R.string.settings_shake_strength_default)));
-            if (accelationSquareRoot >= nShakeStrength)  {
+            if (accelationSquareRoot >= nShakeStrength * 2)  {
                 m_lastSensorUpdate = actualTime;
 
                 newWordAndUpdateView(IndexType.RANDOM);
