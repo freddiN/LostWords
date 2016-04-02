@@ -7,7 +7,12 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GestureDetectorCompat;
@@ -38,11 +43,12 @@ import android.widget.TextView;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import android.speech.tts.TextToSpeech;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SensorEventListener  {
 
     private TextToSpeech m_tts = null;
     private ProgressBar m_progressBar = null;
@@ -53,6 +59,12 @@ public class MainActivity extends AppCompatActivity
     private WordHandler m_wordHandler = null;
 
     private SearchView searchView = null;
+
+    private SensorManager senSensorManager;
+    private Sensor senAccelerometer;
+    private long m_lastSensorUpdate = 0;
+
+    private SharedPreferences m_settings = null;
 
     /** beim Beenden der Activity */
     @Override
@@ -66,15 +78,26 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPause() {
         /** Favs speichern */
-        persistFavoritesToSettings(m_favHandler.getFavorites());
+        settingsPersistFavorites(m_favHandler.getFavorites());
 
         super.onPause();
+
+        senSensorManager.unregisterListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        m_settings = PreferenceManager.getDefaultSharedPreferences(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -101,14 +124,14 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            if (m_tts != null) {
-                m_tts.speak(
-                        m_wordHandler.getCurrentWord().getWord(),
-                        TextToSpeech.QUEUE_FLUSH,
-                        null,
-                        m_wordHandler.getCurrentWord().getWord());
-                fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate));
-            }
+                if (m_tts != null) {
+                    m_tts.speak(
+                            m_wordHandler.getCurrentWord().getWord(),
+                            TextToSpeech.QUEUE_FLUSH,
+                            null,
+                            m_wordHandler.getCurrentWord().getWord());
+                    fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate));
+                }
             }
         });
         fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
@@ -138,7 +161,12 @@ public class MainActivity extends AppCompatActivity
         m_progressBar.setMax(this.m_wordHandler.getWordCount() - 1);
 
         /** Vavoritenhandler Init */
-        m_favHandler = new FavoriteHandler(fab_fav, readFavoritesFromSettings());
+        m_favHandler = new FavoriteHandler(fab_fav, settingsReadFavorites());
+
+        /** Beschleunigungssensor Setup */
+        senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
         /** Nach dem Start: Erstes zufälliges Wort anzeigen */
         newWordAndUpdateView(IndexType.RANDOM);
@@ -170,11 +198,9 @@ public class MainActivity extends AppCompatActivity
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
 
-        //Log.d("SEARCHED", "onNewIntent id=" + intent + " Action=" + intent.getAction());
         final String strAction = intent.getAction();
         if ("android.Intent.action.SEARCHED".equals(strAction)) {
             String strSelect = intent.getDataString();
-            //Log.d("SEARCHED", "SEARCHED wort=" + strSelect);
             if (strSelect != null) {
                 m_wordHandler.selectGivenWord(strSelect);
                 updateView();
@@ -183,7 +209,6 @@ public class MainActivity extends AppCompatActivity
             }
         } else if ("android.intent.action.SEARCH".equals(strAction)) {
             //Suche ohne Suggestions
-            //Log.d("SEARCHED", "SEARCH");
             //showSnackbar("Bei der Suche muss eine Suggestion ausgewählt weren");
             resetSearchView();
         }
@@ -195,7 +220,7 @@ public class MainActivity extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu);
 
-//         Associate searchable configuration with the SearchView
+        /** SearchView konfigurieren */
         final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -289,7 +314,7 @@ public class MainActivity extends AppCompatActivity
             /** Navigation: Beenden
              * "Nicht empfehlenswert", sagt Google. "Mir egal", sagt Freddi.
              */
-            persistFavoritesToSettings(m_favHandler.getFavorites());
+            settingsPersistFavorites(m_favHandler.getFavorites());
             finish();
             shutdown();
             android.os.Process.killProcess(android.os.Process.myPid());
@@ -302,6 +327,9 @@ public class MainActivity extends AppCompatActivity
             sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_subject));
             sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, getResources().getString(R.string.share_body, lw.getWord()));
             startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share_chooser)));
+        } else if (id == R.id.nav_settings) {
+            /** Navigation: Einstellungen */
+            startActivity(new Intent(this, SettingsActivity.class));
         }
 
         /** Navigationsbereich schliessen */
@@ -339,6 +367,51 @@ public class MainActivity extends AppCompatActivity
             m_gestureDetector.onTouchEvent(ev);
         }
         return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER &&
+                m_settings.getBoolean(getResources().getString(R.string.settings_shake), false)) {
+
+            final int nShakeTimeout = Integer.parseInt(
+                    m_settings.getString(
+                            getResources().getString(R.string.settings_shake_timeout),
+                            getResources().getString(R.string.settings_shake_timeout_default)));
+            final long actualTime = sensorEvent.timestamp;
+            if (actualTime - m_lastSensorUpdate < TimeUnit.SECONDS.toNanos(nShakeTimeout)) {
+                return;
+            }
+
+            final float x = sensorEvent.values[0];
+            final float y = sensorEvent.values[1];
+            final float z = sensorEvent.values[2];
+
+            final float accelationSquareRoot = (x * x + y * y + z * z)
+                    / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+
+            final int nShakeStrength = Integer.parseInt(
+                    m_settings.getString(
+                            getResources().getString(R.string.settings_shake_strength),
+                            getResources().getString(R.string.settings_shake_strength_default)));
+            if (accelationSquareRoot >= nShakeStrength)  {
+                m_lastSensorUpdate = actualTime;
+
+                newWordAndUpdateView(IndexType.RANDOM);
+                resetSearchView();
+
+                m_tts.speak(
+                        m_wordHandler.getCurrentWord().getWord(),
+                        TextToSpeech.QUEUE_FLUSH,
+                        null,
+                        m_wordHandler.getCurrentWord().getWord());
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        //ignorieren
     }
 
     /** Gesture-Detector Logik */
@@ -431,13 +504,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private Set<String> readFavoritesFromSettings() {
+    private Set<String> settingsReadFavorites() {
         return getPreferences(0).getStringSet(getResources().getString(R.string.settings_fav), new HashSet<String>());
     }
 
-    private void persistFavoritesToSettings(final Set<String> setFavs) {
+    private void settingsPersistFavorites(final Set<String> setFavs) {
         SharedPreferences.Editor editor = getPreferences(0).edit();
         editor.putStringSet(getResources().getString(R.string.settings_fav), setFavs);
+
         if (!editor.commit()) {
             showSnackbar("error writing favorites");
         }

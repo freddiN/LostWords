@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="@string/settings_shake"
+        android:title="@string/settings_shake_title"
+        android:summary="@string/settings_shake_summary"
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:key="@string/settings_shake_timeout"
+        android:title="@string/settings_shake_timeout_title"
+        android:summary="@string/settings_shake_timeout_summary"
+        android:defaultValue="@string/settings_shake_timeout_default"
+        android:entries="@array/settings_shake_list"
+        android:entryValues="@array/settings_shake_list" />
+
+    <ListPreference
+        android:key="@string/settings_shake_strength"
+        android:title="@string/settings_shake_strength_title"
+        android:summary="@string/settings_shake_strength_summary"
+        android:defaultValue="@string/settings_shake_strength_default"
+        android:entries="@array/settings_shake_list"
+        android:entryValues="@array/settings_shake_list" />
+</PreferenceScreen>

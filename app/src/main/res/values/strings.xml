@@ -19,12 +19,25 @@
     <string name="nav_favorites">Favoriten</string>
     <string name="nav_share">Teilen</string>
     <string name="nav_about">Über LostWords</string>
+    <string name="nav_settings">Einstellungen</string>
     <string name="nav_exit">Beenden</string>
 
     <string name="button_next"> <b>&gt;</b> </string>
     <string name="button_prev"> <b>&lt;</b> </string>
 
     <string name="settings_fav">setting_favorites</string>
+    <string name="settings_shake">setting_shake</string>
+    <string name="settings_shake_title">Schüttelfunktion</string>
+    <string name="settings_shake_summary">Schütteln für ein Zufallswort</string>
+    <string name="settings_shake_timeout">setting_shake_timeout</string>
+    <string name="settings_shake_timeout_title">Schütteltimeout</string>
+    <string name="settings_shake_timeout_summary">Mindestzeit zwischen zwei Schüttlern in Sekunden</string>
+    <string name="settings_shake_timeout_default">3</string>
+    <string name="settings_shake_strength">setting_shake_strength</string>
+    <string name="settings_shake_strength_title">Schüttelstärke</string>
+    <string name="settings_shake_strength_summary">Schüttelstärke von 1=empfindlich bis 10=starkes-Schütteln-notwendig</string>
+    <string name="settings_shake_strength_default">4</string>
+
     <string name="search_title">Suche</string>
     <string name="search_hint">Suchbegriff</string>
 
@@ -98,6 +111,7 @@
         <item>salopp - ungezwungen</item>
         <item>sauertöpfisch - schlecht gelaunt</item>
         <item>Schabernack - lustiger Streich</item>
+        <item>Schabracke - Schreckschraube</item>
         <item>Scherge - böser Handlanger</item>
         <item>Scheusal - Unmensch</item>
         <item>Schlingel - Spassmacher</item>    <!-- sponsored by Ellen -->
@@ -114,4 +128,18 @@
         <item>Wie bei Hempels unterm Sofa - unordentlich</item>
         <item>Zinnober - wertloses Zeug</item>
     </string-array>
+
+    <string-array name="settings_shake_list">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+
 </resources>

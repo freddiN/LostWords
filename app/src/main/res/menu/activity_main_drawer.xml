@@ -2,27 +2,34 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:id="@+id/grp1" android:checkableBehavior="single">
-            <item
-                android:id="@+id/nav_favorites"
-                android:checkable="false"
-                android:icon="@android:drawable/btn_star_big_on"
-                android:actionProviderClass="android.widget.ShareActionProvider"
-                android:title="@string/nav_favorites" />
-            <item
-                android:id="@+id/nav_share"
-                android:checkable="false"
-                android:icon="@drawable/ic_menu_share"
-                android:actionProviderClass="android.widget.ShareActionProvider"
-                android:title="@string/nav_share" />
-
-             <item
-                 android:id="@+id/nav_ueber"
-                 android:checkable="false"
-                 android:icon="@android:drawable/ic_dialog_info"
-                 android:title="@string/nav_about" />
+        <item
+            android:id="@+id/nav_favorites"
+            android:checkable="false"
+            android:icon="@android:drawable/btn_star_big_on"
+            android:actionProviderClass="android.widget.ShareActionProvider"
+            android:title="@string/nav_favorites" />
+        <item
+            android:id="@+id/nav_share"
+            android:checkable="false"
+            android:icon="@drawable/ic_menu_share"
+            android:actionProviderClass="android.widget.ShareActionProvider"
+            android:title="@string/nav_share" />
+        <item
+            android:id="@+id/nav_ueber"
+            android:checkable="false"
+            android:icon="@android:drawable/ic_dialog_info"
+            android:title="@string/nav_about" />
     </group>
 
     <group android:id="@+id/grp2" android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_settings"
+            android:checkable="false"
+            android:icon="@android:drawable/ic_menu_preferences"
+            android:title="@string/nav_settings" />
+    </group>
+
+    <group android:id="@+id/grp3" android:checkableBehavior="single">
         <item
             android:id="@+id/nav_close"
             android:checkable="false"
