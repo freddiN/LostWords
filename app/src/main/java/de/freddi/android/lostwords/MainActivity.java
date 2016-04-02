@@ -352,7 +352,10 @@ public class MainActivity extends AppCompatActivity
         /** Swipe-Links und -rechts erkennen, dann selbe Aktion wie mit den Buttons */
         @Override
         public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
-            //Log.d("Gestures", "onFling:\n" + event1.toString() + "\n" + event2.toString() + "\n" + velocityX + "\n" + velocityY);
+            /** keine Gestures wenn der Drawer offen ist */
+            if (isDrawerOpen()) {
+                return true;
+            }
 
             final int nGestureMinimumSpeed = getResources().getInteger(R.integer.gesture_min_speed);
             if (velocityX > nGestureMinimumSpeed) {
@@ -364,19 +367,18 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
 
-        /** Doule-Tap Erkennung, aber über den Buttons ignorieren */
+        /** Doule-Tap Erkennung, aber über den Buttons und bei offenem Drawer ignorieren */
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-
             final Point pTouch = new Point((int)e.getAxisValue(0), (int)e.getAxisValue(1));
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            if (!isTouchWithinButtons(pTouch,
+             if (!isDrawerOpen() &&
+                !isTouchWithinButtons(pTouch,
                     findViewById(R.id.fab),
                     findViewById(R.id.fab_fav),
                     findViewById(R.id.buttonPrev),
                     findViewById(R.id.buttonNext),
-                    findViewById(R.id.search)) &&
-                    !drawer.isDrawerOpen(GravityCompat.START)) {
+                    findViewById(R.id.search))
+                    ) {
                 newWordAndUpdateView(IndexType.RANDOM);
                 resetSearchView();
             }
@@ -385,11 +387,16 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private boolean isDrawerOpen() {
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        return drawer.isDrawerVisible(GravityCompat.START);
+    }
+
     private boolean isTouchWithinButtons(final Point pTouch, final View... buttons) {
         int[] location = new int[2];
         boolean bXinButton, bYinButton;
         for (View button: buttons) {
-            /** Button posi */
+            /** Button Position */
             button.getLocationInWindow(location);
 
             if (button instanceof SearchView ) {
