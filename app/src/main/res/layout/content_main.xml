@@ -26,9 +26,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/textWordContent"
         android:textSize="@dimen/font_size"
-        android:layout_marginTop="110dp"
         android:gravity="center"
-        android:layout_below="@+id/textWordCounts"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
     <Button
