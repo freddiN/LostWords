@@ -30,15 +30,16 @@ public class SettingsActivity extends PreferenceActivity {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            /** Anzeige wenn Einstellugnen geändert werden */
             String strValue = "";
             String strKeyname = "";
-            if (key == getResources().getString(R.string.settings_shake)) {
+            if (key.equals(getResources().getString(R.string.settings_shake))) {
                 strKeyname = getResources().getString(R.string.settings_shake_title);
                 strValue = "" + sharedPreferences.getBoolean(getResources().getString(R.string.settings_shake), false);
-            } else if (key == getResources().getString(R.string.settings_shake_timeout)) {
+            } else if (key.equals(getResources().getString(R.string.settings_shake_timeout))) {
                 strKeyname = getResources().getString(R.string.settings_shake_timeout_title);
                 strValue = "" + sharedPreferences.getString(getResources().getString(R.string.settings_shake_timeout), "");
-            } else if (key == getResources().getString(R.string.settings_shake_strength)) {
+            } else if (key.equals(getResources().getString(R.string.settings_shake_strength))) {
                 strKeyname = getResources().getString(R.string.settings_shake_strength_title);
                 strValue = "" + sharedPreferences.getString(getResources().getString(R.string.settings_shake_strength), "");
             }
