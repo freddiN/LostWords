@@ -124,14 +124,8 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (m_tts != null) {
-                    m_tts.speak(
-                            m_wordHandler.getCurrentWord().getWord(),
-                            TextToSpeech.QUEUE_FLUSH,
-                            null,
-                            m_wordHandler.getCurrentWord().getWord());
-                    fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate));
-                }
+                doSpeak(m_wordHandler.getCurrentWord().getWord());
+                fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate));
             }
         });
         fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
@@ -399,13 +393,18 @@ public class MainActivity extends AppCompatActivity
 
                 newWordAndUpdateView(IndexType.RANDOM);
                 resetSearchView();
-
-                m_tts.speak(
-                        m_wordHandler.getCurrentWord().getWord(),
-                        TextToSpeech.QUEUE_FLUSH,
-                        null,
-                        m_wordHandler.getCurrentWord().getWord());
+                doSpeak(m_wordHandler.getCurrentWord().getWord());
             }
+        }
+    }
+
+    private void doSpeak(final String strSpeakMe) {
+        if (m_tts != null) {
+            m_tts.speak(
+                    strSpeakMe,
+                    TextToSpeech.QUEUE_FLUSH,
+                    null,
+                    strSpeakMe);
         }
     }
 
