@@ -30,7 +30,7 @@ public class SettingsActivity extends PreferenceActivity {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            /** Anzeige wenn Einstellugnen geändert werden */
+            /** Anzeige wenn Einstellungen geändert werden */
             String strValue = "";
             String strKeyname = "";
             if (key.equals(getResources().getString(R.string.settings_shake))) {

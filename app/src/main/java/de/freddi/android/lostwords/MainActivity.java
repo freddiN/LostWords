@@ -315,6 +315,7 @@ public class MainActivity extends AppCompatActivity
              * "Nicht empfehlenswert", sagt Google. "Mir egal", sagt Freddi.
              */
             settingsPersistFavorites(m_favHandler.getFavorites());
+            senSensorManager.unregisterListener(this);
             finish();
             shutdown();
             android.os.Process.killProcess(android.os.Process.myPid());
