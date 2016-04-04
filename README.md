@@ -1,11 +1,18 @@
 # LostWords for Android
 
-Gebaut mit Android Studio.
+App zur Wiederbelebung seltener Wörter und Oldschool-Begriffe im alltäglichen Sprachgebrauch. Neben jedem Begriff gibt es eine kurze Erklärung.
 
-App zur Wiederbelebung seltener Worte im alltäglichen Sprachgebrauch.
-Team BookingEngine empfiehlt:
-Pro Tag min. 3 der Worte nutzen, am besten vor den Mahlzeiten.
-Gerne auch in Meetings, Telkos, Commit-Kommentaren und/oder Dokumentationen.
+Benutzung:
+Swipe = nächster/vorheriger Begriff
+DoubleTap = zufälliger Begriff
 
-Die Worterklärungen stammen grösstenteils von duden.de, Wikipedia und Freddi.
-Mad creditz @ Team BookingEngine, Jo und Ellen</item>
+Über die beiden FloatButtons kann der aktuelle Begriff in die Favoriten übernommen werden oder mit der Google Text-To-Speech Funktion vorgelesen werden.
+
+Mit Hilfe der "Teilen" Funktion kann der genutzte Begriff via Twitter, Messenger, Email oder anderen Medien geteilt werden (abhängig der auf dem Gerät installierten Apps).
+
+Die Suche im oberen Teil sucht sowohl in den Erklärungen als auch in Wort-Teilstücken.
+
+Wenn in den Einstellungen aktiviert, bewirkt ein Schütteln des Geräts eine Zufallsauswahl mit direkter Sprachausgabe.
+
+Berechtigungen:
+Es werden keine Berechtigungen genutzt.
