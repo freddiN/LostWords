@@ -46,19 +46,19 @@
 
     <string-array name="ueber_content">
         <item>App zur Wiederbelebung seltener Wörter im alltäglichen Sprachgebrauch.</item>
-        <item></item>
+        <item> </item>
         <item>Benutzung:</item>
         <item>Swipe = nächster/vorheriger Begriff</item>
         <item>DoubleTap = zufälliger Begriff</item>
-        <item></item>
+        <item> </item>
         <item>Wir empfehlen:</item>
         <item>Pro Tag min. 3 der Wörter nutzen, am besten vor den Mahlzeiten.</item>
         <item>Gerne auch in Meetings, Telkos, Commit-Kommentaren und/oder Dokumentationen.</item>
-        <item></item>
+        <item> </item>
         <item>Die Worterklärungen stammen vom Autor, Bekannten und www.openthesaurus.de .</item>
-        <item></item>
+        <item> </item>
         <item>Mad creditz @ Team BookingEngine, Jo und Ellen.</item>
-        <item></item>
+        <item> </item>
         <item>Sourcecode auf Github:</item>
         <item>https://github.com/freddiN/LostWords</item>
     </string-array>
@@ -72,6 +72,7 @@
         <item>ei der Daus! - grosse Verwunderung</item>
         <item>Ein X für ein U vormachen - jemanden betrügen</item>
         <item>Einfaltspinsel - unbedarfter Mensch</item>
+        <item>exorbitant - enorm groß</item> <!-- spnsored by Corinna L. -->
         <item>famos - hervorragend</item>
         <item>Faxen machen - herumalbern</item>
         <item>Firlefanzereien - Unsinn</item>
@@ -89,17 +90,18 @@
         <item>Humbug - unsinnige Tat oder Aussage</item>
         <item>Ich glaub\' es hackt! - das missfällt mir ausserordentlich</item>
         <item>Klamauk - billige Komik</item>
-        <item>Kleinod - Kostbarkeit</item> <!-- spnsored by Patricks Frau-->
+        <item>Kleinod - Kostbarkeit</item> <!-- spnsored by Corinna L. -->
         <item>Kokolores - Mist, Blödsinn</item>
         <item>krakeelen - schreien, brüllen</item>
         <item>Lausbub - freches Kind</item>
+        <item>liederlich - nachlässig</item> <!-- spnsored by Corinna L. -->
         <item>Lümmel - Rowdy</item>
         <item>mannigfaltig - facettenreich</item>
         <item>meschugge - verrückt</item>
         <item>Mumpitz - Unsinn</item>
         <item>Murks - Gestümper</item>
         <item>Obacht! - aufgepasst!</item>
-        <item>Panoptikum - Kuriositätenausstellung</item>  <!-- spnsored by Patricks Frau-->
+        <item>Panoptikum - Kuriositätenausstellung</item>  <!-- spnsored by Corinna L. -->
         <item>Potzblitz - grosse Verwunderung</item>
         <item>Rabauke - rücksichtsloser Mensch</item>
         <item>Rabatz - Krach, Krawall</item>
@@ -123,6 +125,7 @@
         <item>Springinsfeld - unerfahrener Jungspund</item>
         <item>Tausendsassa - Multitalent</item>
         <item>Tinnef - wertloses Zeugs, Unsinn</item>
+        <item>Trunkenbold - Trinker</item> <!-- spnsored by Corinna L. -->
         <item>Ulk - Witz</item>
         <item>vermaledeit - verflucht</item>
         <item>Wie bei Hempels unterm Sofa - unordentlich</item>
