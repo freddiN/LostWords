@@ -49,8 +49,6 @@
         android:onClick="buttonPrev"
         android:layout_alignBottom="@+id/textWordCounts"
         android:layout_alignParentStart="true" />
-        android:layout_above="@+id/textWortcontent"
-        android:layout_alignParentEnd="true" />
 
     <ProgressBar
         android:id="@+id/progess"

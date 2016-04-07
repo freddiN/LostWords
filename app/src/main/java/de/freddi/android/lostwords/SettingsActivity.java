@@ -35,17 +35,19 @@ public class SettingsActivity extends PreferenceActivity {
 
             /** setzt die Werte für die Locale */
             final Locale[] arrLocals = Locale.getAvailableLocales();
-            List<String>listStrLocales = new ArrayList<String>(arrLocals.length);
+
+            List<String>listEntries = new ArrayList<>(arrLocals.length);
+            List<String>listEntryValues = new ArrayList<>(arrLocals.length);
             for (Locale l: arrLocals) {
-                if (!TextUtils.isEmpty(l.getCountry()) && !TextUtils.isEmpty(l.getLanguage())) {
-                    listStrLocales.add(l.toString());
+                if (TextUtils.isEmpty(l.getDisplayCountry())) {
+                    listEntryValues.add(l.toString());
+                    listEntries.add(l.getDisplayLanguage() + "  (" + l.toLanguageTag().toUpperCase() + ")");
                 }
             }
 
-            final String[] array = listStrLocales.toArray(new String[listStrLocales.size()]);
             ListPreference lp = (ListPreference)this.getPreferenceScreen().getPreference(3);
-            lp.setEntries(array);
-            lp.setEntryValues(array);
+            lp.setEntries(listEntries.toArray(new String[listEntries.size()]));
+            lp.setEntryValues(listEntryValues.toArray(new String[listEntryValues.size()]));
         }
 
         @Override
@@ -67,7 +69,7 @@ public class SettingsActivity extends PreferenceActivity {
                 strValue = "" + sharedPreferences.getString(getResources().getString(R.string.settings_tts_locale), "");
             }
 
-            if (!TextUtils.isEmpty(strKeyname) && !TextUtils.isEmpty("")) {
+            if (!TextUtils.isEmpty(strKeyname) && !TextUtils.isEmpty(strValue)) {
                 showSnackbar(String.format("Einstellung \"%s\" auf \"%s\" geändert", strKeyname, strValue));
             }
         }
@@ -89,10 +91,12 @@ public class SettingsActivity extends PreferenceActivity {
         }
 
         private void showSnackbar(final String strText) {
-            Snackbar.make(getView(),
-                    strText,
-                    Snackbar.LENGTH_LONG)
-                .show();
+            if (getView() != null) {
+                Snackbar.make(getView(),
+                        strText,
+                        Snackbar.LENGTH_LONG)
+                        .show();
+            }
         }
     }
 }

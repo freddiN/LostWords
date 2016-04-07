@@ -3,6 +3,9 @@
 
     <string name="main_header">LostWords für Android</string>
 
+    <string name="main_current_word_numbers" formatted="false">%d / %d</string>
+    <string name="main_current_word_text" formatted="false">%s\n\n - - - \n\n%s</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 

@@ -10,10 +10,10 @@ import java.util.TreeSet;
 /**
  * Created by freddi on 27.03.2016.
  */
-public class FavoriteHandler {
+class FavoriteHandler {
 
-    private FloatingActionButton m_fabFlav;
-    private Set<String> m_setFavs = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+    private final FloatingActionButton m_fabFlav;
+    private final Set<String> m_setFavs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
     public FavoriteHandler(FloatingActionButton fabFlav, final Set<String> setFavs) {
         this.m_fabFlav = fabFlav;
@@ -33,7 +33,7 @@ public class FavoriteHandler {
     }
 
     public String handleFavoriteFloatbuttonClick(final LostWord lw, Resources res) {
-        String strReturn = "";
+        String strReturn;
         final boolean bIsPresent = checkFavorite(lw);
         if (bIsPresent) {
             strReturn = removeFromFavorites(lw, res);

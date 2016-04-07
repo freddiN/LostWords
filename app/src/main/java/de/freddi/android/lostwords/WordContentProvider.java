@@ -16,8 +16,8 @@ import java.util.regex.Pattern;
  * Created by freddi on 30.03.2016.
  */
 public class WordContentProvider extends ContentProvider {
-    public static final String PROVIDER_NAME = "de.freddi.android.lostwords.Wordprovider";
-    public static final String URL = "content://" + PROVIDER_NAME + "/words";
+    private static final String PROVIDER_NAME = "de.freddi.android.lostwords.Wordprovider";
+    private static final String URL = "content://" + PROVIDER_NAME + "/words";
     public static final Uri CONTENT_URI = Uri.parse(URL);
 
     private static final String[] COLUMNS = {
@@ -27,7 +27,7 @@ public class WordContentProvider extends ContentProvider {
         SearchManager.SUGGEST_COLUMN_INTENT_DATA    //nochmal ID
     };
 
-    private Map<Integer, LostWord> m_mapWords = new HashMap<Integer, LostWord>(100);
+    private final Map<Integer, LostWord> m_mapWords = new HashMap<>(100);
 
     @Override
     public boolean onCreate() {

@@ -20,7 +20,6 @@ import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -41,7 +40,6 @@ import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -69,6 +67,8 @@ public class MainActivity extends AppCompatActivity
     private long m_lastSensorUpdate = 0;
 
     private SharedPreferences m_settings = null;
+
+    private FloatingActionButton m_fab = null;
 
     /** beim Beenden der Activity */
     @Override
@@ -117,39 +117,46 @@ public class MainActivity extends AppCompatActivity
         configureTTS();
 
         /**  FloatButton TTS */
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        m_fab = (FloatingActionButton) findViewById(R.id.fab);
+        m_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 doSpeak(m_wordHandler.getCurrentWord().getWord());
-                fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate));
             }
         });
-        fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
+        m_fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
 
         /** FloatButton Favorites */
         final FloatingActionButton fab_fav = (FloatingActionButton) findViewById(R.id.fab_fav);
-        fab_fav.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showSnackbar(m_favHandler.handleFavoriteFloatbuttonClick(m_wordHandler.getCurrentWord(), getResources()));
-            }
-        });
-        fab_fav.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
+        if (fab_fav != null) {
+            fab_fav.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showSnackbar(m_favHandler.handleFavoriteFloatbuttonClick(m_wordHandler.getCurrentWord(), getResources()));
+                }
+            });
+            fab_fav.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
+        }
 
         /** Nav-Layout Setup */
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        if (drawer != null) {
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            drawer.addDrawerListener(toggle);
+            toggle.syncState();
+        }
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(this);
+        }
 
         /** Progressbar Setup */
         m_progressBar = (ProgressBar) findViewById(R.id.progess);
-        m_progressBar.setMax(this.m_wordHandler.getWordCount() - 1);
+        if (m_progressBar != null) {
+            m_progressBar.setMax(this.m_wordHandler.getWordCount() - 1);
+        }
 
         /** Vavoritenhandler Init */
         m_favHandler = new FavoriteHandler(fab_fav, settingsReadFavorites());
@@ -165,12 +172,19 @@ public class MainActivity extends AppCompatActivity
 
     private void displayCurrentWord() {
         TextView textAnzahl = (TextView) findViewById(R.id.textWordCounts);
-        textAnzahl.setText((m_wordHandler.getCurrentWordIndex() + 1) + " / " + m_wordHandler.getWordCount());
+        if (textAnzahl != null) {
+            textAnzahl.setText(
+                    getResources().getString(R.string.main_current_word_numbers,
+                            (m_wordHandler.getCurrentWordIndex() + 1),
+                            m_wordHandler.getWordCount()));
+        }
 
         final LostWord lw = m_wordHandler.getCurrentWord();
 
         TextView textWort = (TextView) findViewById(R.id.textWordContent);
-        textWort.setText(lw.getWord() + "\n\n - - - \n\n" + lw.getMeaning());
+        if (textWort != null) {
+            textWort.setText(getResources().getString(R.string.main_current_word_text, lw.getWord(), lw.getMeaning()));
+        }
     }
 
     @Override
@@ -199,8 +213,7 @@ public class MainActivity extends AppCompatActivity
                // Log.d("SEARCHED", "SEARCHED id=" + strSelect);
             }
         } else if ("android.intent.action.SEARCH".equals(strAction)) {
-            //Suche ohne Suggestions
-            //showSnackbar("Bei der Suche muss eine Suggestion ausgewählt weren");
+            /** Suche ohne Suggestions */
             resetSearchView();
         }
     }
@@ -259,25 +272,29 @@ public class MainActivity extends AppCompatActivity
             builder.setPositiveButton("Ok", null);
             builder.setTitle("Favoriten");
 
-            View convertView = (View) getLayoutInflater().inflate(R.layout.fav_listview, null);
-            builder.setView(convertView);
+            View convertView = getLayoutInflater().inflate(R.layout.fav_listview, null);
+            if (convertView != null) {
+                builder.setView(convertView);
+            }
 
-            ListView lv = (ListView) convertView.findViewById(R.id.lv);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                    android.R.layout.simple_list_item_1,
-                    stringArray);
-            lv.setAdapter(adapter);
-            final AlertDialog dialog = builder.show();
+            View lv =  convertView.findViewById(R.id.lv);
+            if (lv != null) {
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                        android.R.layout.simple_list_item_1,
+                        stringArray);
+                ((ListView)lv).setAdapter(adapter);
+                final AlertDialog dialog = builder.show();
 
-            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int nID, long id) {
-                    //Log.d("FAV", "SELECTED " + nID + " " + stringArray[nID]);
-                    m_wordHandler.selectGivenWord(stringArray[nID]);
-                    updateView();
-                    dialog.dismiss();
-                }
-            });
+                ((ListView)lv).setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int nID, long id) {
+                        //Log.d("FAV", "SELECTED " + nID + " " + stringArray[nID]);
+                        m_wordHandler.selectGivenWord(stringArray[nID]);
+                        updateView();
+                        dialog.dismiss();
+                    }
+                });
+            }
         } else if (id == R.id.nav_ueber) {
             /** Navigation: Über LostWords */
             StringBuffer buff = new StringBuffer(512);
@@ -298,8 +315,11 @@ public class MainActivity extends AppCompatActivity
                 .create();
             d.show();
 
-            // Make the textview clickable. Must be called after show()
-            ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+            /** Make the textview clickable. Must be called after show() */
+            View viewMessage = d.findViewById(android.R.id.message);
+            if (viewMessage != null){
+                ((TextView) viewMessage).setMovementMethod(LinkMovementMethod.getInstance());
+            }
         } else if (id == R.id.nav_close) {
             /** Navigation: Beenden
              * "Nicht empfehlenswert", sagt Google. "Mir egal", sagt Freddi.
@@ -325,7 +345,9 @@ public class MainActivity extends AppCompatActivity
 
         /** Navigationsbereich schliessen */
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        if (drawer != null) {
+            drawer.closeDrawer(GravityCompat.START);
+        }
         return true;
     }
 
@@ -335,6 +357,7 @@ public class MainActivity extends AppCompatActivity
             final PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             strSuffix += strSpacer + pInfo.versionName;
         } catch (final PackageManager.NameNotFoundException e) {
+            /** ignore */
         }
 
         return strSuffix;
@@ -402,6 +425,7 @@ public class MainActivity extends AppCompatActivity
                     TextToSpeech.QUEUE_FLUSH,
                     null,
                     strSpeakMe);
+            m_fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate));
         } else {
             showSnackbar("Sprachausgabe deaktiviert");
         }
@@ -413,7 +437,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     /** Gesture-Detector Logik */
-    class LostwordsGestureListener extends GestureDetector.SimpleOnGestureListener {
+    private class LostwordsGestureListener extends GestureDetector.SimpleOnGestureListener {
         /** immer true, sonst werden nachfolgende Gestures ignoriert */
         @Override
         public boolean onDown(MotionEvent event) {
@@ -460,7 +484,7 @@ public class MainActivity extends AppCompatActivity
 
     private boolean isDrawerOpen() {
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        return drawer.isDrawerVisible(GravityCompat.START);
+        return drawer != null && drawer.isDrawerVisible(GravityCompat.START);
     }
 
     private boolean isTouchWithinButtons(final Point pTouch, final View... buttons) {
@@ -488,10 +512,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showSnackbar(final String strText) {
-        Snackbar.make(findViewById(android.R.id.content),
+        View viewContent = findViewById(android.R.id.content);
+        if (viewContent != null) {
+            Snackbar.make(viewContent,
                     strText,
                     Snackbar.LENGTH_SHORT)
-                .show();
+                    .show();
+        }
     }
 
     private void configureTTS() {

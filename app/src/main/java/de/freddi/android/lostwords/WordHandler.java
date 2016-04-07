@@ -6,7 +6,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.provider.BaseColumns;
 
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
@@ -14,10 +14,10 @@ import java.util.TreeSet;
 /**
  * Created by freddi on 27.03.2016.
  */
-public class WordHandler {
+class WordHandler {
 
-    final private Random m_rnd = new Random(System.nanoTime());
-    private ContentResolver m_resolver;
+    private final Random m_rnd = new Random(System.nanoTime());
+    private final ContentResolver m_resolver;
 
     private int m_nCachedCount = 0;
     private LostWord m_CachedWord = null;
@@ -31,17 +31,14 @@ public class WordHandler {
          * wie die aus den Ressourcen zurückkommen und dann im ContentProvider
          * landen
          */
-        Set<String> setWords = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
-        for (String strWord: strArrWords) {
-            setWords.add(strWord);
-        }
+        Set<String> setWords = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        Collections.addAll(setWords, strArrWords);
 
         int nIdxDash, nID = 0;
         String strWord;
         ContentValues values;
-        Iterator<String> iter = setWords.iterator();
-        while (iter.hasNext()) {
-            strWord = iter.next();
+        for (String setWord : setWords) {
+            strWord = setWord;
             nIdxDash = strWord.indexOf("-");
 
             if (nIdxDash != -1) {
@@ -96,7 +93,6 @@ public class WordHandler {
 
     /** derzeitiges Wort */
     private void updateCurrentWord(final int nID) {
-        LostWord wordReturn = null;
         Cursor cursor = m_resolver.query(
                 WordContentProvider.CONTENT_URI,
                 null,
