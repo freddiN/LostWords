@@ -5,13 +5,13 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
+import android.speech.tts.TextToSpeech;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
 
 /**
  * Created by freddi on 02.04.2016.
@@ -26,6 +26,8 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     public static class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+        private TextToSpeech m_tts;
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -33,21 +35,36 @@ public class SettingsActivity extends PreferenceActivity {
             /** übernimmt die Werte aus der preferences.xml */
             addPreferencesFromResource(R.xml.preferences);
 
-            /** setzt die Werte für die Locale */
-            final Locale[] arrLocals = Locale.getAvailableLocales();
+            m_tts = new TextToSpeech(getActivity(), new TextToSpeech.OnInitListener() {
+                @Override
+                public void onInit(final int status) {
+                    if(status != TextToSpeech.ERROR && m_tts != null) {
+                        final Locale[] arrLocals = Locale.getAvailableLocales();
+                        List<String>listEntries = new ArrayList<>(arrLocals.length);
+                        List<String>listEntryValues = new ArrayList<>(arrLocals.length);
 
-            List<String>listEntries = new ArrayList<>(arrLocals.length);
-            List<String>listEntryValues = new ArrayList<>(arrLocals.length);
-            for (Locale l: arrLocals) {
-                if (TextUtils.isEmpty(l.getDisplayCountry())) {
-                    listEntryValues.add(l.toString());
-                    listEntries.add(l.getDisplayLanguage() + "  (" + l.toLanguageTag().toUpperCase() + ")");
+                        for (Locale l: arrLocals) {
+                            if (!TextUtils.isEmpty(l.getDisplayLanguage()) &&
+                                    !TextUtils.isEmpty(l.toLanguageTag()) &&
+                                    TextUtils.isEmpty(l.getDisplayCountry()) &&
+                                    m_tts.isLanguageAvailable(l) == TextToSpeech.LANG_AVAILABLE ) {
+                                listEntryValues.add(l.toString());
+                                listEntries.add(l.getDisplayLanguage() + "  (" + l.toLanguageTag().toUpperCase() + ")");
+                            }
+                        }
+
+                        m_tts.stop();
+                        m_tts.shutdown();
+                        m_tts = null;
+
+                        ListPreference lp = (ListPreference)getPreferenceScreen().getPreference(3);
+                        lp.setEntries(listEntries.toArray(new String[listEntries.size()]));
+                        lp.setEntryValues(listEntryValues.toArray(new String[listEntryValues.size()]));
+                    } else {
+                        showSnackbar("Fehler beim Einlesen der Sprachen für TextToSpeech");
+                    }
                 }
-            }
-
-            ListPreference lp = (ListPreference)this.getPreferenceScreen().getPreference(3);
-            lp.setEntries(listEntries.toArray(new String[listEntries.size()]));
-            lp.setEntryValues(listEntryValues.toArray(new String[listEntryValues.size()]));
+            });
         }
 
         @Override

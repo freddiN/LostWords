@@ -7,8 +7,8 @@ android {
         applicationId "de.freddi.android.lostwords"
         minSdkVersion 21
         targetSdkVersion 23
-        versionCode 122
-        versionName '1.2.2'
+        versionCode 123
+        versionName '1.2.3'
     }
     buildTypes {
         release {
@@ -26,5 +26,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.2.1'
     compile 'com.android.support:support-v4:23.2.1'
     compile 'com.android.support:design:23.2.1'
-    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
+    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
 }
