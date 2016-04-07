@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity
     /** beim Beenden der Activity */
     @Override
     public void onDestroy() {
-        shutdown();
+        shutdownTTS();
 
         super.onDestroy();
     }
@@ -114,25 +114,7 @@ public class MainActivity extends AppCompatActivity
         m_gestureDetector = new GestureDetectorCompat(this, new LostwordsGestureListener());
 
         /** TTS setup */
-        m_tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if(status != TextToSpeech.ERROR && m_tts != null) {
-                    int nResult = m_tts.setLanguage(Locale.GERMAN);
-                    if (nResult != TextToSpeech.SUCCESS) {
-                        nResult = m_tts.setLanguage(new Locale("de_DE"));
-                        if (nResult != TextToSpeech.SUCCESS) {
-                            final Locale[] arrLocales = Locale.getAvailableLocales();
-                            Log.e(LOG_PREFIX, "error initializing TTS, error=" + nResult + " , available locales: " + Arrays.toString(arrLocales));
-                            showSnackbar("TextToSpeech Einrichtung gescheitert, Errorcode " + nResult);
-                            m_tts.stop();
-                            m_tts.shutdown();
-                            m_tts = null;
-                        }
-                    }
-                }
-            }
-        });
+        configureTTS();
 
         /**  FloatButton TTS */
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -325,7 +307,7 @@ public class MainActivity extends AppCompatActivity
             settingsPersistFavorites(m_favHandler.getFavorites());
             senSensorManager.unregisterListener(this);
             finish();
-            shutdown();
+            shutdownTTS();
             android.os.Process.killProcess(android.os.Process.myPid());
         } else if (id == R.id.nav_share) {
             /** Navigation: Teilen */
@@ -512,11 +494,34 @@ public class MainActivity extends AppCompatActivity
                 .show();
     }
 
-    private void shutdown() {
+    private void configureTTS() {
+        /** TTS setup */
+        shutdownTTS();
+
+        final String strSettingLocale =  m_settings.getString(
+                        getResources().getString(R.string.settings_tts_locale),
+                        getResources().getString(R.string.settings_tts_locale_default));
+
+        m_tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(final int status) {
+                if(status != TextToSpeech.ERROR && m_tts != null) {
+                    final int nResult = m_tts.setLanguage(new Locale(strSettingLocale));
+                    if (nResult != TextToSpeech.SUCCESS) {
+                        showSnackbar("TextToSpeech Einrichtung für \"" + strSettingLocale + "\"gescheitert, Errorcode=" + nResult);
+                        shutdownTTS();
+                    }
+                }
+            }
+        });
+    }
+
+    private void shutdownTTS() {
         /** TTS schliessen */
         if (m_tts != null) {
             m_tts.stop();
             m_tts.shutdown();
+            m_tts = null;
         }
     }
 

@@ -37,6 +37,10 @@
     <string name="settings_shake_strength_title">Schüttelstärke</string>
     <string name="settings_shake_strength_summary">Schüttelstärke von 1=empfindlich bis 10=starkes-Schütteln-notwendig</string>
     <string name="settings_shake_strength_default">4</string>
+    <string name="settings_tts_locale">setting_tts_locale</string>
+    <string name="settings_tts_locale_title">Sprachausgabe</string>
+    <string name="settings_tts_locale_summary">Sprechweise der Sprachausgabe (Neustart notwendig)</string>
+    <string name="settings_tts_locale_default">de_DE</string>
 
     <string name="search_title">Suche</string>
     <string name="search_hint">Suchbegriff</string>
@@ -127,6 +131,7 @@
         <item>Tinnef - wertloses Zeugs, Unsinn</item>
         <item>Trunkenbold - Trinker</item> <!-- spnsored by Corinna L. -->
         <item>Ulk - Witz</item>
+        <item>verhohnepiepeln - verspotten</item>
         <item>vermaledeit - verflucht</item>
         <item>Wie bei Hempels unterm Sofa - unordentlich</item>
         <item>Zinnober - wertloses Zeug</item>

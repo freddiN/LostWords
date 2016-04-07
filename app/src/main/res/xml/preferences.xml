@@ -21,4 +21,11 @@
         android:defaultValue="@string/settings_shake_strength_default"
         android:entries="@array/settings_shake_list"
         android:entryValues="@array/settings_shake_list" />
+
+    <ListPreference
+        android:key="@string/settings_tts_locale"
+        android:title="@string/settings_tts_locale_title"
+        android:summary="@string/settings_tts_locale_summary"
+        android:defaultValue="@string/settings_tts_locale_default"/>
+
 </PreferenceScreen>
