@@ -20,6 +20,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,6 +41,7 @@ import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -49,6 +51,8 @@ import android.speech.tts.TextToSpeech;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SensorEventListener  {
+
+    public static final String LOG_PREFIX = "LOSTWORDS";
 
     private TextToSpeech m_tts = null;
     private ProgressBar m_progressBar = null;
@@ -114,7 +118,18 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onInit(int status) {
                 if(status != TextToSpeech.ERROR && m_tts != null) {
-                    m_tts.setLanguage(Locale.GERMAN);
+                    int nResult = m_tts.setLanguage(Locale.GERMAN);
+                    if (nResult != TextToSpeech.SUCCESS) {
+                        nResult = m_tts.setLanguage(new Locale("de_DE"));
+                        if (nResult != TextToSpeech.SUCCESS) {
+                            final Locale[] arrLocales = Locale.getAvailableLocales();
+                            Log.e(LOG_PREFIX, "error initializing TTS, error=" + nResult + " , available locales: " + Arrays.toString(arrLocales));
+                            showSnackbar("TextToSpeech Einrichtung gescheitert, Errorcode " + nResult);
+                            m_tts.stop();
+                            m_tts.shutdown();
+                            m_tts = null;
+                        }
+                    }
                 }
             }
         });
@@ -405,6 +420,8 @@ public class MainActivity extends AppCompatActivity
                     TextToSpeech.QUEUE_FLUSH,
                     null,
                     strSpeakMe);
+        } else {
+            showSnackbar("Sprachausgabe deaktiviert");
         }
     }
 
