@@ -20,6 +20,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -247,12 +248,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     /** Button < gedrückt */
-    public void buttonPrev(View v) {
+    public void buttonPrev(final View v) {
         newWordAndUpdateView(IndexType.PREV);
      }
 
     /** Button > gedrückt */
-    public void buttonNext(View v) {
+    public void buttonNext(final View v) {
         newWordAndUpdateView(IndexType.NEXT);
     }
 
@@ -392,40 +393,42 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER &&
-                m_settings.getBoolean(getResources().getString(R.string.settings_shake), false) &&
-                !m_isSensorCheck.get()) {
+                m_isSensorCheck.compareAndSet(false, true)) {
+            try {
+                if (m_settings.getBoolean(getResources().getString(R.string.settings_shake), false)) {
+                    final int nShakeTimeout = Integer.parseInt(
+                            m_settings.getString(
+                                    getResources().getString(R.string.settings_shake_timeout),
+                                    getResources().getString(R.string.settings_shake_timeout_default)));
+                    final long actualTime = sensorEvent.timestamp;
+                    if (actualTime - m_lastSensorUpdate.get() < TimeUnit.SECONDS.toNanos(nShakeTimeout)) {
+                        m_isSensorCheck.set(false);
+                        return;
+                    }
 
-            m_isSensorCheck.set(true);
-            final int nShakeTimeout = Integer.parseInt(
-                    m_settings.getString(
-                            getResources().getString(R.string.settings_shake_timeout),
-                            getResources().getString(R.string.settings_shake_timeout_default)));
-            final long actualTime = sensorEvent.timestamp;
-            if (actualTime - m_lastSensorUpdate.get() < TimeUnit.SECONDS.toNanos(nShakeTimeout)) {
+                    final float x = sensorEvent.values[0];
+                    final float y = sensorEvent.values[1];
+                    final float z = sensorEvent.values[2];
+
+                    final float accelationSquareRoot = (x * x + y * y + z * z)
+                            / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+
+                    final int nShakeStrength = Integer.parseInt(
+                            m_settings.getString(
+                                    getResources().getString(R.string.settings_shake_strength),
+                                    getResources().getString(R.string.settings_shake_strength_default)));
+                    if (accelationSquareRoot >= nShakeStrength * 2)  {
+                        m_lastSensorUpdate.set(actualTime);
+
+                        newWordAndUpdateView(IndexType.RANDOM);
+                        resetSearchView();
+                        doSpeak(m_wordHandler.getCurrentWord().getWord());
+                    }
+                }   //Settings-if
+            } finally {
                 m_isSensorCheck.set(false);
-                return;
             }
 
-            final float x = sensorEvent.values[0];
-            final float y = sensorEvent.values[1];
-            final float z = sensorEvent.values[2];
-
-            final float accelationSquareRoot = (x * x + y * y + z * z)
-                    / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
-
-            final int nShakeStrength = Integer.parseInt(
-                    m_settings.getString(
-                            getResources().getString(R.string.settings_shake_strength),
-                            getResources().getString(R.string.settings_shake_strength_default)));
-            if (accelationSquareRoot >= nShakeStrength * 2)  {
-                m_lastSensorUpdate.set(actualTime);
-
-                newWordAndUpdateView(IndexType.RANDOM);
-                resetSearchView();
-                doSpeak(m_wordHandler.getCurrentWord().getWord());
-            }
-
-            m_isSensorCheck.set(false);
         }
     }
 
@@ -463,6 +466,10 @@ public class MainActivity extends AppCompatActivity
         /** Doule-Tap Erkennung, aber über den Buttons und bei offenem Drawer ignorieren */
         @Override
         public boolean onDoubleTap(MotionEvent e) {
+            if (m_isSensorCheck.get()) {
+                return true;
+            }
+
             final Point pTouch = new Point((int)e.getAxisValue(0), (int)e.getAxisValue(1));
              if (!isDrawerOpen() &&
                 !isTouchWithinButtons(pTouch,
