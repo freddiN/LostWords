@@ -44,6 +44,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import android.speech.tts.TextToSpeech;
 
@@ -64,7 +66,8 @@ public class MainActivity extends AppCompatActivity
 
     private SensorManager senSensorManager;
     private Sensor senAccelerometer;
-    private long m_lastSensorUpdate = 0;
+    private AtomicLong m_lastSensorUpdate = new AtomicLong(0);
+    private AtomicBoolean m_isSensorCheck = new AtomicBoolean(false);
 
     private SharedPreferences m_settings = null;
 
@@ -386,14 +389,17 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER &&
-                m_settings.getBoolean(getResources().getString(R.string.settings_shake), false)) {
+                m_settings.getBoolean(getResources().getString(R.string.settings_shake), false) &&
+                !m_isSensorCheck.get()) {
 
+            m_isSensorCheck.set(true);
             final int nShakeTimeout = Integer.parseInt(
                     m_settings.getString(
                             getResources().getString(R.string.settings_shake_timeout),
                             getResources().getString(R.string.settings_shake_timeout_default)));
             final long actualTime = sensorEvent.timestamp;
-            if (actualTime - m_lastSensorUpdate < TimeUnit.SECONDS.toNanos(nShakeTimeout)) {
+            if (actualTime - m_lastSensorUpdate.get() < TimeUnit.SECONDS.toNanos(nShakeTimeout)) {
+                m_isSensorCheck.set(false);
                 return;
             }
 
@@ -409,12 +415,14 @@ public class MainActivity extends AppCompatActivity
                             getResources().getString(R.string.settings_shake_strength),
                             getResources().getString(R.string.settings_shake_strength_default)));
             if (accelationSquareRoot >= nShakeStrength * 2)  {
-                m_lastSensorUpdate = actualTime;
+                m_lastSensorUpdate.set(actualTime);
 
                 newWordAndUpdateView(IndexType.RANDOM);
                 resetSearchView();
                 doSpeak(m_wordHandler.getCurrentWord().getWord());
             }
+
+            m_isSensorCheck.set(false);
         }
     }
 
@@ -423,8 +431,7 @@ public class MainActivity extends AppCompatActivity
             m_tts.speak(
                     strSpeakMe,
                     TextToSpeech.QUEUE_FLUSH,
-                    null,
-                    strSpeakMe);
+                    null);
             m_fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate));
         } else {
             showSnackbar("Sprachausgabe deaktiviert");
