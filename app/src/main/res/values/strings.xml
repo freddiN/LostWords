@@ -42,7 +42,7 @@
     <string name="settings_shake_strength_default">4</string>
     <string name="settings_tts_locale">setting_tts_locale</string>
     <string name="settings_tts_locale_title">Sprachausgabe</string>
-    <string name="settings_tts_locale_summary">Sprechweise der Sprachausgabe (Neustart notwendig)</string>
+    <string name="settings_tts_locale_summary">Sprechweise der Sprachausgabe</string>
     <string name="settings_tts_locale_default">de_DE</string>
 
     <string name="search_title">Suche</string>

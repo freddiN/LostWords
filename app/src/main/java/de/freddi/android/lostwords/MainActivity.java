@@ -73,6 +73,8 @@ public class MainActivity extends AppCompatActivity
 
     private FloatingActionButton m_fab = null;
 
+    private String m_strSettingsLocale = "";
+
     /** beim Beenden der Activity */
     @Override
     public void onDestroy() {
@@ -97,6 +99,9 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
 
         senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+
+        /** beim Rücksprung aus den Settings und beim Start */
+        configureTTS();
     }
 
     @Override
@@ -116,8 +121,7 @@ public class MainActivity extends AppCompatActivity
         /** Gestures Init */
         m_gestureDetector = new GestureDetectorCompat(this, new LostwordsGestureListener());
 
-        /** TTS setup */
-        configureTTS();
+        /** TTS setup passiert nun in der onResume()*/
 
         /**  FloatButton TTS */
         m_fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -127,7 +131,6 @@ public class MainActivity extends AppCompatActivity
                 doSpeak(m_wordHandler.getCurrentWord().getWord());
             }
         });
-        m_fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
 
         /** FloatButton Favorites */
         final FloatingActionButton fab_fav = (FloatingActionButton) findViewById(R.id.fab_fav);
@@ -426,18 +429,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void doSpeak(final String strSpeakMe) {
-        if (m_tts != null) {
-            m_tts.speak(
-                    strSpeakMe,
-                    TextToSpeech.QUEUE_FLUSH,
-                    null);
-            m_fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate));
-        } else {
-            showSnackbar("Sprachausgabe deaktiviert");
-        }
-    }
-
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         //ignorieren
@@ -528,24 +519,44 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void configureTTS() {
-        /** TTS setup */
-        shutdownTTS();
+    private void doSpeak(final String strSpeakMe) {
+        if (m_tts != null) {
+            m_tts.speak(
+                    strSpeakMe,
+                    TextToSpeech.QUEUE_FLUSH,
+                    null);
 
-        final String strSettingLocale =  m_settings.getString(
-                        getResources().getString(R.string.settings_tts_locale),
-                        getResources().getString(R.string.settings_tts_locale_default));
+            m_fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate));
+        } else {
+            showSnackbar("Sprachausgabe deaktiviert");
+        }
+    }
+
+    /** TTS setup */
+    private void configureTTS() {
+        final String strSettingLocale = m_settings.getString(
+                getResources().getString(R.string.settings_tts_locale),
+                getResources().getString(R.string.settings_tts_locale_default));
+
+        if (strSettingLocale.equals(m_strSettingsLocale)) {
+            return;
+        }
+
+        shutdownTTS();
 
         m_tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(final int status) {
-                if(status != TextToSpeech.ERROR && m_tts != null) {
-                    final int nResult = m_tts.setLanguage(new Locale(strSettingLocale));
-                    if (nResult != TextToSpeech.SUCCESS) {
-                        showSnackbar("TextToSpeech Einrichtung für \"" + strSettingLocale + "\"gescheitert, Errorcode=" + nResult);
-                        shutdownTTS();
-                    }
+            if(status != TextToSpeech.ERROR && m_tts != null) {
+                final int nResult = m_tts.setLanguage(new Locale(strSettingLocale));
+                if (nResult != TextToSpeech.SUCCESS) {
+                    showSnackbar("TextToSpeech Einrichtung für \"" + strSettingLocale + "\"gescheitert, Errorcode=" + nResult);
+                    shutdownTTS();
+                } else {
+                    m_strSettingsLocale = strSettingLocale;
+                    m_fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
                 }
+            }
             }
         });
     }

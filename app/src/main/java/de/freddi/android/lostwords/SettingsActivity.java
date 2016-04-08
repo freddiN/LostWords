@@ -45,7 +45,6 @@ public class SettingsActivity extends PreferenceActivity {
 
                         for (Locale l: arrLocals) {
                             if (!TextUtils.isEmpty(l.getDisplayLanguage()) &&
-                                    //!TextUtils.isEmpty(l.toLanguageTag()) &&
                                     TextUtils.isEmpty(l.getDisplayCountry()) &&
                                     m_tts.isLanguageAvailable(l) == TextToSpeech.LANG_AVAILABLE ) {
                                 listEntryValues.add(l.toString());
