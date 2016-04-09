@@ -15,14 +15,14 @@ public class LostWord {
     }
 
     public int getID() {
-        return this.m_nID;
+        return m_nID;
     }
 
     public String getWord() {
-        return this.m_strWord;
+        return m_strWord;
     }
 
     public String getMeaning() {
-        return this.m_strMeaning;
+        return m_strMeaning;
     }
 }

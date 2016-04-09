@@ -36,7 +36,7 @@ public class WordContentProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(final Uri uri, final String[] projection, final String selection, final String[] selectionArgs, final String sortOrder) {
 //        if (selectionArgs != null) {
 //            Log.d("CURSOR", "selection=" + selection + "-selectionArgs[0]=" + selectionArgs[0] + " uri=" + uri);
 //        } else {
@@ -56,10 +56,9 @@ public class WordContentProvider extends ContentProvider {
         return null;
     }
 
+    /** konfiguriert in searchable.xml  */
     private boolean isSearchView(final Uri uri) {
-        String strPath = uri.getEncodedPath();
-//        Log.d("CURSOR", "Q=" + query + " strPath=" + strPath + "  uri.getLastPathSegment()=" + uri.getLastPathSegment());
-        return (strPath.startsWith("/suggestion/"));
+        return uri.getEncodedPath().startsWith("/suggestion/");
     }
 
     private MatrixCursor matchByWordOrMeaning(final Uri uri) {
@@ -113,13 +112,13 @@ public class WordContentProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public String getType(Uri uri) {
+    public String getType(final Uri uri) {
         return null;
     }
 
     @Nullable
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(final Uri uri, final ContentValues values) {
         final int nID = values.getAsInteger(BaseColumns._ID);
 
         if (!m_mapWords.containsKey(nID)) {

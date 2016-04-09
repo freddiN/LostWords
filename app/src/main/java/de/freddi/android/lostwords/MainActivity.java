@@ -4,9 +4,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.graphics.Point;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -20,7 +17,6 @@ import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -30,7 +26,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
@@ -52,8 +47,6 @@ import android.speech.tts.TextToSpeech;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SensorEventListener  {
 
-    public static final String LOG_PREFIX = "LOSTWORDS";
-
     private TextToSpeech m_tts = null;
     private ProgressBar m_progressBar = null;
 
@@ -62,12 +55,12 @@ public class MainActivity extends AppCompatActivity
     private FavoriteHandler m_favHandler = null;
     private WordHandler m_wordHandler = null;
 
-    private SearchView searchView = null;
+    private SearchView m_searchView = null;
 
     private SensorManager senSensorManager;
     private Sensor senAccelerometer;
     private final AtomicLong m_lastSensorUpdate = new AtomicLong(0);
-    private final AtomicBoolean m_isSensorCheck = new AtomicBoolean(false);
+    protected final AtomicBoolean m_isSensorCheck = new AtomicBoolean(false);
 
     private SharedPreferences m_settings = null;
 
@@ -78,7 +71,7 @@ public class MainActivity extends AppCompatActivity
     /** beim Beenden der Activity */
     @Override
     public void onDestroy() {
-        shutdownTTS();
+        m_tts = Helper.shutdownTTS(m_tts);
 
         super.onDestroy();
     }
@@ -86,10 +79,10 @@ public class MainActivity extends AppCompatActivity
     /** beim Überdecken der Activity */
     @Override
     public void onPause() {
-        /** Favs speichern */
-        settingsPersistFavorites(m_favHandler.getFavorites());
-
         super.onPause();
+
+        /** Favs speichern */
+        m_favHandler.settingsPersistFavorites(getPreferences(0), getResources().getString(R.string.settings_fav), findViewById(R.id.content_frame));
 
         senSensorManager.unregisterListener(this);
     }
@@ -101,7 +94,7 @@ public class MainActivity extends AppCompatActivity
         senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
         /** beim Rücksprung aus den Settings und beim Start */
-        configureTTS();
+        reconfigureTTS();
     }
 
     @Override
@@ -116,19 +109,19 @@ public class MainActivity extends AppCompatActivity
 
         /** Wörter Init */
         m_wordHandler = new WordHandler(getResources().getStringArray(R.array.words), getContentResolver());
-        showSnackbar(getResources().getString(R.string.init_words, m_wordHandler.getWordCount()));
+        Helper.showSnackbar(getResources().getString(R.string.init_words, m_wordHandler.getWordCount()), findViewById(android.R.id.content), Snackbar.LENGTH_SHORT);
 
         /** Gestures Init */
-        m_gestureDetector = new GestureDetectorCompat(this, new LostwordsGestureListener());
+        m_gestureDetector = new GestureDetectorCompat(this, new LostWordsGestureListener(this));
 
         /** TTS setup passiert nun in der onResume()*/
 
-        /**  FloatButton TTS */
+        /** FloatButton TTS */
         m_fab = (FloatingActionButton) findViewById(R.id.fab);
         m_fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                doSpeak(m_wordHandler.getCurrentWord().getWord());
+            public void onClick(final View view) {
+                Helper.doSpeak(m_wordHandler.getCurrentWord().getWord(), m_tts, getApplicationContext(), findViewById(android.R.id.content), m_fab);
             }
         });
 
@@ -138,7 +131,7 @@ public class MainActivity extends AppCompatActivity
             fab_fav.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    showSnackbar(m_favHandler.handleFavoriteFloatbuttonClick(m_wordHandler.getCurrentWord(), getResources()));
+                    Helper.showSnackbar(m_favHandler.handleFavoriteFloatbuttonClick(m_wordHandler.getCurrentWord(), getResources()), findViewById(android.R.id.content), Snackbar.LENGTH_SHORT);
                 }
             });
             fab_fav.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
@@ -164,8 +157,8 @@ public class MainActivity extends AppCompatActivity
             m_progressBar.setMax(this.m_wordHandler.getWordCount() - 1);
         }
 
-        /** Vavoritenhandler Init */
-        m_favHandler = new FavoriteHandler(fab_fav, settingsReadFavorites());
+        /** Favoritenhandler Init */
+        m_favHandler = new FavoriteHandler(fab_fav, getPreferences(0).getStringSet(getResources().getString(R.string.settings_fav), new HashSet<String>()));
 
         /** Beschleunigungssensor Setup */
         senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -177,17 +170,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void displayCurrentWord() {
-        TextView textAnzahl = (TextView) findViewById(R.id.textWordCounts);
+        final LostWord lw = m_wordHandler.getCurrentWord();
+
+        final TextView textAnzahl = (TextView) findViewById(R.id.textWordCounts);
         if (textAnzahl != null) {
             textAnzahl.setText(
                     getResources().getString(R.string.main_current_word_numbers,
-                            (m_wordHandler.getCurrentWordIndex() + 1),
+                            (lw.getID() + 1),
                             m_wordHandler.getWordCount()));
         }
 
-        final LostWord lw = m_wordHandler.getCurrentWord();
-
-        TextView textWort = (TextView) findViewById(R.id.textWordContent);
+        final TextView textWort = (TextView) findViewById(R.id.textWordContent);
         if (textWort != null) {
             textWort.setText(getResources().getString(R.string.main_current_word_text, lw.getWord(), lw.getMeaning()));
         }
@@ -197,7 +190,7 @@ public class MainActivity extends AppCompatActivity
     public void onBackPressed() {
         resetSearchView();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -211,12 +204,11 @@ public class MainActivity extends AppCompatActivity
 
         final String strAction = intent.getAction();
         if ("android.Intent.action.SEARCHED".equals(strAction)) {
-            String strSelect = intent.getDataString();
+            final String strSelect = intent.getDataString();
             if (strSelect != null) {
                 m_wordHandler.selectGivenWord(strSelect);
                 updateView();
                 resetSearchView();
-               // Log.d("SEARCHED", "SEARCHED id=" + strSelect);
             }
         } else if ("android.intent.action.SEARCH".equals(strAction)) {
             /** Suche ohne Suggestions */
@@ -226,23 +218,22 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        final MenuInflater menuInflater = getMenuInflater();
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
 
         /** SearchView konfigurieren */
         final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        m_searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        m_searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         return true;
     }
 
     private void resetSearchView() {
-        if (searchView != null) {
-            searchView.clearFocus();
-            searchView.setIconified(true);
-            searchView.setIconified(true);
+        if (m_searchView != null) {
+            m_searchView.clearFocus();
+            m_searchView.setIconified(true);
+            m_searchView.setIconified(true);
         }
     }
 
@@ -256,7 +247,7 @@ public class MainActivity extends AppCompatActivity
         newWordAndUpdateView(IndexType.NEXT);
     }
 
-    private void newWordAndUpdateView(final IndexType i) {
+    public void newWordAndUpdateView(final IndexType i) {
         m_wordHandler.generateNewPosition(i);   //Next, Prev, Random
         updateView();
         resetSearchView();
@@ -278,12 +269,12 @@ public class MainActivity extends AppCompatActivity
             builder.setPositiveButton("Ok", null);
             builder.setTitle("Favoriten");
 
-            View convertView = getLayoutInflater().inflate(R.layout.fav_listview, null);
+            final View convertView = getLayoutInflater().inflate(R.layout.fav_listview, null);
             if (convertView != null) {
                 builder.setView(convertView);
             }
 
-            View lv =  convertView.findViewById(R.id.lv);
+            final View lv =  convertView.findViewById(R.id.lv);
             if (lv != null) {
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                         android.R.layout.simple_list_item_1,
@@ -294,7 +285,6 @@ public class MainActivity extends AppCompatActivity
                 ((ListView)lv).setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int nID, long id) {
-                        //Log.d("FAV", "SELECTED " + nID + " " + stringArray[nID]);
                         m_wordHandler.selectGivenWord(stringArray[nID]);
                         updateView();
                         dialog.dismiss();
@@ -316,13 +306,13 @@ public class MainActivity extends AppCompatActivity
             final AlertDialog d = new AlertDialog
                 .Builder(this)
                 .setPositiveButton(android.R.string.ok, null)
-                .setTitle(getResources().getString(R.string.ueber_title) + getVersionSuffix(" - "))
+                .setTitle(getResources().getString(R.string.ueber_title) + Helper.getVersionSuffix(" - ", getApplicationContext()))
                 .setMessage(s)
                 .create();
             d.show();
 
             /** Make the textview clickable. Must be called after show() */
-            View viewMessage = d.findViewById(android.R.id.message);
+            final View viewMessage = d.findViewById(android.R.id.message);
             if (viewMessage != null){
                 ((TextView) viewMessage).setMovementMethod(LinkMovementMethod.getInstance());
             }
@@ -330,10 +320,11 @@ public class MainActivity extends AppCompatActivity
             /** Navigation: Beenden
              * "Nicht empfehlenswert", sagt Google. "Mir egal", sagt Freddi.
              */
-            settingsPersistFavorites(m_favHandler.getFavorites());
+            m_favHandler.settingsPersistFavorites(getPreferences(0), getResources().getString(R.string.settings_fav), findViewById(R.id.content_frame));
+
             senSensorManager.unregisterListener(this);
             finish();
-            shutdownTTS();
+            m_tts = Helper.shutdownTTS(m_tts);
             android.os.Process.killProcess(android.os.Process.myPid());
         } else if (id == R.id.nav_share) {
             /** Navigation: Teilen */
@@ -350,23 +341,11 @@ public class MainActivity extends AppCompatActivity
         }
 
         /** Navigationsbereich schliessen */
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer != null) {
             drawer.closeDrawer(GravityCompat.START);
         }
         return true;
-    }
-
-    private String getVersionSuffix(final String strSpacer) {
-        String strSuffix = "";
-        try {
-            final PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            strSuffix += strSpacer + pInfo.versionName;
-        } catch (final PackageManager.NameNotFoundException e) {
-            /** ignore */
-        }
-
-        return strSuffix;
     }
 
     /** Wort anzeigen, Progressbar updaten, Fav.FLoatbutton ggfs. updaten */
@@ -374,7 +353,7 @@ public class MainActivity extends AppCompatActivity
         displayCurrentWord();
 
         if (m_progressBar != null) {
-            m_progressBar.setProgress(this.m_wordHandler.getCurrentWordIndex());
+            m_progressBar.setProgress(m_wordHandler.getCurrentWordIndex());
         }
 
         m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
@@ -390,7 +369,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
+    public void onSensorChanged(final SensorEvent sensorEvent) {
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER &&
                 m_isSensorCheck.compareAndSet(false, true)) {
             try {
@@ -421,13 +400,12 @@ public class MainActivity extends AppCompatActivity
 
                         newWordAndUpdateView(IndexType.RANDOM);
                         resetSearchView();
-                        doSpeak(m_wordHandler.getCurrentWord().getWord());
+                        Helper.doSpeak(m_wordHandler.getCurrentWord().getWord(), m_tts, getApplicationContext(), findViewById(android.R.id.content), m_fab);
                     }
                 }   //Settings-if
             } finally {
                 m_isSensorCheck.set(false);
             }
-
         }
     }
 
@@ -436,110 +414,13 @@ public class MainActivity extends AppCompatActivity
         //ignorieren
     }
 
-    /** Gesture-Detector Logik */
-    private class LostwordsGestureListener extends GestureDetector.SimpleOnGestureListener {
-        /** immer true, sonst werden nachfolgende Gestures ignoriert */
-        @Override
-        public boolean onDown(MotionEvent event) {
-            return true;
-        }
-
-        /** Swipe-Links und -rechts erkennen, dann selbe Aktion wie mit den Buttons */
-        @Override
-        public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
-            /** keine Gestures wenn der Drawer offen ist */
-            if (isDrawerOpen()) {
-                return true;
-            }
-
-            final int nGestureMinimumSpeed = getResources().getInteger(R.integer.gesture_min_speed);
-            if (velocityX > nGestureMinimumSpeed) {
-                buttonPrev(null);
-            } else if (velocityX < -nGestureMinimumSpeed) {
-                buttonNext(null);
-            }
-
-            return true;
-        }
-
-        /** Doule-Tap Erkennung, aber über den Buttons und bei offenem Drawer ignorieren */
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            if (m_isSensorCheck.get()) {
-                return true;
-            }
-
-            final Point pTouch = new Point((int)e.getAxisValue(0), (int)e.getAxisValue(1));
-             if (!isDrawerOpen() &&
-                !isTouchWithinButtons(pTouch,
-                    findViewById(R.id.fab),
-                    findViewById(R.id.fab_fav),
-                    findViewById(R.id.buttonPrev),
-                    findViewById(R.id.buttonNext),
-                    findViewById(R.id.search))
-                    ) {
-                newWordAndUpdateView(IndexType.RANDOM);
-                resetSearchView();
-            }
-
-            return true;
-        }
-    }
-
-    private boolean isDrawerOpen() {
+    public boolean isDrawerOpen() {
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         return drawer != null && drawer.isDrawerVisible(GravityCompat.START);
     }
 
-    private boolean isTouchWithinButtons(final Point pTouch, final View... buttons) {
-        int[] location = new int[2];
-        boolean bXinButton, bYinButton;
-        for (View button: buttons) {
-            /** Button Position */
-            button.getLocationInWindow(location);
-
-            if (button instanceof SearchView ) {
-                /** Double-Taps auf SearchView ignorieren */
-                bYinButton = pTouch.y >= location[1] && pTouch.y <= location[1] + button.getHeight();
-                return bYinButton;
-            } else {
-                /** Touch innerhalb des Buttons? */
-                bXinButton = pTouch.x >= location[0] && pTouch.x <= location[0] + button.getWidth();
-                bYinButton = pTouch.y >= location[1] && pTouch.y <= location[1] + button.getHeight();
-                if (bXinButton && bYinButton) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private void showSnackbar(final String strText) {
-        View viewContent = findViewById(android.R.id.content);
-        if (viewContent != null) {
-            Snackbar.make(viewContent,
-                    strText,
-                    Snackbar.LENGTH_SHORT)
-                    .show();
-        }
-    }
-
-    private void doSpeak(final String strSpeakMe) {
-        if (m_tts != null) {
-            m_tts.speak(
-                    strSpeakMe,
-                    TextToSpeech.QUEUE_FLUSH,
-                    null);
-
-            m_fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate));
-        } else {
-            showSnackbar("Sprachausgabe deaktiviert");
-        }
-    }
-
-    /** TTS setup */
-    private void configureTTS() {
+    /** TTS Setup abhängig von den Settings */
+    private void reconfigureTTS() {
         final String strSettingLocale = m_settings.getString(
                 getResources().getString(R.string.settings_tts_locale),
                 getResources().getString(R.string.settings_tts_locale_default));
@@ -548,7 +429,7 @@ public class MainActivity extends AppCompatActivity
             return;
         }
 
-        shutdownTTS();
+        m_tts = Helper.shutdownTTS(m_tts);
 
         m_tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
@@ -556,8 +437,8 @@ public class MainActivity extends AppCompatActivity
             if(status != TextToSpeech.ERROR && m_tts != null) {
                 final int nResult = m_tts.setLanguage(new Locale(strSettingLocale));
                 if (nResult != TextToSpeech.SUCCESS) {
-                    showSnackbar("TextToSpeech Einrichtung für \"" + strSettingLocale + "\"gescheitert, Errorcode=" + nResult);
-                    shutdownTTS();
+                    Helper.showSnackbar("TextToSpeech Einrichtung für \"" + strSettingLocale + "\"gescheitert, Errorcode=" + nResult, findViewById(android.R.id.content), Snackbar.LENGTH_SHORT);
+                    m_tts = Helper.shutdownTTS(m_tts);
                 } else {
                     m_strSettingsLocale = strSettingLocale;
                     m_fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
@@ -565,27 +446,5 @@ public class MainActivity extends AppCompatActivity
             }
             }
         });
-    }
-
-    private void shutdownTTS() {
-        /** TTS schliessen */
-        if (m_tts != null) {
-            m_tts.stop();
-            m_tts.shutdown();
-            m_tts = null;
-        }
-    }
-
-    private Set<String> settingsReadFavorites() {
-        return getPreferences(0).getStringSet(getResources().getString(R.string.settings_fav), new HashSet<String>());
-    }
-
-    private void settingsPersistFavorites(final Set<String> setFavs) {
-        SharedPreferences.Editor editor = getPreferences(0).edit();
-        editor.putStringSet(getResources().getString(R.string.settings_fav), setFavs);
-
-        if (!editor.commit()) {
-            showSnackbar("error writing favorites");
-        }
     }
 }
