@@ -20,7 +20,6 @@ import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -67,8 +66,8 @@ public class MainActivity extends AppCompatActivity
 
     private SensorManager senSensorManager;
     private Sensor senAccelerometer;
-    private AtomicLong m_lastSensorUpdate = new AtomicLong(0);
-    private AtomicBoolean m_isSensorCheck = new AtomicBoolean(false);
+    private final AtomicLong m_lastSensorUpdate = new AtomicLong(0);
+    private final AtomicBoolean m_isSensorCheck = new AtomicBoolean(false);
 
     private SharedPreferences m_settings = null;
 
