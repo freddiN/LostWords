@@ -51,25 +51,6 @@
     <string name="favorites_add">\"%s\" zu Favoriten hinzugefügt</string>
     <string name="favorites_remove">\"%s\" aus Favoriten entfernt</string>
 
-    <string-array name="ueber_content">
-        <item>App zur Wiederbelebung seltener Wörter im alltäglichen Sprachgebrauch.</item>
-        <item> </item>
-        <item>Benutzung:</item>
-        <item>Swipe = nächster/vorheriger Begriff</item>
-        <item>DoubleTap = zufälliger Begriff</item>
-        <item> </item>
-        <item>Wir empfehlen:</item>
-        <item>Pro Tag min. 3 der Wörter nutzen, am besten vor den Mahlzeiten.</item>
-        <item>Gerne auch in Meetings, Telkos, Commit-Kommentaren und/oder Dokumentationen.</item>
-        <item> </item>
-        <item>Die Worterklärungen stammen vom Autor, Bekannten und www.openthesaurus.de .</item>
-        <item> </item>
-        <item>Mad creditz @ Team BookingEngine, Jo und Ellen.</item>
-        <item> </item>
-        <item>Sourcecode auf Github:</item>
-        <item>https://github.com/freddiN/LostWords</item>
-    </string-array>
-
     <string-array name="words">
         <item>aufmüpfig - Anweisungen nicht folgen</item>
         <item>Bengel - ungezogenes Kind</item>

@@ -12,6 +12,10 @@ import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.SearchView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 /**
  * Created by freddi on 09.04.2016.
  */
@@ -87,5 +91,31 @@ public class Helper {
         } else {
             showSnackbar("Sprachausgabe deaktiviert", v, Snackbar.LENGTH_SHORT);
         }
+    }
+
+    public static String parseReadme(MainActivity act) {
+        StringBuffer buff = new StringBuffer(1024);
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(act.getResources().openRawResource(R.raw.readme)));
+            String line = reader.readLine();
+            while (line != null) {
+                line = reader.readLine();
+                if (line == null || line.startsWith("#")) {
+                    continue;
+                }
+                buff.append(line).append("\n");
+            }
+        } catch(final Exception e) {
+            e.printStackTrace();
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+        return buff.toString();
     }
 }

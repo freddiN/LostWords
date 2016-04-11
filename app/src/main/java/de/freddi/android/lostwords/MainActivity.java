@@ -293,14 +293,9 @@ public class MainActivity extends AppCompatActivity
             }
         } else if (id == R.id.nav_ueber) {
             /** Navigation: Über LostWords */
-            StringBuffer buff = new StringBuffer(512);
-            final String[] strArrLines = getResources().getStringArray(R.array.ueber_content);
-            for (String strLine: strArrLines) {
-                buff.append(strLine).append("\n");
-            }
 
             // Linkify the message
-            final SpannableString s = new SpannableString(buff);
+            final SpannableString s = new SpannableString(Helper.parseReadme(this));
             Linkify.addLinks(s, Linkify.WEB_URLS);
 
             final AlertDialog d = new AlertDialog
