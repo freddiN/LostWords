@@ -28,12 +28,12 @@ dependencies {
     compile 'com.google.android.gms:play-services-appindexing:8.4.0'
 }
 
-task copyReadme(type: Copy) {
+task copyReadme(type: Exec) {
     description = 'copying  README.md ...'
     println 'copying  README.md ...'
-    from 'src/main/res/raw/readme.md'
-    into '/'
-    rename { 'README.md'}
+    workingDir '../'
+
+    commandLine 'cmd', '/c', 'copy app\\src\\main\\res\\raw\\readme.md README.md /Y'
 }
 
 project.afterEvaluate {
