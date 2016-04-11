@@ -98,16 +98,16 @@ public class Helper {
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(act.getResources().openRawResource(R.raw.readme)));
-            String line = reader.readLine();
-            while (line != null) {
-                line = reader.readLine();
-                if (line == null || line.startsWith("#")) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("#")) {
                     continue;
                 }
                 buff.append(line).append("\n");
             }
         } catch(final Exception e) {
             e.printStackTrace();
+        } finally {
             if (reader != null) {
                 try {
                     reader.close();
