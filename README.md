@@ -2,14 +2,11 @@
 
 App zur Wiederbelebung seltener Wörter und Oldschool-Begriffe im alltäglichen Sprachgebrauch. Zu jedem Begriff gibt es eine kurze Erklärung.
 
-Benutzung:
+##Benutzung:
 
 Swipe = nächster/vorheriger Begriff
-
 DoubleTap = zufälliger Begriff
-
 Schütteln = zufälliger Begriff mit Sprachausgabe (aktivierbar in den Einstellungen)
-
 
 Über die beiden FloatButtons kann der aktuelle Begriff in die Favoriten übernommen werden oder mit der Text-To-Speech Engine vorgelesen werden.
 
@@ -19,7 +16,7 @@ Die Suche im oberen Teil sucht sowohl in den Erklärungen als auch in Wort-Teils
 
 In den Einstellungen kann die Schüttelfunktionalität konfiguriert werden, dort kann auch die Sprechweise (z.B. französisch, niederländisch ...) gewählt werden. Die verfügbaren Sprechweisen hängen von den auf dem Gerät installierten Text-To-Speech Sprachen ab.
 
-Berechtigungen:
+##Berechtigungen:
 Es werden keine Berechtigungen benötigt.
 
 Die Worterklärungen stammen vom Autor, Bekannten und www.openthesaurus.de.

@@ -101,10 +101,7 @@ public class Helper {
             reader = new BufferedReader(new InputStreamReader(act.getResources().openRawResource(R.raw.readme)));
 
             while ((strLine = reader.readLine()) != null) {
-                if (strLine.startsWith("#")) {
-                    continue;
-                }
-                buff.append(strLine).append("\n");
+                buff.append(strLine.replaceAll("#", "")).append("\n");
             }
         } catch(final Exception e) {
             e.printStackTrace();
