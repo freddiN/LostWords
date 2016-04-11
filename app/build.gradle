@@ -27,3 +27,18 @@ dependencies {
     compile 'com.android.support:design:23.3.0'
     compile 'com.google.android.gms:play-services-appindexing:8.4.0'
 }
+
+task copyReadme(type: Copy) {
+    description = 'copying  README.md ...'
+    println 'copying  README.md ...'
+    from 'src/main/res/raw/readme.md'
+    into '/'
+    rename { 'README.md'}
+}
+
+project.afterEvaluate {
+    preBuild.dependsOn copyReadme
+}
+
+clean.dependsOn copyReadme
+clean.mustRunAfter copyReadme
