@@ -5,7 +5,7 @@ App zur Wiederbelebung seltener Wörter und Oldschool-Begriffe im alltäglichen 
 Benutzung:
 Swipe = nächster/vorheriger Begriff
 DoubleTap = zufälliger Begriff
-Schütteln = zufälliger Begriff mit Sprachausgabe (aktivierbar in den Einstellugnen)
+Schütteln = zufälliger Begriff mit Sprachausgabe (aktivierbar in den Einstellungen)
 
 Über die beiden FloatButtons kann der aktuelle Begriff in die Favoriten übernommen werden oder mit der Text-To-Speech Engine vorgelesen werden.
 
