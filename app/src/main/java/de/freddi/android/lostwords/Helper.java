@@ -96,14 +96,15 @@ public class Helper {
     public static String parseReadme(MainActivity act) {
         StringBuffer buff = new StringBuffer(1024);
         BufferedReader reader = null;
+        String strLine;
         try {
             reader = new BufferedReader(new InputStreamReader(act.getResources().openRawResource(R.raw.readme)));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith("#")) {
+
+            while ((strLine = reader.readLine()) != null) {
+                if (strLine.startsWith("#")) {
                     continue;
                 }
-                buff.append(line).append("\n");
+                buff.append(strLine).append("\n");
             }
         } catch(final Exception e) {
             e.printStackTrace();
@@ -111,7 +112,7 @@ public class Helper {
             if (reader != null) {
                 try {
                     reader.close();
-                } catch (IOException e1) {
+                } catch (final IOException e1) {
                     e1.printStackTrace();
                 }
             }
