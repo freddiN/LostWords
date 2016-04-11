@@ -23,6 +23,6 @@ Es werden keine Berechtigungen benötigt.
 Die Worterklärungen stammen vom Autor, Bekannten und www.openthesaurus.de.
 Code von Freddi und Boris, mad creditz @ Team BookingEngine.
 
-####Sourccode
-LostWords ist Open Source, der Sourcecode befindet sich hier:
+####Code
+LostWords ist Open Source, der Sourcecode befindet sich hier:  
 https://github.com/freddiN/LostWords
