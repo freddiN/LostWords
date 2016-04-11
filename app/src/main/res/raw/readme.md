@@ -1,11 +1,11 @@
 ### LostWords für Android
 
-App zur Wiederbelebung seltener Wörter und Oldschool-Begriffe im alltäglichen Sprachgebrauch.
+App zur Wiederbelebung seltener Wörter und Oldschool-Begriffe im alltäglichen Sprachgebrauch.  
 Zu jedem Begriff gibt es eine kurze Erklärung.
 
 ####Benutzung
-Swipe = nächster/vorheriger Begriff
-DoubleTap = zufälliger Begriff
+Swipe = nächster/vorheriger Begriff  
+DoubleTap = zufälliger Begriff  
 Schütteln = zufälliger Begriff mit Sprachausgabe (aktivierbar in den Einstellungen)
 
 Über die beiden FloatButtons kann der aktuelle Begriff in die Favoriten übernommen werden oder mit der Text-To-Speech Engine vorgelesen werden.
@@ -20,9 +20,9 @@ In den Einstellungen kann die Schüttelfunktionalität konfiguriert werden, dort
 Es werden keine Berechtigungen benötigt.
 
 ####Quellenangabe
-Die Worterklärungen stammen vom Autor, Bekannten und www.openthesaurus.de.
+Die Worterklärungen stammen vom Autor, Bekannten und www.openthesaurus.de.  
 Code von Freddi und Boris, mad creditz @ Team BookingEngine.
 
 ####Code
-LostWords ist Open Source, der Sourcecode befindet sich hier:
+LostWords ist Open Source, der Sourcecode befindet sich hier:  
 https://github.com/freddiN/LostWords
