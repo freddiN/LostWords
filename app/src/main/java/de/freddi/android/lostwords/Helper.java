@@ -19,7 +19,7 @@ import java.io.InputStreamReader;
 /**
  * Created by freddi on 09.04.2016.
  */
-public class Helper {
+class Helper {
 
     public static void doLog(final String strLogMe) {
         Log.d("LOSTWORDS", strLogMe);
@@ -60,15 +60,14 @@ public class Helper {
         }
     }
 
-    public static TextToSpeech shutdownTTS(TextToSpeech tts) {
+    public static TextToSpeech shutdownTTS(final TextToSpeech tts) {
         /** TTS schliessen */
         if (tts != null) {
             tts.stop();
             tts.shutdown();
-            return null;
-        } else {
-            return tts;
-        }
+        } 
+
+        return null;
     }
 
     public static String getVersionSuffix(final String strSpacer, final Context ctx) {
@@ -94,7 +93,7 @@ public class Helper {
     }
 
     public static String parseReadme(MainActivity act) {
-        StringBuffer buff = new StringBuffer(1024);
+        StringBuilder buff = new StringBuilder(1024);
         BufferedReader reader = null;
         String strLine;
         try {

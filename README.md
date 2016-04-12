@@ -3,7 +3,7 @@
 App zur Wiederbelebung seltener Wörter und Oldschool-Begriffe im alltäglichen Sprachgebrauch.  
 Zu jedem Begriff gibt es eine kurze Erklärung.
 
-####Benutzung
+#### Benutzung
 Swipe = nächster/vorheriger Begriff  
 DoubleTap = zufälliger Begriff  
 Schütteln = zufälliger Begriff mit Sprachausgabe (aktivierbar in den Einstellungen)
@@ -16,13 +16,13 @@ Die Suche im oberen Teil sucht sowohl in den Erklärungen als auch in Wort-Teils
 
 In den Einstellungen kann die Schüttelfunktionalität konfiguriert werden, dort kann auch die Sprechweise (z.B. französisch, niederländisch ...) gewählt werden. Die verfügbaren Sprechweisen hängen von den auf dem Gerät installierten Text-To-Speech Sprachen ab.
 
-####Berechtigungen
+#### Berechtigungen
 Es werden keine Berechtigungen benötigt.
 
-####Quellenangabe
+#### Quellenangabe
 Die Worterklärungen stammen vom Autor, Bekannten und www.openthesaurus.de.  
 Code von Freddi und Boris, mad creditz @ Team BookingEngine.
 
-####Code
+#### Code
 LostWords ist Open Source, der Sourcecode befindet sich hier:  
 https://github.com/freddiN/LostWords

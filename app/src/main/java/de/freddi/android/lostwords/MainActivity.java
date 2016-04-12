@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity
     private SensorManager senSensorManager;
     private Sensor senAccelerometer;
     private final AtomicLong m_lastSensorUpdate = new AtomicLong(0);
-    protected final AtomicBoolean m_isSensorCheck = new AtomicBoolean(false);
+    final AtomicBoolean m_isSensorCheck = new AtomicBoolean(false);
 
     private SharedPreferences m_settings = null;
 

@@ -9,7 +9,7 @@ import android.view.MotionEvent;
  *
  * Created by freddi on 09.04.2016.
  */
-public class LostWordsGestureListener extends GestureDetector.SimpleOnGestureListener {
+class LostWordsGestureListener extends GestureDetector.SimpleOnGestureListener {
     private final MainActivity m_mainActivity;
 
     public LostWordsGestureListener(final MainActivity main) {
