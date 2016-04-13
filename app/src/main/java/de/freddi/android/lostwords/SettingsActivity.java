@@ -35,7 +35,12 @@ public class SettingsActivity extends PreferenceActivity {
             /** übernimmt die Werte aus der preferences.xml */
             addPreferencesFromResource(R.xml.preferences);
 
-            /** eigene TTS Instanz starten und wieder schliessen, um die Locales zu prüfen */
+            /** aktuelle Configwerte in die Configbeschreibung übernehmen */
+            refreshConfigValues();
+
+            /** Listenpunkt "Sprachausgabe" 
+             * eigene TTS Instanz starten und wieder schliessen, um die Locales zu prüfen 
+             */
             m_tts = new TextToSpeech(getActivity(), new TextToSpeech.OnInitListener() {
                 @Override
                 public void onInit(final int status) {
@@ -85,8 +90,28 @@ public class SettingsActivity extends PreferenceActivity {
             }
 
             if (!TextUtils.isEmpty(strKeyname) && !TextUtils.isEmpty(strValue)) {
+                refreshConfigValues();
                 Helper.showSnackbar(String.format("Einstellung \"%s\" auf \"%s\" geändert", strKeyname, strValue), getView(), Snackbar.LENGTH_LONG);
             }
+        }
+        
+        /**
+         *  aktuelle Config in den Listenpunkten anzeigen
+         *  
+         *  1 = Schütteltimeout
+         *  2 = SchüttelStärke
+         *  3 = Sprachausgabe
+         *  summary enthält IMMER bereits "(aktuell: )", dieser Teil muss ersetzt werden
+         */
+        public void refreshConfigValues() {
+            ListPreference lp;
+            String strSummary;
+            
+            for (int i=1; i<=3; i++) {
+                lp = (ListPreference)getPreferenceScreen().getPreference(i);
+                strSummary = String.valueOf(lp.getSummary());
+                lp.setSummary(strSummary.substring(0, strSummary.indexOf("(")) + "(aktuell: " + lp.getValue() + ")");
+             }
         }
 
         @Override

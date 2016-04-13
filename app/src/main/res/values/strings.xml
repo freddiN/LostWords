@@ -34,15 +34,15 @@
     <string name="settings_shake_summary">Schütteln für ein Zufallswort mit Sprachausgabe</string>
     <string name="settings_shake_timeout">setting_shake_timeout</string>
     <string name="settings_shake_timeout_title">Schütteltimeout</string>
-    <string name="settings_shake_timeout_summary">Mindestzeit zwischen zwei Schüttlern in Sekunden</string>
+    <string name="settings_shake_timeout_summary">Mindestzeit zwischen zwei Schüttlern in Sekunden (aktuell: )</string>
     <string name="settings_shake_timeout_default">3</string>
     <string name="settings_shake_strength">setting_shake_strength</string>
     <string name="settings_shake_strength_title">Schüttelstärke</string>
-    <string name="settings_shake_strength_summary">Schüttelstärke von 1=empfindlich bis 10=starkes-Schütteln-notwendig</string>
+    <string name="settings_shake_strength_summary">Schüttelstärke von 1=empfindlich bis 10=starkes-Schütteln-notwendig (aktuell: )</string>
     <string name="settings_shake_strength_default">4</string>
     <string name="settings_tts_locale">setting_tts_locale</string>
     <string name="settings_tts_locale_title">Sprachausgabe</string>
-    <string name="settings_tts_locale_summary">Sprechweise der Sprachausgabe</string>
+    <string name="settings_tts_locale_summary">Sprechweise der Sprachausgabe (aktuell: )</string>
     <string name="settings_tts_locale_default">de_DE</string>
 
     <string name="search_title">Suche</string>
@@ -69,6 +69,7 @@
         <item>flink - schnell</item>
         <item>flunkern - lügen</item>
         <item>formidabel - aussergewöhnlich</item>
+        <item>gehopst wie gesprungen - einerlei</item> <!-- sponsored by Ellen -->
         <item>Gutdünken - Einschätzung</item>
         <item>Hallodri - Nichtsnutz, Weiberheld</item>
         <item>Halunke - Verbrecher</item>
