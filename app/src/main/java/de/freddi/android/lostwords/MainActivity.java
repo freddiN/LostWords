@@ -347,11 +347,12 @@ public class MainActivity extends AppCompatActivity
     private void updateView() {
         displayCurrentWord();
 
+        final LostWord lw = m_wordHandler.getCurrentWord();
         if (m_progressBar != null) {
-            m_progressBar.setProgress(m_wordHandler.getCurrentWordIndex());
+            m_progressBar.setProgress(lw.getID());
         }
 
-        m_favHandler.checkFavorite(m_wordHandler.getCurrentWord());
+        m_favHandler.checkFavorite(lw);
     }
 
     /** alle Touch Events erstmal durch den GestureDetector leiten */

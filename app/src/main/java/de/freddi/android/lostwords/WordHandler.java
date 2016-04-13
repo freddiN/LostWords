@@ -82,11 +82,6 @@ class WordHandler {
         return m_nCachedCount;
     }
 
-    /** derzeitiger Wörter Index */
-    public int getCurrentWordIndex() {
-        return m_CachedWord.getID();
-    }
-
     public LostWord getCurrentWord() {
         return m_CachedWord;
     }

@@ -7,8 +7,8 @@ android {
         applicationId "de.freddi.android.lostwords"
         minSdkVersion 19
         targetSdkVersion 23
-        versionName '1.2.6'
-        versionCode 126
+        versionName '1.2.7'
+        versionCode 127
     }
     buildTypes {
         release {
