@@ -37,13 +37,8 @@ public class WordContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(final Uri uri, final String[] projection, final String selection, final String[] selectionArgs, final String sortOrder) {
-//        if (selectionArgs != null) {
-//            Log.d("CURSOR", "selection=" + selection + "-selectionArgs[0]=" + selectionArgs[0] + " uri=" + uri);
-//        } else {
-//            Log.d("CURSOR", "selection=" + selection + "-selectionArgs=" + selectionArgs + " uri=" + uri);
-//        }
-
-        if (isSearchView(uri)) {
+        if (uri.getEncodedPath().startsWith("/suggestion/")) {
+            /** aus der SearchView, konfiguriert in searchable.xml */
             return matchByWordOrMeaning(uri);
         }
 
@@ -56,14 +51,8 @@ public class WordContentProvider extends ContentProvider {
         return null;
     }
 
-    /** konfiguriert in searchable.xml  */
-    private boolean isSearchView(final Uri uri) {
-        return uri.getEncodedPath().startsWith("/suggestion/");
-    }
-
     private MatrixCursor matchByWordOrMeaning(final Uri uri) {
         final String query = uri.getLastPathSegment().toLowerCase();
-
         if (query.equals("search_suggest_query") ||
                 query.length() < 3) {
             return null;
