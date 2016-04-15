@@ -35,17 +35,15 @@ class WordHandler {
         Collections.addAll(setWords, strArrWords);
 
         int nIdxDash, nID = 0;
-        String strWord;
         ContentValues values;
         for (String setWord : setWords) {
-            strWord = setWord;
-            nIdxDash = strWord.indexOf("-");
+            nIdxDash = setWord.indexOf(" - ");
 
             if (nIdxDash != -1) {
                 values = new ContentValues();
                 values.put(BaseColumns._ID, String.valueOf(nID++));
-                values.put(SearchManager.SUGGEST_COLUMN_TEXT_1, strWord.substring(0, nIdxDash).trim());
-                values.put(SearchManager.SUGGEST_COLUMN_TEXT_2, strWord.substring(nIdxDash + 1).trim());
+                values.put(SearchManager.SUGGEST_COLUMN_TEXT_1, setWord.substring(0, nIdxDash).trim());
+                values.put(SearchManager.SUGGEST_COLUMN_TEXT_2, setWord.substring(nIdxDash + 3).trim());
 
                 m_resolver.insert(WordContentProvider.CONTENT_URI, values);
                 m_nCachedCount++;

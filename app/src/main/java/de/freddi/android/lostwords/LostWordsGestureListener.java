@@ -5,27 +5,31 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 
 /**
- * Gesture-Detector Logik
- *
  * Created by freddi on 09.04.2016.
+ * 
+ * gestures detector logic
  */
 class LostWordsGestureListener extends GestureDetector.SimpleOnGestureListener {
     private final MainActivity m_mainActivity;
 
+    /**
+     * 
+     * @param main
+     */
     public LostWordsGestureListener(final MainActivity main) {
         this.m_mainActivity = main;
     }
 
-    /** immer true, sonst werden nachfolgende Gestures ignoriert */
+    /** always true! otherwise upcoming gestures will get ignored */
     @Override
     public boolean onDown(MotionEvent event) {
         return true;
     }
 
-    /** Swipe-Links und -rechts erkennen, dann selbe Aktion wie mit den Buttons */
+    /** detect swipe-left and swipe-right, which results in the same action as a button press */
     @Override
     public boolean onFling(final MotionEvent event1, final MotionEvent event2, final float velocityX, final float velocityY) {
-        /** keine Gestures wenn der Drawer offen ist */
+        /** ignore gestures when drawer is open */
         if (m_mainActivity.isDrawerOpen()) {
             return true;
         }
@@ -40,16 +44,16 @@ class LostWordsGestureListener extends GestureDetector.SimpleOnGestureListener {
         return true;
     }
 
-    /** Doule-Tap Erkennung, aber über den Buttons und bei offenem Drawer ignorieren */
+    /** detect double taps. ignore when tapped on a button, during a shake or drawer is open */
     @Override
     public boolean onDoubleTap(final MotionEvent e) {
-        if (m_mainActivity.m_isSensorCheck.get()) {
+        /** ignore double taps during a shake or opened drawer */
+        if (m_mainActivity.m_isSensorCheck.get() || m_mainActivity.isDrawerOpen()) {
             return true;
         }
 
         final Point pTouch = new Point((int)e.getAxisValue(0), (int)e.getAxisValue(1));
-        if (!m_mainActivity.isDrawerOpen() &&
-                !Helper.isTouchWithinButtons(pTouch,
+        if (!Helper.isTouchWithinButtons(pTouch,
                         m_mainActivity.findViewById(R.id.fab),
                         m_mainActivity.findViewById(R.id.fab_fav),
                         m_mainActivity.findViewById(R.id.buttonPrev),
