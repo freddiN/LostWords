@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity
         if ("android.Intent.action.SEARCHED".equals(strAction)) {
             final String strSelect = intent.getDataString();
             if (strSelect != null) {
-                m_wordHandler.selectGivenWord(strSelect);
+                m_wordHandler.selectWordByString(strSelect);
                 updateView();
                 resetSearchView();
             }
@@ -310,7 +310,7 @@ public class MainActivity extends AppCompatActivity
                 ((ListView)lv).setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int nID, long id) {
-                        m_wordHandler.selectGivenWord(stringArray[nID]);
+                        m_wordHandler.selectWordByString(stringArray[nID]);
                         updateView();
                         dialog.dismiss();
                     }

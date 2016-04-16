@@ -36,7 +36,7 @@ class WordHandler {
 
         int nIdxDash, nID = 0;
         ContentValues values;
-        for (String setWord : setWords) {
+        for (String setWord: setWords) {
             nIdxDash = setWord.indexOf(" - ");
 
             if (nIdxDash != -1) {
@@ -51,6 +51,11 @@ class WordHandler {
         }
     }
 
+    /**
+     * move through the words via next, previous or random
+     * 
+     * @param i NEXT, PREV or RANDOM
+     */
     public void generateNewPosition(final IndexType i) {
         int nID = 0;
         if (m_CachedWord != null) {
@@ -61,7 +66,7 @@ class WordHandler {
         } else if (i == IndexType.PREV) {
             nID--;
         } else {
-            /** Random */
+            /** RANDOM */
             nID = m_rnd.nextInt(m_nCachedCount - 1);
         }
 
@@ -72,25 +77,39 @@ class WordHandler {
             nID = 0;
         }
 
-        updateCurrentWord(nID);
+        selectWordByID(nID);
     }
 
-    /** Anzahl Wörter */
+    /**
+     * wordcount
+     * 
+     * @return
+     */
     public int getWordCount() {
         return m_nCachedCount;
     }
 
+    /**
+     * current word
+     * 
+     * @return
+     */
     public LostWord getCurrentWord() {
         return m_CachedWord;
     }
 
-    /** derzeitiges Wort */
-    private void updateCurrentWord(final int nID) {
+    /**
+     * makes the word identified by the id the current word
+     * use by the buttons/swipes, random (doubletap, shake)
+     * 
+     * @param nID
+     */
+    private void selectWordByID(final int nID) {
         Cursor cursor = m_resolver.query(
                 WordContentProvider.CONTENT_URI,
                 null,
                 SelectionType.ID.name(),
-                getSelection(String.valueOf(nID)),
+                new String[]{String.valueOf(nID)},
                 null);
 
         if (cursor != null && cursor.moveToFirst()) {
@@ -104,13 +123,18 @@ class WordHandler {
         }
     }
 
-    /** Favorites: derzeitiges Wort auf den Bildschirm holen */
-    public void selectGivenWord(final String strWord) {
+    /**
+     * makes the word identified by "strWord" the current word.
+     * used from the serach view and favorites
+     * 
+     * @param strWord
+     */
+    public void selectWordByString(final String strWord) {
         Cursor cursor = m_resolver.query(
                 WordContentProvider.CONTENT_URI,
                 null,
                 SelectionType.WORD.name(),
-                getSelection(strWord),
+                new String[]{strWord},
                 null);
 
         if (cursor != null && cursor.moveToFirst()) {
@@ -122,11 +146,5 @@ class WordHandler {
 
             cursor.close();
         }
-    }
-
-    private String[] getSelection(final String strTerm) {
-        String[] strValues = new String[1];
-        strValues[0] = strTerm;
-        return strValues;
     }
 }
