@@ -30,6 +30,7 @@ import android.view.MenuItem;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
@@ -237,14 +238,38 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /** Button < gedrückt */
+    /**
+     * pressed button <
+     * 
+     * @param v
+     */
     public void buttonPrev(final View v) {
         newWordAndUpdateView(IndexType.PREV);
      }
 
-    /** Button > gedrückt */
+    /**
+     * pressd button >
+     * 
+     * @param v
+     */
     public void buttonNext(final View v) {
         newWordAndUpdateView(IndexType.NEXT);
+    }
+
+    /**
+     * @param view
+     */
+    public void buttonQRCode(final View view) {
+        ImageView image = new ImageView(this);
+        image.setImageResource(R.drawable.qrcode);
+        
+        final AlertDialog d = new AlertDialog
+                .Builder(this)
+                .setPositiveButton(android.R.string.ok, null)
+                .setTitle(getResources().getString(R.string.qrcode_title))
+                .setView(image)
+                .create();
+        d.show();
     }
 
     public void newWordAndUpdateView(final IndexType i) {
@@ -443,4 +468,5 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+
 }

@@ -17,6 +17,8 @@
 
     <string name="ueber_title">Über LostWords</string>
 
+    <string name="qrcode_title">LostWords im Google PlayStore:</string>
+
     <string name="nav_topstring">LostWords</string>
     <string name="nav_substring">\'cause \'betuppen\' just sounds awesome!</string>
     <string name="nav_favorites">Favoriten</string>
