@@ -30,8 +30,7 @@
             android:label="Einstellungen"
             android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait"/>
 
         <provider
             android:name="WordContentProvider"

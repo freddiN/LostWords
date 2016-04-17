@@ -11,32 +11,13 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:gravity="center_vertical">
-
-        <ImageView
-            android:contentDescription="LostWords logo"
-            android:id="@+id/imageViewLogo"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:scaleType="fitXY"
-            android:src="@mipmap/ic_launcher"/>
-
-        <ImageView
-            android:contentDescription="QRCode"
-            android:id="@+id/imageViewQRCode"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/qrcode"
-            android:onClick="buttonQRCode"
-            android:layout_marginLeft="40dp"/>
-    </LinearLayout>
-    
+    <ImageView
+        android:contentDescription="LostWords logo"
+        android:id="@+id/imageViewLogo"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:scaleType="fitXY"
+        android:src="@mipmap/ic_launcher"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -49,6 +30,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/nav_substring" />
-
     
 </LinearLayout>

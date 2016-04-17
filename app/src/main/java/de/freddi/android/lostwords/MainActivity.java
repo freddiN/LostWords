@@ -14,9 +14,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -30,7 +29,6 @@ import android.view.MenuItem;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
@@ -256,22 +254,6 @@ public class MainActivity extends AppCompatActivity
         newWordAndUpdateView(IndexType.NEXT);
     }
 
-    /**
-     * @param view
-     */
-    public void buttonQRCode(final View view) {
-        ImageView image = new ImageView(this);
-        image.setImageResource(R.drawable.qrcode);
-        
-        final AlertDialog d = new AlertDialog
-                .Builder(this)
-                .setPositiveButton(android.R.string.ok, null)
-                .setTitle(getResources().getString(R.string.qrcode_title))
-                .setView(image)
-                .create();
-        d.show();
-    }
-
     public void newWordAndUpdateView(final IndexType i) {
         m_wordHandler.generateNewPosition(i);   //Next, Prev, Random
         updateView();
@@ -318,24 +300,22 @@ public class MainActivity extends AppCompatActivity
             }
         } else if (id == R.id.nav_ueber) {
             /** Navigation: Über LostWords */
-
-            // Linkify the message
-            final SpannableString s = new SpannableString(Helper.parseReadme(this));
-            Linkify.addLinks(s, Linkify.WEB_URLS);
-
-            final AlertDialog d = new AlertDialog
-                .Builder(this)
-                .setPositiveButton(android.R.string.ok, null)
-                .setTitle(getResources().getString(R.string.ueber_title) + Helper.getVersionSuffix(" - ", getApplicationContext()))
-                .setMessage(s)
-                .create();
-            d.show();
-
-            /** Make the textview clickable. Must be called after show() */
-            final View viewMessage = d.findViewById(android.R.id.message);
-            if (viewMessage != null){
-                ((TextView) viewMessage).setMovementMethod(LinkMovementMethod.getInstance());
+            LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View view = li.inflate(R.layout.ueber_view, null, false);
+   
+            TextView tview = (TextView)view.findViewById(R.id.ueber_view_text);
+            if (tview != null) {
+                tview.setText(Helper.parseReadme(this));
+                Linkify.addLinks(tview, Linkify.WEB_URLS);
             }
+            
+            final AlertDialog d = new AlertDialog
+                    .Builder(this)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .setTitle(getResources().getString(R.string.ueber_title) + Helper.getVersionSuffix(" - ", getApplicationContext()))
+                    .setView(view)
+                    .create();
+            d.show();
         } else if (id == R.id.nav_close) {
             /** Navigation: Beenden
              * "Nicht empfehlenswert", sagt Google. "Mir egal", sagt Freddi.
