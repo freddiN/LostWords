@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
+import android.media.AudioManager;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -15,6 +17,9 @@ import android.widget.SearchView;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Created by freddi on 09.04.2016.
@@ -121,7 +126,9 @@ class Helper {
     public static void doSpeak(final String strSpeakMe, final TextToSpeech tts, final Context ctx, final View v,
                                final FloatingActionButton fab) {
         if (tts != null) {
-            tts.speak(strSpeakMe, TextToSpeech.QUEUE_FLUSH, null);
+            HashMap<String, String> params = new HashMap<>();
+            params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, UUID.randomUUID().toString());
+            tts.speak(strSpeakMe, TextToSpeech.QUEUE_FLUSH, params);
             fab.startAnimation(AnimationUtils.loadAnimation(ctx, R.anim.fab_rotate));
         } else {
             showSnackbar("Sprachausgabe deaktiviert", v, Snackbar.LENGTH_SHORT);

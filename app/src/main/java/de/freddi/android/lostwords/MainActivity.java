@@ -8,8 +8,10 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GestureDetectorCompat;
@@ -443,10 +445,63 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     m_strSettingsLocale = strSettingLocale;
                     m_fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
+                    m_tts.setOnUtteranceProgressListener(new TTSAudioManagerListener(MainActivity.this));
                 }
             }
             }
         });
     }
 
+    private class TTSAudioManagerListener extends UtteranceProgressListener {
+        private final AudioManager m_audioManager;
+        private final AudioManager.OnAudioFocusChangeListener m_audioFocusListener = new AudioFocusListener();
+
+        TTSAudioManagerListener(Context ctx) {
+            m_audioManager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
+        }
+
+        @Override
+        public void onStart(String utteranceId) {
+            int audioFocus = m_audioManager.requestAudioFocus(m_audioFocusListener, AudioManager.STREAM_MUSIC,
+                                                              AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
+            if (audioFocus == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
+                stopAndClearTTSQueue();
+            }
+        }
+
+        @Override
+        public void onDone(String utteranceId) {
+            abandonAudioFocus();
+        }
+
+        @Override
+        public void onError(String utteranceId) {
+            abandonAudioFocus();
+        }
+
+        private void abandonAudioFocus() {
+            m_audioManager.abandonAudioFocus(m_audioFocusListener);
+        }
+
+        private void stopAndClearTTSQueue() {
+            final TextToSpeech tts = MainActivity.this.m_tts;
+            if (tts != null) {
+                tts.stop();
+            }
+        }
+
+        private final class AudioFocusListener implements AudioManager.OnAudioFocusChangeListener {
+            @Override
+            public void onAudioFocusChange(int focusChange) {
+                switch (focusChange) {
+                    case AudioManager.AUDIOFOCUS_LOSS:
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                        // if the audiofocus is lost,
+                        stopAndClearTTSQueue();
+                        break;
+                }
+            }
+        }
+    }
 }
