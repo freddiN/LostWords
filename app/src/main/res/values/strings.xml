@@ -16,8 +16,7 @@
     <string name="init_words">Reloade ok, %d  Wörter geladen.</string>
 
     <string name="ueber_title">Über LostWords</string>
-
-    <string name="qrcode_title">LostWords im Google PlayStore:</string>
+    <string name="ueber_qrcode_prefix">\n\n\nLostWords im Google Play Store:</string>
 
     <string name="nav_topstring">LostWords</string>
     <string name="nav_substring">\'cause \'betuppen\' just sounds awesome!</string>

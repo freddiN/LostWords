@@ -305,7 +305,7 @@ public class MainActivity extends AppCompatActivity
    
             TextView tview = (TextView)view.findViewById(R.id.ueber_view_text);
             if (tview != null) {
-                tview.setText(Helper.parseReadme(this));
+                tview.setText(Helper.parseReadme(this) + getString(R.string.ueber_qrcode_prefix));
                 Linkify.addLinks(tview, Linkify.WEB_URLS);
             }
             
