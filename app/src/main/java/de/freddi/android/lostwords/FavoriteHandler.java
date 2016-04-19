@@ -60,7 +60,7 @@ class FavoriteHandler {
         if (bIsPresent) {
             strReturn = removeFromFavorites(lw, res);
         } else {
-            strReturn = addToFavorites(lw, res);
+            strReturn = addToFavorites(lw.getWord(), res);
         }
 
         /** after the handling: check again to update the float button */
@@ -68,16 +68,9 @@ class FavoriteHandler {
         return strReturn;
     }
 
-    /**
-     * adds to favs
-     * 
-     * @param lw word to add
-     * @param res ressources
-     * @return added info
-     */
-    private String addToFavorites(final LostWord lw, final Resources res) {
-        m_setFavs.add(lw.getWord());
-        return res.getString(R.string.favorites_add, lw.getWord());
+    public String addToFavorites(final String strWord, final Resources res) {
+        m_setFavs.add(strWord);
+        return res.getString(R.string.favorites_add, strWord);
     }
 
     /**
@@ -97,7 +90,6 @@ class FavoriteHandler {
 
         return res.getString(R.string.favorites_remove, lw.getWord());
     }
-
 
     /**
      * for the drawer display

@@ -21,6 +21,7 @@
     <string name="nav_topstring">LostWords</string>
     <string name="nav_substring">\'cause \'betuppen\' just sounds awesome!</string>
     <string name="nav_favorites">Favoriten</string>
+    <string name="nav_ownwords">Hinzufügen</string>
     <string name="nav_share">Teilen</string>
     <string name="nav_about">Über LostWords</string>
     <string name="nav_settings">Einstellungen</string>
@@ -29,6 +30,7 @@
     <string name="button_next"> <b>&gt;</b> </string>
     <string name="button_prev"> <b>&lt;</b> </string>
 
+    <string name="settings_ownwords">setting_ownwords</string>
     <string name="settings_fav">setting_favorites</string>
     <string name="settings_shake">setting_shake</string>
     <string name="settings_shake_title">Schüttelfunktion</string>

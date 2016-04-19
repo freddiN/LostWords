@@ -6,6 +6,7 @@ package de.freddi.android.lostwords;
  * when selecting from the contentprovider: search by given ID, or search by given word
  */
 public enum SelectionType {
-    ID,
-    WORD
+    POSITION,
+    WORD,
+    OWNWORDS
 }

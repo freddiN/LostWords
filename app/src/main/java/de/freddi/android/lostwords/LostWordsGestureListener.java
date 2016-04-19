@@ -54,8 +54,9 @@ class LostWordsGestureListener extends GestureDetector.SimpleOnGestureListener {
 
         final Point pTouch = new Point((int)e.getAxisValue(0), (int)e.getAxisValue(1));
         if (!Helper.isTouchWithinButtons(pTouch,
-                        m_mainActivity.findViewById(R.id.fab),
+                        m_mainActivity.findViewById(R.id.fab_speak),
                         m_mainActivity.findViewById(R.id.fab_fav),
+                        m_mainActivity.findViewById(R.id.fab_own),
                         m_mainActivity.findViewById(R.id.buttonPrev),
                         m_mainActivity.findViewById(R.id.buttonNext),
                         m_mainActivity.findViewById(R.id.search))

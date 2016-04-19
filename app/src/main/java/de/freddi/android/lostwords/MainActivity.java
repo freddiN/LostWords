@@ -2,6 +2,7 @@ package de.freddi.android.lostwords;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
@@ -14,6 +15,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -29,6 +31,7 @@ import android.view.MenuItem;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
@@ -63,7 +66,7 @@ public class MainActivity extends AppCompatActivity
 
     private SharedPreferences m_settings = null;
 
-    private FloatingActionButton m_fab = null;
+    private FloatingActionButton m_fab_speak = null, m_fab_own = null;
 
     private String m_strSettingsLocale = "";
 
@@ -82,6 +85,9 @@ public class MainActivity extends AppCompatActivity
 
         /** Favs speichern */
         m_favHandler.settingsPersistFavorites(getPreferences(0), getResources().getString(R.string.settings_fav), findViewById(R.id.content_frame));
+        
+        /** Ownwords speichern */
+        m_wordHandler.settingsPersistOwnwords(getPreferences(0), getResources().getString(R.string.settings_ownwords), findViewById(R.id.content_frame));
 
         senSensorManager.unregisterListener(this);
     }
@@ -107,7 +113,10 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         /** Wörter Init */
-        m_wordHandler = new WordHandler(getResources().getStringArray(R.array.words), getContentResolver());
+        m_wordHandler = new WordHandler(
+                getResources().getStringArray(R.array.words),
+                getPreferences(0).getStringSet(getResources().getString(R.string.settings_ownwords), new HashSet<String>()), 
+                getContentResolver());
         Helper.showSnackbar(getResources().getString(R.string.init_words, m_wordHandler.getWordCount()), findViewById(android.R.id.content), Snackbar.LENGTH_SHORT);
 
         /** Gestures Init */
@@ -116,11 +125,11 @@ public class MainActivity extends AppCompatActivity
         /** TTS setup passiert nun in der onResume()*/
 
         /** FloatButton TTS */
-        m_fab = (FloatingActionButton) findViewById(R.id.fab);
-        m_fab.setOnClickListener(new View.OnClickListener() {
+        m_fab_speak = (FloatingActionButton) findViewById(R.id.fab_speak);
+        m_fab_speak.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                Helper.doSpeak(m_wordHandler.getCurrentWord().getWord(), m_tts, getApplicationContext(), findViewById(android.R.id.content), m_fab);
+                Helper.doSpeak(m_wordHandler.getCurrentWord().getWord(), m_tts, getApplicationContext(), findViewById(android.R.id.content), m_fab_speak);
             }
         });
 
@@ -136,6 +145,20 @@ public class MainActivity extends AppCompatActivity
             fab_fav.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
         }
 
+        /** FloatButton Own Word */
+        m_fab_own = (FloatingActionButton) findViewById(R.id.fab_own);
+        if (m_fab_own != null) {
+            m_fab_own.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final LostWord lw = m_wordHandler.getCurrentWord();
+                    displayOwnwordDialog(lw.getWord(), lw.getMeaning());
+                    //Helper.showSnackbar(m_favHandler.handleFavoriteFloatbuttonClick(m_wordHandler.getCurrentWord(), getResources()), findViewById(android.R.id.content), Snackbar.LENGTH_SHORT);
+                }
+            });
+            //m_fab_own.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
+        }
+        
         /** Nav-Layout Setup */
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer != null) {
@@ -150,11 +173,6 @@ public class MainActivity extends AppCompatActivity
             navigationView.setNavigationItemSelectedListener(this);
         }
 
-        /** Progressbar Setup */
-        m_progressBar = (ProgressBar) findViewById(R.id.progess);
-        if (m_progressBar != null) {
-            m_progressBar.setMax(this.m_wordHandler.getWordCount() - 1);
-        }
 
         /** Favoritenhandler Init */
         m_favHandler = new FavoriteHandler(fab_fav, getPreferences(0).getStringSet(getResources().getString(R.string.settings_fav), new HashSet<String>()));
@@ -167,6 +185,15 @@ public class MainActivity extends AppCompatActivity
         /** Nach dem Start: Erstes zufälliges Wort anzeigen */
         newWordAndUpdateView(IndexType.RANDOM);
     }
+    
+    private void updateProgressBar() {
+        /** Progressbar Setup */
+        m_progressBar = (ProgressBar) findViewById(R.id.progess);
+        if (m_progressBar != null) {
+            m_progressBar.setProgress(m_wordHandler.getCurrentPosition()+1);
+            m_progressBar.setMax(m_wordHandler.getWordCount());
+        }
+    }
 
     private void displayCurrentWord() {
         final LostWord lw = m_wordHandler.getCurrentWord();
@@ -175,7 +202,7 @@ public class MainActivity extends AppCompatActivity
         if (textAnzahl != null) {
             textAnzahl.setText(
                     getResources().getString(R.string.main_current_word_numbers,
-                            (lw.getID() + 1),
+                            (m_wordHandler.getCurrentPosition() + 1),
                             m_wordHandler.getWordCount()));
         }
 
@@ -273,7 +300,7 @@ public class MainActivity extends AppCompatActivity
 
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setIcon(android.R.drawable.btn_star_big_on);
-            builder.setPositiveButton("Ok", null);
+            builder.setPositiveButton(android.R.string.ok, null);
             builder.setTitle("Favoriten");
 
             final View convertView = getLayoutInflater().inflate(R.layout.fav_listview, null);
@@ -281,7 +308,7 @@ public class MainActivity extends AppCompatActivity
                 builder.setView(convertView);
             }
 
-            final View lv =  convertView.findViewById(R.id.lv);
+            final View lv = convertView.findViewById(R.id.lv);
             if (lv != null) {
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                         android.R.layout.simple_list_item_1,
@@ -312,6 +339,7 @@ public class MainActivity extends AppCompatActivity
             final AlertDialog d = new AlertDialog
                     .Builder(this)
                     .setPositiveButton(android.R.string.ok, null)
+                    .setIcon(android.R.drawable.ic_dialog_info)
                     .setTitle(getResources().getString(R.string.ueber_title) + Helper.getVersionSuffix(" - ", getApplicationContext()))
                     .setView(view)
                     .create();
@@ -321,6 +349,9 @@ public class MainActivity extends AppCompatActivity
              * "Nicht empfehlenswert", sagt Google. "Mir egal", sagt Freddi.
              */
             m_favHandler.settingsPersistFavorites(getPreferences(0), getResources().getString(R.string.settings_fav), findViewById(R.id.content_frame));
+
+            /** Ownwords speichern */
+            m_wordHandler.settingsPersistOwnwords(getPreferences(0), getResources().getString(R.string.settings_ownwords), findViewById(R.id.content_frame));
 
             senSensorManager.unregisterListener(this);
             finish();
@@ -338,6 +369,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
             /** Navigation: Einstellungen */
             startActivity(new Intent(this, SettingsActivity.class));
+        } else if (id == R.id.nav_ownwords) {
+            /** Navigation: Hinzufügen */
+            displayOwnwordDialog("", "");
         }
 
         /** Navigationsbereich schliessen */
@@ -348,16 +382,76 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private void displayOwnwordDialog(final String strWord, final String strMeaning) {
+        final LostWord lwSafe = new LostWord(
+                m_wordHandler.getCurrentWord().getWord(),
+                m_wordHandler.getCurrentWord().getMeaning(),
+                m_wordHandler.getCurrentWord().isOwnWord());
+        
+        LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View view = li.inflate(R.layout.ownwords_view, null, false);
+        final AlertDialog.Builder d = new AlertDialog.Builder(this);
+        d.setPositiveButton("SPEICHERN", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            // code for matching password
+            final String word = ((TextView) view.findViewById(R.id.ownword_word)).getText().toString();
+            final String meaning = ((TextView) view.findViewById(R.id.ownword_meaning)).getText().toString();
+            final boolean isFavorite = ((CheckBox)view.findViewById(R.id.ownword_favorite)).isChecked();
+
+            m_wordHandler.addWord(word, meaning);
+            if (isFavorite) {
+                m_favHandler.handleFavoriteFloatbuttonClick(new LostWord(word, meaning ,true), getResources());
+            }
+
+            /** position could have changed, so update view but keep current word */
+            m_wordHandler.selectWordByString(lwSafe.getWord());
+            updateView();
+            }
+        });
+        if (lwSafe.isOwnWord()) {
+            ((CheckBox)view.findViewById(R.id.ownword_favorite)).setVisibility(View.INVISIBLE);
+            d.setNegativeButton("LÖSCHEN", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // code for matching password
+                    String word = ((TextView) view.findViewById(R.id.ownword_word)).getText().toString();
+                    m_wordHandler.deleteWord(word);
+                    
+                    m_favHandler.handleFavoriteFloatbuttonClick(new LostWord(word, "" ,false), getResources());
+                    updateView();
+                }
+            });
+        }
+        d.setNeutralButton("ABBRUCH", null);
+        d.setTitle("Wort hinzufügen / ändern");
+        d.setView(view);
+        d.create();
+        
+        if (!TextUtils.isEmpty(strWord)) {
+            ((TextView) view.findViewById(R.id.ownword_word)).setText(strWord);
+            ((TextView) view.findViewById(R.id.ownword_meaning)).setText(strMeaning);
+        }
+        
+        d.show();
+    }
+
     /** Wort anzeigen, Progressbar updaten, Fav.FLoatbutton ggfs. updaten */
     private void updateView() {
         displayCurrentWord();
 
-        final LostWord lw = m_wordHandler.getCurrentWord();
-        if (m_progressBar != null) {
-            m_progressBar.setProgress(lw.getID());
-        }
+        updateProgressBar();
 
+        final LostWord lw = m_wordHandler.getCurrentWord();
         m_favHandler.checkFavorite(lw);
+
+        if (lw.isOwnWord()) {
+            m_fab_own.setVisibility(View.VISIBLE);
+            m_fab_own.clearAnimation();
+        } else {
+            m_fab_own.setVisibility(View.INVISIBLE);
+            m_fab_own.clearAnimation();
+        }
     }
 
     /** alle Touch Events erstmal durch den GestureDetector leiten */
@@ -401,7 +495,7 @@ public class MainActivity extends AppCompatActivity
 
                         newWordAndUpdateView(IndexType.RANDOM);
                         resetSearchView();
-                        Helper.doSpeak(m_wordHandler.getCurrentWord().getWord(), m_tts, getApplicationContext(), findViewById(android.R.id.content), m_fab);
+                        Helper.doSpeak(m_wordHandler.getCurrentWord().getWord(), m_tts, getApplicationContext(), findViewById(android.R.id.content), m_fab_speak);
                     }
                 }   //Settings-if
             } finally {
@@ -442,7 +536,7 @@ public class MainActivity extends AppCompatActivity
                     m_tts = Helper.shutdownTTS(m_tts);
                 } else {
                     m_strSettingsLocale = strSettingLocale;
-                    m_fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
+                    m_fab_speak.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
                     m_tts.setOnUtteranceProgressListener(new TTSAudioManagerListener(MainActivity.this, m_tts));
                 }
             }

@@ -8,8 +8,10 @@ import android.database.MatrixCursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 /**
@@ -27,7 +29,7 @@ public class WordContentProvider extends ContentProvider {
         SearchManager.SUGGEST_COLUMN_INTENT_DATA    //nochmal ID
     };
 
-    private final Map<Integer, LostWord> m_mapWords = new HashMap<>(100);
+    private final Set<LostWord> m_setWords = new TreeSet<>();
 
     @Override
     public boolean onCreate() {
@@ -42,10 +44,12 @@ public class WordContentProvider extends ContentProvider {
             return matchByWordOrMeaning(uri);
         }
 
-        if (selection.equals(SelectionType.ID.name())) {
-            return matchByID(Integer.parseInt(selectionArgs[0]));
+        if (selection.equals(SelectionType.POSITION.name())) {
+            return matchByPosition(Integer.parseInt(selectionArgs[0]));
         } else if (selection.equals(SelectionType.WORD.name())) {
             return matchByWord(selectionArgs[0]);
+        } else if (selection.equals(SelectionType.OWNWORDS.name())) {
+            return matchOwnWords();
         }
 
         return null;
@@ -62,11 +66,64 @@ public class WordContentProvider extends ContentProvider {
         int nCounter = 0;
 
         final Pattern matchPattern = Pattern.compile(Pattern.quote(query), Pattern.CASE_INSENSITIVE);
-
-        for (LostWord lw: m_mapWords.values()) {
-            if (matchPattern.matcher(lw.getWord() + lw.getMeaning()).find()) {
+ 
+        int nPosition = 0;
+        for (LostWord lw: m_setWords) {
+           if (matchPattern.matcher(lw.getWord() + lw.getMeaning()).find()) {
                 /** Aufbau siehe hier: http://developer.android.com/guide/topics/search/adding-custom-suggestions.html */
-                matrixCursor.addRow(new Object[]{lw.getID(), lw.getWord(), lw.getMeaning(), lw.getWord()});
+                matrixCursor.addRow(new Object[]{nPosition, lw.getWord(), lw.getMeaning(), lw.getWord()});
+                nCounter++;
+            }
+            nPosition++;
+        }
+
+        if (nCounter > 0) {
+            return matrixCursor;
+        } else {
+            return null;
+        }
+    }
+
+    private MatrixCursor matchByPosition(final int nPosition) {
+        MatrixCursor matrixCursor = new MatrixCursor(COLUMNS);
+        if (nPosition >= 0 && nPosition <= m_setWords.size()-1) {
+            LostWord lw = null;
+            Iterator <LostWord> iter = m_setWords.iterator();
+            for (int i=0; i<=nPosition; i++) {  //0 = erstes Element!
+                lw = iter.next();
+            }
+            
+             matrixCursor.addRow(new Object[]{lw.isOwnWord() ? 1 : 0, lw.getWord(), lw.getMeaning(), nPosition});
+        }
+
+        return matrixCursor;
+    }
+
+    private MatrixCursor matchByWord(final String strMatch) {
+        final LostWord lw = new LostWord(strMatch, "", false);
+        MatrixCursor matrixCursor = new MatrixCursor(COLUMNS);
+        if (m_setWords.contains(lw)) {
+            int nPosition = 0;
+            for (LostWord lwIter: m_setWords) {
+                if (lwIter.getWord().equalsIgnoreCase(strMatch)) {
+                    matrixCursor.addRow(new Object[]{lwIter.isOwnWord() ? 1 : 0, lwIter.getWord(), lwIter.getMeaning(), String.valueOf(nPosition)});
+                    return matrixCursor;
+                }
+                nPosition++;
+            }
+        }
+
+        return matrixCursor;
+    }
+
+    private MatrixCursor matchOwnWords() {
+        MatrixCursor matrixCursor = new MatrixCursor(COLUMNS);
+
+        int nCounter = 0;
+        for (LostWord lw: m_setWords) {
+            if (lw.isOwnWord()) {
+                /** Aufbau siehe hier: http://developer.android.com/guide/topics/search/adding-custom-suggestions.html */
+                matrixCursor.addRow(new Object[]{0, lw.getWord(), lw.getMeaning(), ""});
                 nCounter++;
             }
         }
@@ -78,51 +135,42 @@ public class WordContentProvider extends ContentProvider {
         }
     }
 
-    private MatrixCursor matchByID(final int nID) {
-        MatrixCursor matrixCursor = new MatrixCursor(COLUMNS);
-        if (m_mapWords.containsKey(nID)) {
-            final LostWord lw = m_mapWords.get(nID);
-            matrixCursor.addRow(new Object[]{lw.getID(), lw.getWord(), lw.getMeaning(), lw.getID()});
-        }
-
-        return matrixCursor;
-    }
-
-    private MatrixCursor matchByWord(final String strMatch) {
-        MatrixCursor matrixCursor = new MatrixCursor(COLUMNS);
-        for (LostWord lw: m_mapWords.values()) {
-            if (lw.getWord().equalsIgnoreCase(strMatch)) {
-                matrixCursor.addRow(new Object[]{lw.getID(), lw.getWord(), lw.getMeaning(), lw.getID()});
-            }
-        }
-
-        return matrixCursor;
-    }
-
     @Nullable
     @Override
     public String getType(final Uri uri) {
-        return null;
+        return String.valueOf(m_setWords.size());
     }
 
     @Nullable
     @Override
     public Uri insert(final Uri uri, final ContentValues values) {
-        final int nID = values.getAsInteger(BaseColumns._ID);
-
-        if (!m_mapWords.containsKey(nID)) {
-            m_mapWords.put(nID, new LostWord(
-                    nID,
-                    values.getAsString(SearchManager.SUGGEST_COLUMN_TEXT_1),
-                    values.getAsString(SearchManager.SUGGEST_COLUMN_TEXT_2)));
+        final LostWord lw = new LostWord(
+                values.getAsString(SearchManager.SUGGEST_COLUMN_TEXT_1),
+                values.getAsString(SearchManager.SUGGEST_COLUMN_TEXT_2),
+                (1 == values.getAsInteger(BaseColumns._ID))
+        );
+        if (!m_setWords.contains(lw)) {
+            m_setWords.add(lw);
+        } else {
+            for (LostWord lwTemp: m_setWords) {
+                if (lwTemp.getWord().equalsIgnoreCase(lw.getWord())) {
+                    lwTemp.updateMeaning(lw.getMeaning());
+                 }
+            }
         }
 
         return null;
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+    public int delete(final Uri uri, final String selection, final String[] selectionArgs) {
+        final LostWord lw = new LostWord(selection, "", false);
+        if (m_setWords.contains(lw)) {
+            m_setWords.remove(lw);
+            return 1;
+        } else {
+            return 0;    
+        }
     }
 
     @Override

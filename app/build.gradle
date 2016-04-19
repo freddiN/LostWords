@@ -7,8 +7,8 @@ android {
         applicationId "de.freddi.android.lostwords"
         minSdkVersion 19
         targetSdkVersion 23
-        versionName '1.2.8'
-        versionCode 128
+        versionName '1.2.9'
+        versionCode 129
     }
     buildTypes {
         release {
@@ -32,9 +32,7 @@ task copyReadme(type: Exec) {
     description = 'copying  README.md ...'
     println 'copying  README.md ...'
     workingDir '../'
-
-    //commandLine 'cmd', '/c', 'copy app\\src\\main\\res\\raw\\readme.md README.md /Y'
-
+    
     commandLine 'cmd', '/c', 'copy README.md app\\src\\main\\res\\raw\\readme.md /Y'
 }
 

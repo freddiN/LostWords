@@ -9,6 +9,12 @@
             android:actionProviderClass="android.widget.ShareActionProvider"
             android:title="@string/nav_favorites" />
         <item
+            android:id="@+id/nav_ownwords"
+            android:checkable="false"
+            android:icon="@android:drawable/ic_input_add"
+            android:actionProviderClass="android.widget.ShareActionProvider"
+            android:title="@string/nav_ownwords" />
+        <item
             android:id="@+id/nav_share"
             android:checkable="false"
             android:icon="@drawable/ic_menu_share"
