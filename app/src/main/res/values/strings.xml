@@ -54,6 +54,13 @@
     <string name="favorites_add">\"%s\" zu Favoriten hinzugefügt</string>
     <string name="favorites_remove">\"%s\" aus Favoriten entfernt</string>
 
+    <string name="ownwords_add">\"%s\" zu den Wörtern hinzugefügt</string>
+    <string name="ownwords_remove">\"%s\" aus den Wörtern entfernt</string>
+    <string name="ownwords_title">Wort hinzufügen / ändern</string>
+    <string name="ownwords_button_save">SPEICHERN</string>
+    <string name="ownwords_button_remove">LÖSCHEN</string>
+    <string name="ownwords_button_cancel">ABBRUCH</string>
+
     <string-array name="words">
         <item>aufmüpfig - Anweisungen nicht folgen</item>
         <item>Bengel - ungezogenes Kind</item>

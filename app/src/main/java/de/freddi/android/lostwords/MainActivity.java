@@ -384,10 +384,9 @@ public class MainActivity extends AppCompatActivity
         LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = li.inflate(R.layout.ownwords_view, null, false);
         final AlertDialog.Builder d = new AlertDialog.Builder(this);
-        d.setPositiveButton("SPEICHERN", new DialogInterface.OnClickListener() {
+        d.setPositiveButton(getString(R.string.ownwords_button_save), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-            // code for matching password
             final String strWord = ((TextView) view.findViewById(R.id.ownword_word)).getText().toString();
             final String strMeaning = ((TextView) view.findViewById(R.id.ownword_meaning)).getText().toString();
             final boolean isFavorite = ((CheckBox)view.findViewById(R.id.ownword_favorite)).isChecked();
@@ -400,29 +399,32 @@ public class MainActivity extends AppCompatActivity
             /** position could have changed, so update view but keep current word */
             m_wordHandler.selectWordByString(strWord);
             updateView();
+
+            Helper.showSnackbar(getResources().getString(R.string.ownwords_add, strWord), findViewById(android.R.id.content), Snackbar.LENGTH_SHORT);    
             }
         });
         if (!isNewWord && m_wordHandler.getCurrentWord().isOwnWord()) {
             ((CheckBox)view.findViewById(R.id.ownword_favorite)).setVisibility(View.INVISIBLE);
-            d.setNegativeButton("LÖSCHEN", new DialogInterface.OnClickListener() {
+            d.setNegativeButton(getString(R.string.ownwords_button_remove), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    // code for matching password
                     final String strWord = ((TextView) view.findViewById(R.id.ownword_word)).getText().toString();
                     m_wordHandler.deleteWord(strWord);
                     
                     m_favHandler.removeFromFavorites(new LostWord(strWord, "" ,false), getResources());
                     updateView();
+
+                    Helper.showSnackbar(getResources().getString(R.string.ownwords_remove, strWord), findViewById(android.R.id.content), Snackbar.LENGTH_SHORT);
                 }
             });
         }
-        d.setNeutralButton("ABBRUCH", null)
-        .setTitle("Wort hinzufügen / ändern")
+        d.setNeutralButton(getString(R.string.ownwords_button_cancel), null)
+        .setTitle(getString(R.string.ownwords_title))
         .setView(view)
         .setIcon(android.R.drawable.ic_input_add);
         d.create();
         
-        if (!TextUtils.isEmpty(strWord)) {
+        if (!isNewWord && !TextUtils.isEmpty(strWord)) {
             ((TextView) view.findViewById(R.id.ownword_word)).setText(strWord);
             ((TextView) view.findViewById(R.id.ownword_meaning)).setText(strMeaning);
         }
