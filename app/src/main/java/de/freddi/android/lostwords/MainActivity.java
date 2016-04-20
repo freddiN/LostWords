@@ -51,8 +51,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SensorEventListener  {
 
     private TextToSpeech m_tts = null;
-    private ProgressBar m_progressBar = null;
-
+    
     private GestureDetectorCompat m_gestureDetector = null;
 
     private FavoriteHandler m_favHandler = null;
@@ -186,10 +185,10 @@ public class MainActivity extends AppCompatActivity
     
     private void updateProgressBar() {
         /** Progressbar Setup */
-        m_progressBar = (ProgressBar) findViewById(R.id.progess);
-        if (m_progressBar != null) {
-            m_progressBar.setProgress(m_wordHandler.getCurrentPosition()+1);
-            m_progressBar.setMax(m_wordHandler.getWordCount());
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progess);
+        if (progressBar != null) {
+            progressBar.setProgress(m_wordHandler.getCurrentPosition()+1);
+            progressBar.setMax(m_wordHandler.getWordCount());
         }
     }
 
@@ -264,7 +263,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * pressed button <
      * 
-     * @param v
+     * @param v view
      */
     public void buttonPrev(final View v) {
         newWordAndUpdateView(IndexType.PREV);
@@ -273,7 +272,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * pressd button >
      * 
-     * @param v
+     * @param v view
      */
     public void buttonNext(final View v) {
         newWordAndUpdateView(IndexType.NEXT);
@@ -304,24 +303,24 @@ public class MainActivity extends AppCompatActivity
             final View convertView = getLayoutInflater().inflate(R.layout.fav_listview, null);
             if (convertView != null) {
                 builder.setView(convertView);
-            }
-
-            final View lv = convertView.findViewById(R.id.lv);
-            if (lv != null) {
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                        android.R.layout.simple_list_item_1,
-                        stringArray);
-                ((ListView)lv).setAdapter(adapter);
-                final AlertDialog dialog = builder.show();
-
-                ((ListView)lv).setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int nID, long id) {
-                        m_wordHandler.selectWordByString(stringArray[nID]);
-                        updateView();
-                        dialog.dismiss();
-                    }
-                });
+                
+                final View lv = convertView.findViewById(R.id.lv);
+                if (lv != null) {
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                            android.R.layout.simple_list_item_1,
+                            stringArray);
+                    ((ListView)lv).setAdapter(adapter);
+                    final AlertDialog dialog = builder.show();
+    
+                    ((ListView)lv).setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int nID, long id) {
+                            m_wordHandler.selectWordByString(stringArray[nID]);
+                            updateView();
+                            dialog.dismiss();
+                        }
+                    });
+                }
             }
         } else if (id == R.id.nav_ueber) {
             /** Navigation: Über LostWords */
@@ -404,7 +403,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
         if (!isNewWord && m_wordHandler.getCurrentWord().isOwnWord()) {
-            ((CheckBox)view.findViewById(R.id.ownword_favorite)).setVisibility(View.INVISIBLE);
+            view.findViewById(R.id.ownword_favorite).setVisibility(View.INVISIBLE);
             d.setNegativeButton(getString(R.string.ownwords_button_remove), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {

@@ -1,5 +1,7 @@
 package de.freddi.android.lostwords;
 
+import android.support.annotation.NonNull;
+
 /**
  * Created by freddi on 25.03.2016.
  * 
@@ -24,7 +26,7 @@ public class LostWord implements Comparable<LostWord> {
 
     /**
      * 
-     * @return
+     * @return word
      */
     public String getWord() {
         return m_strWord;
@@ -32,7 +34,7 @@ public class LostWord implements Comparable<LostWord> {
 
     /**
      * 
-     * @return
+     * @return meaning
      */
     public String getMeaning() {
         return m_strMeaning;
@@ -44,7 +46,7 @@ public class LostWord implements Comparable<LostWord> {
 
     /**
      *
-     * @return
+     * @return true if word provided by user
      */
     public boolean isOwnWord() {
         return m_bIsOwnWord;
@@ -52,7 +54,7 @@ public class LostWord implements Comparable<LostWord> {
     
 
     @Override
-    public int compareTo(final LostWord another) {
+    public int compareTo(@NonNull final LostWord another) {
         return m_strWord.compareToIgnoreCase(another.getWord());
     }
 

@@ -14,7 +14,7 @@ class LostWordsGestureListener extends GestureDetector.SimpleOnGestureListener {
 
     /**
      * 
-     * @param main
+     * @param main mainactivity
      */
     public LostWordsGestureListener(final MainActivity main) {
         this.m_mainActivity = main;

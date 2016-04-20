@@ -8,10 +8,10 @@ import android.speech.tts.UtteranceProgressListener;
 /**
  * Created by Boris on 18.04.2016.
  */
-public class TTSAudioManagerListener extends UtteranceProgressListener {
+class TTSAudioManagerListener extends UtteranceProgressListener {
     private final AudioManager m_audioManager;
     private final AudioManager.OnAudioFocusChangeListener m_audioFocusListener = new AudioFocusListener();
-    private TextToSpeech m_tts;
+    private final TextToSpeech m_tts;
 
     public TTSAudioManagerListener(Context ctx, TextToSpeech tts) {
         m_audioManager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);

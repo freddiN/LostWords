@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.Iterator;
@@ -38,7 +39,7 @@ public class WordContentProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(final Uri uri, final String[] projection, final String selection, final String[] selectionArgs, final String sortOrder) {
+    public Cursor query(@NonNull final Uri uri, final String[] projection, final String selection, final String[] selectionArgs, final String sortOrder) {
         if (uri.getEncodedPath().startsWith("/suggestion/")) {
             /** aus der SearchView, konfiguriert in searchable.xml */
             return matchByWordOrMeaning(uri);
@@ -93,7 +94,9 @@ public class WordContentProvider extends ContentProvider {
                 lw = iter.next();
             }
             
-             matrixCursor.addRow(new Object[]{lw.isOwnWord() ? 1 : 0, lw.getWord(), lw.getMeaning(), nPosition});
+            if (lw != null) {
+                matrixCursor.addRow(new Object[]{lw.isOwnWord() ? 1 : 0, lw.getWord(), lw.getMeaning(), nPosition});
+            }
         }
 
         return matrixCursor;
@@ -137,13 +140,13 @@ public class WordContentProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public String getType(final Uri uri) {
+    public String getType(@NonNull final Uri uri) {
         return String.valueOf(m_setWords.size());
     }
 
     @Nullable
     @Override
-    public Uri insert(final Uri uri, final ContentValues values) {
+    public Uri insert(@NonNull final Uri uri, final ContentValues values) {
         final LostWord lw = new LostWord(
                 values.getAsString(SearchManager.SUGGEST_COLUMN_TEXT_1),
                 values.getAsString(SearchManager.SUGGEST_COLUMN_TEXT_2),
@@ -163,7 +166,7 @@ public class WordContentProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(final Uri uri, final String selection, final String[] selectionArgs) {
+    public int delete(@NonNull final Uri uri, final String selection, final String[] selectionArgs) {
         final LostWord lw = new LostWord(selection, "", false);
         if (m_setWords.contains(lw)) {
             m_setWords.remove(lw);
@@ -174,7 +177,7 @@ public class WordContentProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         return 0;
     }
 }

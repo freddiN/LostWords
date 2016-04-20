@@ -38,7 +38,7 @@ class WordHandler {
 
     /**
      * 
-     * @param strArrWords
+     * @param strArrWords words to add
      * @param nWordMarker 0 = base word, 1 = own word
      */
     private void addWordarrayToContent(final String[] strArrWords, final int nWordMarker) {
@@ -92,7 +92,7 @@ class WordHandler {
     /**
      * wordcount
      * 
-     * @return
+     * @return word count
      */
     public int getWordCount() {
          return Integer.parseInt(m_resolver.getType(WordContentProvider.CONTENT_URI));
@@ -101,7 +101,7 @@ class WordHandler {
     /**
      * current word
      * 
-     * @return
+     * @return current word
      */
     public LostWord getCurrentWord() {
         return m_CachedWord;
@@ -111,7 +111,7 @@ class WordHandler {
      * makes the word identified by the positon in the TreeSet
      * use by the buttons/swipes, random (doubletap, shake)
      * 
-     * @param nPosition
+     * @param nPosition position within all the words
      */
     private void selectWordByPosition(final int nPosition) {
         Cursor cursor = m_resolver.query(
@@ -136,7 +136,7 @@ class WordHandler {
      * makes the word identified by "strWord" the current word.
      * used from the serach view and favorites
      * 
-     * @param strWord
+     * @param strWord word to select
      */
     public void selectWordByString(final String strWord) {
         Cursor cursor = m_resolver.query(
@@ -199,8 +199,7 @@ class WordHandler {
                 null);
 
         if (cursor != null && cursor.moveToFirst()) {
-            LostWord lw;
-            while (cursor.isAfterLast() == false) {
+            while (!cursor.isAfterLast()) {
                 setOwnwords.add(cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1)) + 
                 " - " +
                 cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_2)));

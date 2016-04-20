@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
-import android.media.AudioManager;
 import android.speech.tts.TextToSpeech;
-import android.speech.tts.UtteranceProgressListener;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -17,7 +15,6 @@ import android.widget.SearchView;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -42,7 +39,7 @@ class Helper {
      * 
      * @param pTouch coordinates of the touch
      * @param buttons list of buttons
-     * @return
+     * @return true if touch fro within one of the buttons, false otherwise
      */
     public static boolean isTouchWithinButtons(final Point pTouch, final View... buttons) {
         int[] location = new int[2];
@@ -85,7 +82,7 @@ class Helper {
      * closes the text to speech engine
      * 
      * @param tts tts engine to close
-     * @return
+     * @return always null
      */
     public static TextToSpeech shutdownTTS(final TextToSpeech tts) {
         if (tts != null) {
@@ -100,7 +97,7 @@ class Helper {
      * fetches the current version of the app
      * 
      * @param strSpacer spacer to use before version
-     * @param ctx
+     * @param ctx context
      * @return version string
      */
     public static String getVersionSuffix(final String strSpacer, final Context ctx) {
