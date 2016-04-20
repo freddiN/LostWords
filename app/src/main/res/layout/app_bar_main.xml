@@ -52,6 +52,6 @@
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="16dp"
         android:layout_marginRight="170dp"
-        android:src="@android:drawable/ic_menu_manage" />
+        android:src="@drawable/draw" />
 
 </android.support.design.widget.CoordinatorLayout>

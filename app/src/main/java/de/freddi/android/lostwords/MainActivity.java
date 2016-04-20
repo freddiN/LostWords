@@ -153,10 +153,8 @@ public class MainActivity extends AppCompatActivity
                 public void onClick(View view) {
                     final LostWord lw = m_wordHandler.getCurrentWord();
                     displayOwnwordDialog(lw.getWord(), lw.getMeaning());
-                    //Helper.showSnackbar(m_favHandler.handleFavoriteFloatbuttonClick(m_wordHandler.getCurrentWord(), getResources()), findViewById(android.R.id.content), Snackbar.LENGTH_SHORT);
                 }
             });
-            //m_fab_own.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
         }
         
         /** Nav-Layout Setup */
@@ -172,7 +170,6 @@ public class MainActivity extends AppCompatActivity
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(this);
         }
-
 
         /** Favoritenhandler Init */
         m_favHandler = new FavoriteHandler(fab_fav, getPreferences(0).getStringSet(getResources().getString(R.string.settings_fav), new HashSet<String>()));
@@ -383,11 +380,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void displayOwnwordDialog(final String strWord, final String strMeaning) {
-        final LostWord lwSafe = new LostWord(
-                m_wordHandler.getCurrentWord().getWord(),
-                m_wordHandler.getCurrentWord().getMeaning(),
-                m_wordHandler.getCurrentWord().isOwnWord());
-        
         LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = li.inflate(R.layout.ownwords_view, null, false);
         final AlertDialog.Builder d = new AlertDialog.Builder(this);
@@ -395,21 +387,21 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(DialogInterface dialog, int which) {
             // code for matching password
-            final String word = ((TextView) view.findViewById(R.id.ownword_word)).getText().toString();
-            final String meaning = ((TextView) view.findViewById(R.id.ownword_meaning)).getText().toString();
+            final String strWord = ((TextView) view.findViewById(R.id.ownword_word)).getText().toString();
+            final String strMeaning = ((TextView) view.findViewById(R.id.ownword_meaning)).getText().toString();
             final boolean isFavorite = ((CheckBox)view.findViewById(R.id.ownword_favorite)).isChecked();
 
-            m_wordHandler.addWord(word, meaning);
+            m_wordHandler.addWord(strWord, strMeaning);
             if (isFavorite) {
-                m_favHandler.handleFavoriteFloatbuttonClick(new LostWord(word, meaning ,true), getResources());
+                m_favHandler.handleFavoriteFloatbuttonClick(new LostWord(strWord, strMeaning ,true), getResources());
             }
 
             /** position could have changed, so update view but keep current word */
-            m_wordHandler.selectWordByString(lwSafe.getWord());
+            m_wordHandler.selectWordByString(strWord);
             updateView();
             }
         });
-        if (lwSafe.isOwnWord()) {
+        if (m_wordHandler.getCurrentWord().isOwnWord()) {
             ((CheckBox)view.findViewById(R.id.ownword_favorite)).setVisibility(View.INVISIBLE);
             d.setNegativeButton("LÖSCHEN", new DialogInterface.OnClickListener() {
                 @Override
