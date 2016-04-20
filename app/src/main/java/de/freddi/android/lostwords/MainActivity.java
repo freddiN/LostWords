@@ -423,9 +423,10 @@ public class MainActivity extends AppCompatActivity
                 }
             });
         }
-        d.setNeutralButton("ABBRUCH", null);
-        d.setTitle("Wort hinzufügen / ändern");
-        d.setView(view);
+        d.setNeutralButton("ABBRUCH", null)
+        .setTitle("Wort hinzufügen / ändern")
+        .setView(view)
+        .setIcon(android.R.drawable.ic_input_add);
         d.create();
         
         if (!TextUtils.isEmpty(strWord)) {
