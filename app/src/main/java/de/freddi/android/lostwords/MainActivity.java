@@ -393,7 +393,7 @@ public class MainActivity extends AppCompatActivity
 
             m_wordHandler.addWord(strWord, strMeaning);
             if (isFavorite) {
-                m_favHandler.handleFavoriteFloatbuttonClick(new LostWord(strWord, strMeaning ,true), getResources());
+                m_favHandler.addToFavorites(strWord, getResources());
             }
 
             /** position could have changed, so update view but keep current word */
@@ -407,10 +407,10 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     // code for matching password
-                    String word = ((TextView) view.findViewById(R.id.ownword_word)).getText().toString();
-                    m_wordHandler.deleteWord(word);
+                    final String strWord = ((TextView) view.findViewById(R.id.ownword_word)).getText().toString();
+                    m_wordHandler.deleteWord(strWord);
                     
-                    m_favHandler.handleFavoriteFloatbuttonClick(new LostWord(word, "" ,false), getResources());
+                    m_favHandler.removeFromFavorites(new LostWord(strWord, "" ,false), getResources());
                     updateView();
                 }
             });

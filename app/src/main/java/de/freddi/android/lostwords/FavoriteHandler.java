@@ -80,7 +80,7 @@ class FavoriteHandler {
      * @param res ressources
      * @return remove info
      */
-    private String removeFromFavorites(final LostWord lw, final Resources res) {
+    public String removeFromFavorites(final LostWord lw, final Resources res) {
         Iterator<String> iterFavs = m_setFavs.iterator();
         while (iterFavs.hasNext()) {
             if (iterFavs.next().equals(lw.getWord())) {
