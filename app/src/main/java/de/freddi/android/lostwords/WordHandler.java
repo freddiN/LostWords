@@ -29,45 +29,36 @@ class WordHandler {
     public WordHandler(final String[] strArrWordsBase, final Set<String> strSetWordsOwn, ContentResolver resolver) {
         m_resolver = resolver;
 
-        addWordarrayToContent(strArrWordsBase);
-        addWordsetToContent(strSetWordsOwn);
+        addWordarrayToContent(strArrWordsBase, 0);
+
+        String[] strArrWordsOwn = new String[strSetWordsOwn.size()];
+        strSetWordsOwn.toArray(strArrWordsOwn);
+        addWordarrayToContent(strArrWordsOwn, 1);
     }
 
-    private void addWordsetToContent(final Set<String> strSetWordsOwn) {
-        if (strSetWordsOwn == null || strSetWordsOwn.size() < 1) {
-            return;
-        }
-
-        int nIdxDash;
-        ContentValues values;
-        for (String setWord: strSetWordsOwn) {
-            addWord(setWord, 1);
-        }
-    }
-    
-    private void addWordarrayToContent(final String[] strArrWords) {
+    /**
+     * 
+     * @param strArrWords
+     * @param nWordMarker 0 = base word, 1 = own word
+     */
+    private void addWordarrayToContent(final String[] strArrWords, final int nWordMarker) {
         if (strArrWords == null || strArrWords.length < 1) {
             return;
         }
         
         int nIdxDash;
         ContentValues values;
-        for (String setWord: strArrWords) {
-            addWord(setWord, 0);
-        }
-    }
-    
-    private void addWord(final String strWord, final int nID) {
-        int nIdxDash = strWord.indexOf(" - ");
-        ContentValues values;
-        
-        if (nIdxDash != -1) {
-            values = new ContentValues();
-            values.put(BaseColumns._ID, nID); //0 = base word, 1 = own word
-            values.put(SearchManager.SUGGEST_COLUMN_TEXT_1, strWord.substring(0, nIdxDash).trim());
-            values.put(SearchManager.SUGGEST_COLUMN_TEXT_2, strWord.substring(nIdxDash + 3).trim());
+        for (String strWord: strArrWords) {
+            nIdxDash = strWord.indexOf(" - ");
 
-            m_resolver.insert(WordContentProvider.CONTENT_URI, values);
+            if (nIdxDash != -1) {
+                values = new ContentValues();
+                values.put(BaseColumns._ID, nWordMarker); //0 = base word, 1 = own word
+                values.put(SearchManager.SUGGEST_COLUMN_TEXT_1, strWord.substring(0, nIdxDash).trim());
+                values.put(SearchManager.SUGGEST_COLUMN_TEXT_2, strWord.substring(nIdxDash + 3).trim());
+
+                m_resolver.insert(WordContentProvider.CONTENT_URI, values);
+            }
         }
     }
 
