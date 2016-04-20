@@ -4,17 +4,25 @@ App zur Wiederbelebung seltener Wörter und Oldschool-Begriffe im alltäglichen 
 Zu jedem Begriff gibt es eine kurze Erklärung.
 
 #### Benutzung
-Swipe = nächster/vorheriger Begriff  
+Swipe oder Pfeil-Buttons = nächster / vorheriger Begriff  
 DoubleTap = zufälliger Begriff  
 Schütteln = zufälliger Begriff mit Sprachausgabe (aktivierbar in den Einstellungen)
 
-Über die beiden FloatButtons kann der aktuelle Begriff in die Favoriten übernommen werden oder mit der Text-To-Speech Engine vorgelesen werden.
+Die Suche oben rechts (Icon "Lupe") sucht sowohl in den Erklärungen als auch in Wort-Teilstücken.
 
-Mit Hilfe der "Teilen" Funktion kann der genutzte Begriff via Twitter, Messenger, Email oder anderen Medien geteilt werden (abhängig der auf dem Gerät installierten Apps).
+FloatButton "Lautsprecher": Den aktuellen Begriff via Sprachausgabe ausgeben   
+FloatButton "Stern": Den Aktuellen Begriff in Favoriten übernehmen   
+FloatButton "Stift": Den aktuellen Begriff editieren (nur bei selbst hinzugefügten Wörtern)   
 
-Die Suche im oberen Teil sucht sowohl in den Erklärungen als auch in Wort-Teilstücken.
+Im Seitenmenü befindet sich folgende Funktionalität:   
+Favoriten: Liste favorisierter Begriffe   
+Hinzufügen: Eigenes Wort hinzufügen   
+Teilen: Teil den aktuellen Begriff z.B. via Twitter, Messenger, EMail ...   
+Über LostWords: Hilfetext anzeigen  
+Einstellungen: Applikatiosneinstellungen (z.B. zur Sprachausgabe und Schüttelfunktionalität)   
+Beenden: Schliesst die Applikation
 
-In den Einstellungen kann die Schüttelfunktionalität konfiguriert werden, dort kann auch die Sprechweise (z.B. französisch, niederländisch ...) gewählt werden. Die verfügbaren Sprechweisen hängen von den auf dem Gerät installierten Text-To-Speech Sprachen ab.
+Die in den Einstellungen konfigurierbare Sprechweise (z.B. französisch, niederländisch ...) hängt von den auf dem Gerät installierten Text-To-Speech Sprachen ab.
 
 #### Berechtigungen
 Es werden keine Berechtigungen benötigt.
