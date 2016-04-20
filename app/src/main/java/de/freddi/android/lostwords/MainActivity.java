@@ -28,6 +28,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -441,9 +442,17 @@ public class MainActivity extends AppCompatActivity
         if (lw.isOwnWord()) {
             m_fab_own.setVisibility(View.VISIBLE);
             m_fab_own.clearAnimation();
+            Animation a = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
+            a.setStartOffset(0);
+            a.setDuration(100);
+            m_fab_own.startAnimation(a);
         } else {
             m_fab_own.setVisibility(View.INVISIBLE);
             m_fab_own.clearAnimation();
+            Animation a = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
+            a.setStartOffset(0);
+            a.setDuration(100);
+            m_fab_own.startAnimation(a);
         }
     }
 
