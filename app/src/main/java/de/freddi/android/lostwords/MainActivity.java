@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onClick(View view) {
                     final LostWord lw = m_wordHandler.getCurrentWord();
-                    displayOwnwordDialog(lw.getWord(), lw.getMeaning());
+                    displayOwnwordDialog(lw.getWord(), lw.getMeaning(), false);
                 }
             });
         }
@@ -369,7 +369,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(new Intent(this, SettingsActivity.class));
         } else if (id == R.id.nav_ownwords) {
             /** Navigation: Hinzufügen */
-            displayOwnwordDialog("", "");
+            displayOwnwordDialog("", "", true);
         }
 
         /** Navigationsbereich schliessen */
@@ -380,7 +380,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void displayOwnwordDialog(final String strWord, final String strMeaning) {
+    private void displayOwnwordDialog(final String strWord, final String strMeaning, final boolean isNewWord) {
         LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = li.inflate(R.layout.ownwords_view, null, false);
         final AlertDialog.Builder d = new AlertDialog.Builder(this);
@@ -402,7 +402,7 @@ public class MainActivity extends AppCompatActivity
             updateView();
             }
         });
-        if (m_wordHandler.getCurrentWord().isOwnWord()) {
+        if (!isNewWord && m_wordHandler.getCurrentWord().isOwnWord()) {
             ((CheckBox)view.findViewById(R.id.ownword_favorite)).setVisibility(View.INVISIBLE);
             d.setNegativeButton("LÖSCHEN", new DialogInterface.OnClickListener() {
                 @Override
