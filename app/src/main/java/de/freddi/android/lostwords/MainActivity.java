@@ -439,14 +439,14 @@ public class MainActivity extends AppCompatActivity
         final LostWord lw = m_wordHandler.getCurrentWord();
         m_favHandler.checkFavorite(lw);
 
-        if (lw.isOwnWord()) {
+        if (lw.isOwnWord() && m_fab_own.getVisibility() == View.INVISIBLE) {
             m_fab_own.setVisibility(View.VISIBLE);
             m_fab_own.clearAnimation();
             Animation a = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
             a.setStartOffset(0);
             a.setDuration(100);
             m_fab_own.startAnimation(a);
-        } else {
+        } else if (!lw.isOwnWord() && m_fab_own.getVisibility() == View.VISIBLE) {
             m_fab_own.setVisibility(View.INVISIBLE);
             m_fab_own.clearAnimation();
             Animation a = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
