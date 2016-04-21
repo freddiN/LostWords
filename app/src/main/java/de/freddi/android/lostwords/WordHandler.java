@@ -5,9 +5,9 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.design.widget.Snackbar;
-import android.text.TextUtils;
 import android.view.View;
 
 import java.util.HashSet;
@@ -161,20 +161,24 @@ class WordHandler {
         }
     }
 
-    public void addWord(final String strWord, final String strMeaning) {
+    public String addWord(final String strWord, final String strMeaning) {
         ContentValues values = new ContentValues();
         values.put(BaseColumns._ID, 1); //1 = ownword!
         values.put(SearchManager.SUGGEST_COLUMN_TEXT_1, strWord.trim());
         values.put(SearchManager.SUGGEST_COLUMN_TEXT_2, strMeaning.trim());
 
-        m_resolver.insert(WordContentProvider.CONTENT_URI, values);
+        final Uri result = m_resolver.insert(WordContentProvider.CONTENT_URI, values);
 
         selectWordByString(strWord);
+        
+        return result.getLastPathSegment();
     }
 
-    public void deleteWord(final String strWord) {
-        m_resolver.delete(WordContentProvider.CONTENT_URI, strWord, null);
+    public boolean deleteWord(final String strWord) {
+        final int nResult = m_resolver.delete(WordContentProvider.CONTENT_URI, strWord, null);
         generateNewPosition(IndexType.PREV);
+        
+        return nResult == 1;
     }
     
     public int getCurrentPosition() {

@@ -394,16 +394,24 @@ public class MainActivity extends AppCompatActivity
                 final boolean isFavorite = ((CheckBox) view.findViewById(R.id.ownword_favorite)).isChecked();
 
                 if (!TextUtils.isEmpty(strWord)) {
-                    m_wordHandler.addWord(strWord, strMeaning);
-                    if (isFavorite) {
-                        m_favHandler.addToFavorites(strWord, getResources());
+                    final String strResult = m_wordHandler.addWord(strWord, strMeaning);
+                      if (strResult.equals(WordContentProvider.URI_INSERT_OK)) {
+                        if (isFavorite) {
+                            m_favHandler.addToFavorites(strWord, getResources());
+                        }
+
+                        /** position could have changed, so update view but keep current word */
+                        m_wordHandler.selectWordByString(strWord);
+                        updateView();
+
+                        Helper.showSnackbar(getResources().getString(R.string.ownwords_add, strWord), findViewById(android.R.id.content), Snackbar.LENGTH_SHORT);
+                    } else if (strResult.equals(WordContentProvider.URI_INSERT_UPDATED)) {
+                        updateView();
+
+                        Helper.showSnackbar(getResources().getString(R.string.ownwords_updated, strWord), findViewById(android.R.id.content), Snackbar.LENGTH_SHORT);
+                    } else {
+                        Helper.showSnackbar(getResources().getString(R.string.ownwords_fail, "Hinzufügen", strWord), findViewById(android.R.id.content), Snackbar.LENGTH_SHORT);
                     }
-
-                    /** position could have changed, so update view but keep current word */
-                    m_wordHandler.selectWordByString(strWord);
-                    updateView();
-
-                    Helper.showSnackbar(getResources().getString(R.string.ownwords_add, strWord), findViewById(android.R.id.content), Snackbar.LENGTH_SHORT);
                 }
             }
         });
@@ -414,12 +422,14 @@ public class MainActivity extends AppCompatActivity
                 public void onClick(DialogInterface dialog, int which) {
                     final String strWord = ((TextView) view.findViewById(R.id.ownword_word)).getText().toString();
                     if (!TextUtils.isEmpty(strWord)) {
-                        m_wordHandler.deleteWord(strWord);
+                        if (m_wordHandler.deleteWord(strWord)) {
+                            m_favHandler.removeFromFavorites(new LostWord(strWord, "", false), getResources());
+                            updateView();
 
-                        m_favHandler.removeFromFavorites(new LostWord(strWord, "", false), getResources());
-                        updateView();
-
-                        Helper.showSnackbar(getResources().getString(R.string.ownwords_remove, strWord), findViewById(android.R.id.content), Snackbar.LENGTH_SHORT);
+                            Helper.showSnackbar(getResources().getString(R.string.ownwords_remove, strWord), findViewById(android.R.id.content), Snackbar.LENGTH_SHORT);
+                        } else {
+                            Helper.showSnackbar(getResources().getString(R.string.ownwords_fail, "Löschen", strWord), findViewById(android.R.id.content), Snackbar.LENGTH_SHORT);
+                        }
                     }
                 }
             });

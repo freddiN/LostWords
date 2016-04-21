@@ -14,7 +14,7 @@
     <string name="share_chooser">Teile via</string>
 
     <string name="init_words" formatted="false">Reloade ok, %d (%d+%d) Wörter geladen.</string>
-
+    
     <string name="ueber_title">Über LostWords</string>
     <string name="ueber_qrcode_prefix">\n\n\nLostWords im Google Play Store:</string>
 
@@ -54,7 +54,9 @@
     <string name="favorites_add">\"%s\" zu Favoriten hinzugefügt</string>
     <string name="favorites_remove">\"%s\" aus Favoriten entfernt</string>
 
+    <string name="ownwords_fail" formatted="false">Aktion \"%s\" auf Wort \"%s\" fehlgeschlagen</string>
     <string name="ownwords_add">\"%s\" zu den Wörtern hinzugefügt</string>
+    <string name="ownwords_updated">\"%s\" in den Wörtern geändert</string>
     <string name="ownwords_remove">\"%s\" aus den Wörtern entfernt</string>
     <string name="ownwords_title">Wort hinzufügen / ändern</string>
     <string name="ownwords_button_save">SPEICHERN</string>

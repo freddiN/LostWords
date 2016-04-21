@@ -22,6 +22,10 @@ public class WordContentProvider extends ContentProvider {
     private static final String PROVIDER_NAME = "de.freddi.android.lostwords.Wordprovider";
     private static final String URL = "content://" + PROVIDER_NAME + "/words";
     public static final Uri CONTENT_URI = Uri.parse(URL);
+    
+    public static final String URI_INSERT_OK = "inserted";
+    public static final String URI_INSERT_ERROR = "error";
+    public static final String URI_INSERT_UPDATED = "updated";
 
     private static final String[] COLUMNS = {
         BaseColumns._ID,                            //ID
@@ -157,6 +161,8 @@ public class WordContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull final Uri uri, final ContentValues values) {
+        Uri result = Uri.parse("content://insert/" + URI_INSERT_ERROR);
+          
         final LostWord lw = new LostWord(
             values.getAsString(SearchManager.SUGGEST_COLUMN_TEXT_1),
             values.getAsString(SearchManager.SUGGEST_COLUMN_TEXT_2),
@@ -164,15 +170,18 @@ public class WordContentProvider extends ContentProvider {
         );
         if (!m_setWords.contains(lw)) {
             m_setWords.add(lw);
+            result = Uri.parse("content://insert/" + URI_INSERT_OK);
         } else {
             for (LostWord lwTemp: m_setWords) {
                 if (lwTemp.isOwnWord() && lwTemp.getWord().equalsIgnoreCase(lw.getWord())) {
                     lwTemp.updateMeaning(lw.getMeaning());
+                    result = Uri.parse("content://insert/" + URI_INSERT_UPDATED);
+                    break;
                  }
             }
         }
 
-        return null;
+        return result;
     }
 
     @Override
