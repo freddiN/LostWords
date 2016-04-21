@@ -141,7 +141,17 @@ public class WordContentProvider extends ContentProvider {
     @Nullable
     @Override
     public String getType(@NonNull final Uri uri) {
-        return String.valueOf(m_setWords.size());
+        int nBaseCount = 0, nOwnCount = 0;
+
+        for (LostWord lw: m_setWords) {
+           if (lw.isOwnWord()) {
+               nOwnCount++;
+           } else {
+               nBaseCount++;
+           }
+        }
+        
+        return (nBaseCount+nOwnCount) + "-" + nBaseCount + "-" + nOwnCount;
     }
 
     @Nullable

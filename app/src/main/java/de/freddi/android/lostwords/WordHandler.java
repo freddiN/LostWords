@@ -68,7 +68,7 @@ class WordHandler {
      * @param i NEXT, PREV or RANDOM
      */
     public void generateNewPosition(final IndexType i) {
-        final int nWordCount = getWordCount();
+        final int nWordCount = getWordCounts()[0];
         
         if (i == IndexType.NEXT) {
             m_nCurrentPosition++;
@@ -90,12 +90,15 @@ class WordHandler {
     }
 
     /**
-     * wordcount
+     * wordcounts
      * 
-     * @return word count
+     * @return gesamt-basewords-ownwords
      */
-    public int getWordCount() {
-         return Integer.parseInt(m_resolver.getType(WordContentProvider.CONTENT_URI));
+    public int[] getWordCounts() {
+        String strCounts = m_resolver.getType(WordContentProvider.CONTENT_URI);
+        String[] arrCounts = strCounts.split("-");
+        int[] nReturn = {Integer.parseInt(arrCounts[0]), Integer.parseInt(arrCounts[1]), Integer.parseInt(arrCounts[2])}; 
+        return nReturn;
     }
 
     /**

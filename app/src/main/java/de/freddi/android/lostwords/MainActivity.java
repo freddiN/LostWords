@@ -117,7 +117,10 @@ public class MainActivity extends AppCompatActivity
                 getResources().getStringArray(R.array.words),
                 getPreferences(0).getStringSet(getResources().getString(R.string.settings_ownwords), new HashSet<String>()), 
                 getContentResolver());
-        Helper.showSnackbar(getResources().getString(R.string.init_words, m_wordHandler.getWordCount()), findViewById(android.R.id.content), Snackbar.LENGTH_SHORT);
+        Helper.showSnackbar(
+                getResources().getString(R.string.init_words, m_wordHandler.getWordCounts()[1], m_wordHandler.getWordCounts()[2]),
+                findViewById(android.R.id.content),
+                Snackbar.LENGTH_SHORT);
 
         /** Gestures Init */
         m_gestureDetector = new GestureDetectorCompat(this, new LostWordsGestureListener(this));
@@ -188,7 +191,7 @@ public class MainActivity extends AppCompatActivity
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.progess);
         if (progressBar != null) {
             progressBar.setProgress(m_wordHandler.getCurrentPosition()+1);
-            progressBar.setMax(m_wordHandler.getWordCount());
+            progressBar.setMax(m_wordHandler.getWordCounts()[0]);
         }
     }
 
@@ -200,7 +203,7 @@ public class MainActivity extends AppCompatActivity
             textAnzahl.setText(
                     getResources().getString(R.string.main_current_word_numbers,
                             (m_wordHandler.getCurrentPosition() + 1),
-                            m_wordHandler.getWordCount()));
+                            m_wordHandler.getWordCounts()[0]));
         }
 
         final TextView textWort = (TextView) findViewById(R.id.textWordContent);
