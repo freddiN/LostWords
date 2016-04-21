@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity
                 getPreferences(0).getStringSet(getResources().getString(R.string.settings_ownwords), new HashSet<String>()), 
                 getContentResolver());
         Helper.showSnackbar(
-                getResources().getString(R.string.init_words, m_wordHandler.getWordCounts()[1], m_wordHandler.getWordCounts()[2]),
+                getResources().getString(R.string.init_words, m_wordHandler.getWordCounts()[0], m_wordHandler.getWordCounts()[1], m_wordHandler.getWordCounts()[2]),
                 findViewById(android.R.id.content),
                 Snackbar.LENGTH_SHORT);
 

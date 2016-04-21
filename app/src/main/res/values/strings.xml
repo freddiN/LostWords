@@ -13,7 +13,7 @@
     <string name="share_subject">Oldschool Begriff Alert!</string>
     <string name="share_chooser">Teile via</string>
 
-    <string name="init_words" formatted="false">Reloade ok, %d + %d  Wörter geladen.</string>
+    <string name="init_words" formatted="false">Reloade ok, %d (%d+%d) Wörter geladen.</string>
 
     <string name="ueber_title">Über LostWords</string>
     <string name="ueber_qrcode_prefix">\n\n\nLostWords im Google Play Store:</string>

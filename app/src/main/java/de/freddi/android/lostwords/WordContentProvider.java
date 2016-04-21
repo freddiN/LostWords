@@ -158,15 +158,15 @@ public class WordContentProvider extends ContentProvider {
     @Override
     public Uri insert(@NonNull final Uri uri, final ContentValues values) {
         final LostWord lw = new LostWord(
-                values.getAsString(SearchManager.SUGGEST_COLUMN_TEXT_1),
-                values.getAsString(SearchManager.SUGGEST_COLUMN_TEXT_2),
-                (1 == values.getAsInteger(BaseColumns._ID))
+            values.getAsString(SearchManager.SUGGEST_COLUMN_TEXT_1),
+            values.getAsString(SearchManager.SUGGEST_COLUMN_TEXT_2),
+            (1 == values.getAsInteger(BaseColumns._ID))
         );
         if (!m_setWords.contains(lw)) {
             m_setWords.add(lw);
         } else {
             for (LostWord lwTemp: m_setWords) {
-                if (lwTemp.getWord().equalsIgnoreCase(lw.getWord())) {
+                if (lwTemp.isOwnWord() && lwTemp.getWord().equalsIgnoreCase(lw.getWord())) {
                     lwTemp.updateMeaning(lw.getMeaning());
                  }
             }
