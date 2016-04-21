@@ -159,23 +159,19 @@ class WordHandler {
     }
 
     public void addWord(final String strWord, final String strMeaning) {
-        if (!TextUtils.isEmpty(strWord)) {
-            ContentValues values = new ContentValues();
-            values.put(BaseColumns._ID, 1); //1 = ownword!
-            values.put(SearchManager.SUGGEST_COLUMN_TEXT_1, strWord.trim());
-            values.put(SearchManager.SUGGEST_COLUMN_TEXT_2, strMeaning.trim());
+        ContentValues values = new ContentValues();
+        values.put(BaseColumns._ID, 1); //1 = ownword!
+        values.put(SearchManager.SUGGEST_COLUMN_TEXT_1, strWord.trim());
+        values.put(SearchManager.SUGGEST_COLUMN_TEXT_2, strMeaning.trim());
 
-            m_resolver.insert(WordContentProvider.CONTENT_URI, values);
+        m_resolver.insert(WordContentProvider.CONTENT_URI, values);
 
-            selectWordByString(strWord);
-        }
+        selectWordByString(strWord);
     }
 
     public void deleteWord(final String strWord) {
-        if (!TextUtils.isEmpty(strWord)) {
-            m_resolver.delete(WordContentProvider.CONTENT_URI, strWord, null);
-            generateNewPosition(IndexType.PREV);
-        }
+        m_resolver.delete(WordContentProvider.CONTENT_URI, strWord, null);
+        generateNewPosition(IndexType.PREV);
     }
     
     public int getCurrentPosition() {
