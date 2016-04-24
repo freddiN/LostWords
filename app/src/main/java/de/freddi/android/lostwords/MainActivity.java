@@ -50,7 +50,7 @@ import android.speech.tts.TextToSpeech;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SensorEventListener  {
 
-    private TextToSpeech m_tts = null;
+    protected TextToSpeech m_tts = null;
     
     private GestureDetectorCompat m_gestureDetector = null;
 
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity
 
     private SharedPreferences m_settings = null;
 
-    private FloatingActionButton m_fab_speak = null, m_fab_own = null;
+    protected FloatingActionButton m_fab_speak = null, m_fab_own = null;
 
     private String m_strSettingsLocale = "";
 
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity
         super.onPause();
 
         /** Favs speichern */
-        m_favHandler.settingsPersistFavorites(getPreferences(0), getResources().getString(R.string.settings_fav), findViewById(R.id.content_frame));
+        m_favHandler.settingsPersistFavorites(getPreferences(0), getResources().getString(R.string.settings_fav), this);
         
         /** Ownwords speichern */
         m_wordHandler.settingsPersistOwnwords(getPreferences(0), getResources().getString(R.string.settings_ownwords), findViewById(R.id.content_frame));
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
- 
+        
         m_settings = PreferenceManager.getDefaultSharedPreferences(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -143,6 +143,8 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onClick(View view) {
                     Helper.showSnackbar(m_favHandler.handleFavoriteFloatbuttonClick(m_wordHandler.getCurrentWord(), getResources()), findViewById(android.R.id.content), Snackbar.LENGTH_SHORT);
+                    /** Favs speichern */
+                    m_favHandler.settingsPersistFavorites(getPreferences(0), getResources().getString(R.string.settings_fav), MainActivity.this);
                 }
             });
             fab_fav.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
@@ -280,7 +282,7 @@ public class MainActivity extends AppCompatActivity
     public void buttonNext(final View v) {
         newWordAndUpdateView(IndexType.NEXT);
     }
-
+    
     public void newWordAndUpdateView(final IndexType i) {
         m_wordHandler.generateNewPosition(i);   //Next, Prev, Random
         updateView();
@@ -348,7 +350,7 @@ public class MainActivity extends AppCompatActivity
             /** Navigation: Beenden
              * "Nicht empfehlenswert", sagt Google. "Mir egal", sagt Freddi.
              */
-            m_favHandler.settingsPersistFavorites(getPreferences(0), getResources().getString(R.string.settings_fav), findViewById(R.id.content_frame));
+            m_favHandler.settingsPersistFavorites(getPreferences(0), getResources().getString(R.string.settings_fav), this);
 
             /** Ownwords speichern */
             m_wordHandler.settingsPersistOwnwords(getPreferences(0), getResources().getString(R.string.settings_ownwords), findViewById(R.id.content_frame));

@@ -14,7 +14,7 @@
     <string name="share_chooser">Teile via</string>
 
     <string name="init_words" formatted="false">Reloade ok, %d (%d+%d) Wörter geladen.</string>
-    
+
     <string name="ueber_title">Über LostWords</string>
     <string name="ueber_qrcode_prefix">\n\n\nLostWords im Google Play Store:</string>
 
@@ -153,5 +153,9 @@
         <item>9</item>
         <item>10</item>
     </string-array>
+    
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="widget_click_empty">(keine Favoriten hinzugefügt)</string>
 
 </resources>

@@ -23,7 +23,7 @@ import java.util.UUID;
  * 
  * independent functionality
  */
-class Helper {
+public class Helper {
 
     /**
      * write to logcat, can be filtered by lookng for "LOSTWORDS"

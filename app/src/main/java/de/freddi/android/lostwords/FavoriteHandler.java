@@ -1,5 +1,7 @@
 package de.freddi.android.lostwords;
 
+import android.appwidget.AppWidgetManager;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.support.design.widget.FloatingActionButton;
@@ -105,14 +107,29 @@ class FavoriteHandler {
      * 
      * @param prefs application data
      * @param strSettingsKey key
-     * @param v for the snackbar
+     * @param m main activity
      */
-    public void settingsPersistFavorites(SharedPreferences prefs, final String strSettingsKey, final View v) {
+    public void settingsPersistFavorites(SharedPreferences prefs, final String strSettingsKey, final MainActivity m) {
+        final View v = m.findViewById(R.id.content_frame);
+                
         SharedPreferences.Editor editor = prefs.edit();
         editor.putStringSet(strSettingsKey, m_setFavs);
 
         if (!editor.commit()) {
             Helper.showSnackbar("Problem beim Speichern der Favoriten", v, Snackbar.LENGTH_SHORT);
+        } else {
+            requestWidgetUpdate(m);
         }
+    }
+
+    private void requestWidgetUpdate(final MainActivity m) {
+        // Widget soll daten updaten
+        Intent intent = new Intent(m, FavoritesWidget.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        // Use an array and EXTRA_APPWIDGET_IDS instead of AppWidgetManager.EXTRA_APPWIDGET_ID,
+        // since it seems the onUpdate() is only fired on that:
+        int[] ids = {R.xml.favorites_widget_info};
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,ids);
+        m.sendBroadcast(intent);
     }
 }
