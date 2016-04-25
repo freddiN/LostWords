@@ -126,14 +126,10 @@ class FavoriteHandler {
     }
 
     private void requestWidgetUpdate(final MainActivity m) {
-        // Widget soll daten updaten
+        // Widget soll Daten updaten
         Intent intent = new Intent(m, FavoritesWidget.class);
-        intent.setAction(FavoritesWidget.ACTION_UPDATE);
-        // Use an array and EXTRA_APPWIDGET_IDS instead of AppWidgetManager.EXTRA_APPWIDGET_ID,
-        // since it seems the onUpdate() is only fired on that:
-        int[] ids = {R.xml.favorites_widget_info};
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,ids);
-        PendingIntent pi = PendingIntent.getBroadcast(m, 0, intent, 0);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        PendingIntent.getBroadcast(m, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         m.sendBroadcast(intent);
-    }
+     }
 }

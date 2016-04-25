@@ -46,12 +46,11 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
         RemoteViews mView = new RemoteViews(mContext.getPackageName(), android.R.layout.simple_list_item_1);
         mView.setTextViewText(android.R.id.text1, m_listFavorites.get(position));
         mView.setTextColor(android.R.id.text1, Color.BLACK);
-
-
+        
         final Intent fillInIntent = new Intent();
         fillInIntent.setAction(FavoritesWidget.ACTION_CLICK);
         final Bundle bundle = new Bundle();
-        bundle.putString("clicked", m_listFavorites.get(position));
+        bundle.putString(FavoritesWidget.ITEM_CLICK, m_listFavorites.get(position));
         fillInIntent.putExtras(bundle);
         mView.setOnClickFillInIntent(android.R.id.text1, fillInIntent);
         
@@ -70,7 +69,7 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
 
     @Override
     public void onCreate() {
-          initData();
+        initData();
     }
 
     @Override
@@ -87,7 +86,7 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
             Set<String> setSavedFavoritersSorted = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
             setSavedFavoritersSorted.addAll(setSavedFavoriters);
 
-            for (String strFav : setSavedFavoritersSorted) {
+            for (String strFav: setSavedFavoritersSorted) {
                 m_listFavorites.add(strFav);
             }
         } else {

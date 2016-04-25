@@ -37,16 +37,12 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
     @Override
     public void onCreate() {
         super.onCreate();
-        Helper.doLog("onCreate");
         
         m_handler = new Handler();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-         Helper.doLog("SpeechService onStartCommand extras EXTRA_PARAM=" + 
-                intent.getStringExtra(SpeechService.EXTRA_PARAM) + " EXTRA_ACTION=" + 
-                intent.getStringExtra(SpeechService.EXTRA_ACTION));
         m_handler.removeCallbacksAndMessages(null);
 
         if (m_tts == null) {
@@ -101,7 +97,6 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
 
     private void doTTSCommand(final String strCommand) {
         if (m_tts == null) {
-            Helper.doLog("doTTSCommand tts null");
             return;
         }
         
@@ -117,21 +112,17 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
                 getResources().getString(R.string.settings_tts_locale),
                 "");
 
-        Helper.doLog("SpeechService onInit status=" + status + " locale=" + strLocale + " m_tts=" + m_tts);
-        
         if(!TextUtils.isEmpty(strLocale) && status != TextToSpeech.ERROR && m_tts != null) {
             final int nResult = m_tts.setLanguage(new Locale(strLocale));
             if (nResult != TextToSpeech.SUCCESS) {
                 m_isInitialized.set(false);
-                Helper.doLog("SpeechService onInit TextToSpeech Einrichtung für \"" + strLocale + "\" gescheitert, Errorcode=" + nResult);
                 doShutdown();
             } else {
-                Helper.doLog("SpeechService onInit TextToSpeech Einrichtung für \"" + strLocale + "\" erfolgreich");
                 m_isInitialized.set(true);
-                m_tts.setOnUtteranceProgressListener(new TTSAudioManagerListener(getApplicationContext(), m_tts));
+                // TODO: Hmm, der stoppt jetzt regelmäggig die ausgabe wenn man n der app mehrfach drückt ... 
+                //m_tts.setOnUtteranceProgressListener(new TTSAudioManagerListener(getApplicationContext(), m_tts));
             }
         } else {
-            Helper.doLog("SpeechService onInit TextToSpeech Einrichtung für \"" + strLocale + "\" gescheitert 2");
             m_isInitialized.set(false);
         }
     }

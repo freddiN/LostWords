@@ -67,13 +67,13 @@ public class MainActivity extends AppCompatActivity
 
     private String m_strSettingsLocale = "";
 
-    /** beim Beenden der Activity */
-    @Override
-    public void onDestroy() {
-        Helper.invokeSpeechService(SpeechService.EXTRA_ACTION_SHUTDOWN, "", this);
-        
-        super.onDestroy();
-    }
+//    /** beim Beenden der Activity */
+//    @Override
+//    public void onDestroy() {
+//        //Helper.invokeSpeechService(SpeechService.EXTRA_ACTION_SHUTDOWN, "", this);
+//        
+//        super.onDestroy();
+//    }
 
     /** beim Überdecken der Activity */
     @Override
@@ -96,7 +96,6 @@ public class MainActivity extends AppCompatActivity
         senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
         /** beim Rücksprung aus den Settings und beim Start */
-        Helper.doLog("Mainactivity onResume reconfigureTTS");
         reconfigureTTS();
     }
 
@@ -104,9 +103,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
-        //Helper.doLog("getLocalClassName() " + getLocalClassName());
-        
+
         m_settings = PreferenceManager.getDefaultSharedPreferences(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
