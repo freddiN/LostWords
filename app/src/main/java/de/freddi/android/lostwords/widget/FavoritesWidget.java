@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.widget.RemoteViews;
 
 import de.freddi.android.lostwords.Helper;
+import de.freddi.android.lostwords.MainActivity;
 import de.freddi.android.lostwords.R;
 import de.freddi.android.lostwords.services.SpeechService;
 
@@ -31,22 +32,24 @@ public class FavoritesWidget extends AppWidgetProvider {
     }
 
     private RemoteViews initViews(Context context, int widgetId) {
+        RemoteViews mView = new RemoteViews(context.getPackageName(), R.layout.favorites_widget);
+
+        /** Adapter zur Listenverwaltung an die ListView anhängen */
         Intent intent = new Intent(context, WidgetService.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
-        
-        RemoteViews mView = new RemoteViews(context.getPackageName(), R.layout.favorites_widget);
         mView.setRemoteAdapter(R.id.widgetCollectionList, intent);
 
+        /** Klick auf den WidgetHeader startet die App */
+        Intent intentMainlaunch = new Intent(context, MainActivity.class);
+        PendingIntent pendingIntentMainClick = PendingIntent.getActivity(context, 0, intentMainlaunch, PendingIntent.FLAG_UPDATE_CURRENT);
+        mView.setOnClickPendingIntent(R.id.widgetLayoutMain, pendingIntentMainClick);
 
-        Intent toastIntent = new Intent(context, FavoritesWidget.class);
-        // Set the action for the intent.
-        // When the user touches a particular view, it will have the effect of
-        // broadcasting TOAST_ACTION.
-        toastIntent.setAction(FavoritesWidget.ACTION_CLICK);
-        toastIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
-        intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
-        PendingIntent toastPendingIntent = PendingIntent.getBroadcast(context, 0, toastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        /** Klick auf ein ListItem: ACTION_CLICK an FavoritesWidget */
+        Intent clickIntent = new Intent(context, FavoritesWidget.class);
+        clickIntent.setAction(FavoritesWidget.ACTION_CLICK);
+        clickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
+        PendingIntent toastPendingIntent = PendingIntent.getBroadcast(context, 0, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         mView.setPendingIntentTemplate(R.id.widgetCollectionList, toastPendingIntent);
 
         return mView;
