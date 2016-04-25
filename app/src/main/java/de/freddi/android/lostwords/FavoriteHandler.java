@@ -1,5 +1,6 @@
 package de.freddi.android.lostwords;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +12,8 @@ import android.view.View;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
+
+import de.freddi.android.lostwords.widget.FavoritesWidget;
 
 /**
  * Created by freddi on 27.03.2016.
@@ -125,11 +128,12 @@ class FavoriteHandler {
     private void requestWidgetUpdate(final MainActivity m) {
         // Widget soll daten updaten
         Intent intent = new Intent(m, FavoritesWidget.class);
-        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        intent.setAction(FavoritesWidget.ACTION_UPDATE);
         // Use an array and EXTRA_APPWIDGET_IDS instead of AppWidgetManager.EXTRA_APPWIDGET_ID,
         // since it seems the onUpdate() is only fired on that:
         int[] ids = {R.xml.favorites_widget_info};
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,ids);
+        PendingIntent pi = PendingIntent.getBroadcast(m, 0, intent, 0);
         m.sendBroadcast(intent);
     }
 }

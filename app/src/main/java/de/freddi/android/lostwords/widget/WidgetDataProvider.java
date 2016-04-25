@@ -16,12 +16,9 @@ import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import de.freddi.android.lostwords.FavoritesWidget;
-import de.freddi.android.lostwords.Helper;
 import de.freddi.android.lostwords.R;
 
 public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory {
-
     private List<String> m_listFavorites = new ArrayList();
     private Context mContext = null;
 
@@ -31,7 +28,6 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
 
     @Override
     public int getCount() {
-        Helper.doLog("getCount");
         return m_listFavorites.size();
     }
 
@@ -47,7 +43,6 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
 
     @Override
     public RemoteViews getViewAt(int position) {
-        Helper.doLog("getViewAt " + position);
         RemoteViews mView = new RemoteViews(mContext.getPackageName(), android.R.layout.simple_list_item_1);
         mView.setTextViewText(android.R.id.text1, m_listFavorites.get(position));
         mView.setTextColor(android.R.id.text1, Color.BLACK);
@@ -75,13 +70,11 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
 
     @Override
     public void onCreate() {
-        Helper.doLog("onCreate");
-        initData();
+          initData();
     }
 
     @Override
     public void onDataSetChanged() {
-        Helper.doLog("onDataSetChanged");
         initData();
     }
 

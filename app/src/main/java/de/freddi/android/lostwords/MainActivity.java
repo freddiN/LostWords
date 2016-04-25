@@ -12,22 +12,22 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GestureDetectorCompat;
-import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
-import android.text.util.Linkify;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.text.util.Linkify;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
@@ -39,19 +39,16 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import android.speech.tts.TextToSpeech;
+import de.freddi.android.lostwords.services.SpeechService;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SensorEventListener  {
 
-    protected TextToSpeech m_tts = null;
-    
     private GestureDetectorCompat m_gestureDetector = null;
 
     private FavoriteHandler m_favHandler = null;
@@ -66,15 +63,15 @@ public class MainActivity extends AppCompatActivity
 
     private SharedPreferences m_settings = null;
 
-    protected FloatingActionButton m_fab_speak = null, m_fab_own = null;
+    private FloatingActionButton m_fab_speak = null, m_fab_own = null;
 
     private String m_strSettingsLocale = "";
 
     /** beim Beenden der Activity */
     @Override
     public void onDestroy() {
-        m_tts = Helper.shutdownTTS(m_tts);
-
+        Helper.invokeSpeechService(SpeechService.EXTRA_ACTION_SHUTDOWN, "", this);
+        
         super.onDestroy();
     }
 
@@ -99,6 +96,7 @@ public class MainActivity extends AppCompatActivity
         senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
         /** beim Rücksprung aus den Settings und beim Start */
+        Helper.doLog("Mainactivity onResume reconfigureTTS");
         reconfigureTTS();
     }
 
@@ -106,6 +104,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
+        //Helper.doLog("getLocalClassName() " + getLocalClassName());
         
         m_settings = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -132,7 +132,8 @@ public class MainActivity extends AppCompatActivity
         m_fab_speak.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                Helper.doSpeak(m_wordHandler.getCurrentWord().getWord(), m_tts, getApplicationContext(), findViewById(android.R.id.content), m_fab_speak);
+                Helper.invokeSpeechService(SpeechService.EXTRA_ACTION_SPEAK, m_wordHandler.getCurrentWord().getWord(), getApplicationContext());
+                m_fab_speak.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate));
             }
         });
 
@@ -357,7 +358,7 @@ public class MainActivity extends AppCompatActivity
 
             senSensorManager.unregisterListener(this);
             finish();
-            m_tts = Helper.shutdownTTS(m_tts);
+            Helper.invokeSpeechService(SpeechService.EXTRA_ACTION_SHUTDOWN, "", this);
             android.os.Process.killProcess(android.os.Process.myPid());
         } else if (id == R.id.nav_share) {
             /** Navigation: Teilen */
@@ -517,7 +518,7 @@ public class MainActivity extends AppCompatActivity
 
                         newWordAndUpdateView(IndexType.RANDOM);
                         resetSearchView();
-                        Helper.doSpeak(m_wordHandler.getCurrentWord().getWord(), m_tts, getApplicationContext(), findViewById(android.R.id.content), m_fab_speak);
+                        Helper.invokeSpeechService(SpeechService.EXTRA_ACTION_SPEAK, m_wordHandler.getCurrentWord().getWord(), getApplicationContext());
                     }
                 }   //Settings-if
             } finally {
@@ -542,27 +543,15 @@ public class MainActivity extends AppCompatActivity
                 getResources().getString(R.string.settings_tts_locale),
                 getResources().getString(R.string.settings_tts_locale_default));
 
+        Helper.doLog("reconfigureTTS cfg=" + strSettingLocale + "-bisher=" + m_strSettingsLocale);
+
         if (strSettingLocale.equals(m_strSettingsLocale)) {
             return;
+        } else {
+            m_strSettingsLocale = strSettingLocale;
         }
 
-        m_tts = Helper.shutdownTTS(m_tts);
-
-        m_tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(final int status) {
-            if(status != TextToSpeech.ERROR && m_tts != null) {
-                final int nResult = m_tts.setLanguage(new Locale(strSettingLocale));
-                if (nResult != TextToSpeech.SUCCESS) {
-                    Helper.showSnackbar("TextToSpeech Einrichtung für \"" + strSettingLocale + "\"gescheitert, Errorcode=" + nResult, findViewById(android.R.id.content), Snackbar.LENGTH_SHORT);
-                    m_tts = Helper.shutdownTTS(m_tts);
-                } else {
-                    m_strSettingsLocale = strSettingLocale;
-                    m_fab_speak.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
-                    m_tts.setOnUtteranceProgressListener(new TTSAudioManagerListener(MainActivity.this, m_tts));
-                }
-            }
-            }
-        });
+        Helper.invokeSpeechService(SpeechService.EXTRA_ACTION_CONFIGURE, m_strSettingsLocale, getApplicationContext());
+        m_fab_speak.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open));
     }
 }

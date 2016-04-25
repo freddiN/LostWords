@@ -58,7 +58,7 @@ public class SettingsActivity extends PreferenceActivity {
                             }
                         }
 
-                        m_tts = Helper.shutdownTTS(m_tts);
+                        m_tts.shutdown();
 
                         ListPreference lp = (ListPreference)getPreferenceScreen().getPreference(3);
                         lp.setEntries(listEntries.toArray(new String[listEntries.size()]));

@@ -35,7 +35,7 @@
             android:name="de.freddi.android.lostwords.WordContentProvider"
             android:authorities="de.freddi.android.lostwords.Wordprovider"/>
 
-        <receiver android:name="de.freddi.android.lostwords.FavoritesWidget">
+        <receiver android:name=".widget.FavoritesWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
@@ -46,7 +46,11 @@
         </receiver>
 
         <service
-            android:name="de.freddi.android.lostwords.widget.WidgetService"
+            android:name=".widget.WidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <service 
+            android:name=".services.SpeechService" />
+    
     </application>
 </manifest>

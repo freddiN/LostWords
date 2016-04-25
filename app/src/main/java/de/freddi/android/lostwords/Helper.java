@@ -1,22 +1,20 @@
 package de.freddi.android.lostwords;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
-import android.speech.tts.TextToSpeech;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.widget.SearchView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.UUID;
+
+import de.freddi.android.lostwords.services.SpeechService;
 
 /**
  * Created by freddi on 09.04.2016.
@@ -79,21 +77,6 @@ public class Helper {
     }
 
     /**
-     * closes the text to speech engine
-     * 
-     * @param tts tts engine to close
-     * @return always null
-     */
-    public static TextToSpeech shutdownTTS(final TextToSpeech tts) {
-        if (tts != null) {
-            tts.stop();
-            tts.shutdown();
-        } 
-
-        return null;
-    }
-
-    /**
      * fetches the current version of the app
      * 
      * @param strSpacer spacer to use before version
@@ -110,28 +93,7 @@ public class Helper {
 
         return "";
     }
-
-    /**
-     * uses the text to speech engine to speak out a word
-     * 
-     * @param strSpeakMe word to speak
-     * @param tts tts engine to use
-     * @param ctx context for the animation loading
-     * @param v for teh snackbar
-     * @param fab button to animate
-     */
-    public static void doSpeak(final String strSpeakMe, final TextToSpeech tts, final Context ctx, final View v,
-                               final FloatingActionButton fab) {
-        if (tts != null) {
-            HashMap<String, String> params = new HashMap<>();
-            params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, UUID.randomUUID().toString());
-            tts.speak(strSpeakMe, TextToSpeech.QUEUE_FLUSH, params);
-            fab.startAnimation(AnimationUtils.loadAnimation(ctx, R.anim.fab_rotate));
-        } else {
-            showSnackbar("Sprachausgabe deaktiviert", v, Snackbar.LENGTH_SHORT);
-        }
-    }
-
+    
     /**
      * parses the readme from the resources to display in the drawer's "Über Lostwords"
      * 
@@ -159,5 +121,19 @@ public class Helper {
             }
         }
         return buff.toString();
+    }
+
+    /**
+     * calsl the SpeechService
+     * 
+     * @param strAction see SpeechService statics
+     * @param strParam see SpeechService statics
+     * @param ctx
+     */
+    public static void invokeSpeechService(final String strAction, final String strParam, final Context ctx) {
+        Intent speechIntent = new Intent(ctx, SpeechService.class);
+        speechIntent.putExtra(SpeechService.EXTRA_ACTION, strAction);
+        speechIntent.putExtra(SpeechService.EXTRA_PARAM, strParam);
+        ctx.startService(speechIntent);
     }
 }

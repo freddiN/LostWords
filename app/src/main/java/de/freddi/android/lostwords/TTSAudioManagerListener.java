@@ -5,18 +5,20 @@ import android.media.AudioManager;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 
+import de.freddi.android.lostwords.services.SpeechService;
+
 /**
  * Created by Boris on 18.04.2016.
  */
-class TTSAudioManagerListener extends UtteranceProgressListener {
+public class TTSAudioManagerListener extends UtteranceProgressListener {
     private final AudioManager m_audioManager;
     private final AudioManager.OnAudioFocusChangeListener m_audioFocusListener = new AudioFocusListener();
-    private final TextToSpeech m_tts;
+    private final Context m_ctx;
 
     public TTSAudioManagerListener(Context ctx, TextToSpeech tts) {
+        m_ctx = ctx;
         m_audioManager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
-        m_tts = tts;
-    }
+     }
 
     @Override
     public void onStart(String utteranceId) {
@@ -42,9 +44,7 @@ class TTSAudioManagerListener extends UtteranceProgressListener {
     }
 
     private void stopAndClearTTSQueue() {
-        if (m_tts != null) {
-            m_tts.stop();
-        }
+        Helper.invokeSpeechService(SpeechService.EXTRA_ACTION_TTSCOMMAND, "stop", m_ctx);
     }
 
     private final class AudioFocusListener implements AudioManager.OnAudioFocusChangeListener {
