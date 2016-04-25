@@ -46,7 +46,7 @@
     <string name="settings_tts_locale">setting_tts_locale</string>
     <string name="settings_tts_locale_title">Sprachausgabe</string>
     <string name="settings_tts_locale_summary">Sprechweise der Sprachausgabe (aktuell: )</string>
-    <string name="settings_tts_locale_default">de_DE</string>
+    <string name="settings_tts_locale_default">de</string>
 
     <string name="search_title">Suche</string>
     <string name="search_hint">Suchbegriff</string>
