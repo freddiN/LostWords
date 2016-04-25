@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.freddi.android.lostwords.Helper;
 import de.freddi.android.lostwords.R;
+import de.freddi.android.lostwords.TTSAudioManagerListener;
 
 /**
  * Created by freddi on 25.04.2016.
@@ -106,8 +107,7 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
                 doShutdown();
             } else {
                 m_isInitialized.set(true);
-                // TODO: Hmm, der stoppt jetzt regelmäggig die ausgabe wenn man n der app mehrfach drückt ... 
-                //m_tts.setOnUtteranceProgressListener(new TTSAudioManagerListener(getApplicationContext(), m_tts));
+                m_tts.setOnUtteranceProgressListener(new TTSAudioManagerListener(getApplicationContext(), m_tts));
             }
         } else {
             m_isInitialized.set(false);

@@ -540,8 +540,6 @@ public class MainActivity extends AppCompatActivity
                 getResources().getString(R.string.settings_tts_locale),
                 getResources().getString(R.string.settings_tts_locale_default));
 
-        Helper.doLog("reconfigureTTS cfg=" + strSettingLocale + "-bisher=" + m_strSettingsLocale);
-
         if (strSettingLocale.equals(m_strSettingsLocale)) {
             return;
         } else {
