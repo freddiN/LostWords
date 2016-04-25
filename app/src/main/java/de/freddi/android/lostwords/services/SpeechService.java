@@ -97,7 +97,7 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String strLocale = preferences.getString(
                 getResources().getString(R.string.settings_tts_locale),
-                "");
+                getResources().getString(R.string.settings_tts_locale_default));
 
         if(!TextUtils.isEmpty(strLocale) && status != TextToSpeech.ERROR && m_tts != null) {
             final int nResult = m_tts.setLanguage(new Locale(strLocale));
