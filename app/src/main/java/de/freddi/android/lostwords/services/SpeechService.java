@@ -3,7 +3,6 @@ package de.freddi.android.lostwords.services;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
@@ -16,7 +15,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.freddi.android.lostwords.Helper;
 import de.freddi.android.lostwords.R;
-import de.freddi.android.lostwords.TTSAudioManagerListener;
 
 /**
  * Created by freddi on 25.04.2016.
@@ -30,21 +28,11 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
     public static final String EXTRA_ACTION_CONFIGURE = "CONFIGURE";
     public static final String EXTRA_ACTION_TTSCOMMAND = "TTSCOMMAND";
 
-    private TextToSpeech m_tts;
+    private TextToSpeech m_tts = null;
     private AtomicBoolean m_isInitialized = new AtomicBoolean(false);
-    private Handler m_handler;
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        
-        m_handler = new Handler();
-    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        m_handler.removeCallbacksAndMessages(null);
-
         if (m_tts == null) {
             m_tts = new TextToSpeech(getApplicationContext(), this);
         }
@@ -90,7 +78,6 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
     }
     
     private void doReconfigure() {
-        Helper.doLog("Speechservice doReconfigure ");
         doShutdown();
         m_tts = new TextToSpeech(getApplicationContext(), this);
     }
