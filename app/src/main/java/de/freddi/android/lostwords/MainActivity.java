@@ -44,7 +44,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import de.freddi.android.lostwords.favorites.FavoriteHandler;
 import de.freddi.android.lostwords.services.SpeechService;
+import de.freddi.android.lostwords.settings.SettingsActivity;
+import de.freddi.android.lostwords.words.IndexType;
+import de.freddi.android.lostwords.words.LostWord;
+import de.freddi.android.lostwords.words.WordContentProvider;
+import de.freddi.android.lostwords.words.WordHandler;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SensorEventListener  {

@@ -4,6 +4,8 @@ import android.graphics.Point;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
+import de.freddi.android.lostwords.words.IndexType;
+
 /**
  * Created by freddi on 09.04.2016.
  * 

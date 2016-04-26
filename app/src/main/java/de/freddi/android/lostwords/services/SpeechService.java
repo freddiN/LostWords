@@ -40,7 +40,6 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
         
         final String strAction = intent.getStringExtra(SpeechService.EXTRA_ACTION);
         final String strParam  = intent.getStringExtra(SpeechService.EXTRA_PARAM);
-
         if (EXTRA_ACTION_CONFIGURE.equals(strAction)) {
             doReconfigure();
         } else if (EXTRA_ACTION_SHUTDOWN.equals(strAction)) {
@@ -71,9 +70,9 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
     }
     
     private void doSpeak(final String strSpeakMe) {
-        HashMap<String, String> params = new HashMap<>();
-        params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, UUID.randomUUID().toString());
         if (m_tts != null) {
+            HashMap<String, String> params = new HashMap<>();
+            params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, UUID.randomUUID().toString());
             m_tts.speak(strSpeakMe, TextToSpeech.QUEUE_FLUSH, params);
         }
     }
@@ -84,23 +83,17 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
     }
 
     private void doTTSCommand(final String strCommand) {
-        if (m_tts == null) {
-            return;
-        }
-        
-        if ("STOP".equalsIgnoreCase(strCommand)) {
+        if (m_tts != null && "STOP".equalsIgnoreCase(strCommand)) {
             m_tts.stop();
         }
     }
 
     @Override
-    public void onInit(int status) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String strLocale = preferences.getString(
-                getResources().getString(R.string.settings_tts_locale),
-                getResources().getString(R.string.settings_tts_locale_default));
-
-        if(!TextUtils.isEmpty(strLocale) && status != TextToSpeech.ERROR && m_tts != null) {
+    public void onInit(final int nStatus) {
+        if(nStatus != TextToSpeech.ERROR && m_tts != null) {
+            final String strLocale = PreferenceManager.getDefaultSharedPreferences(this).getString(
+                    getResources().getString(R.string.settings_tts_locale),
+                    getResources().getString(R.string.settings_tts_locale_default));
             final int nResult = m_tts.setLanguage(new Locale(strLocale));
             if (nResult != TextToSpeech.SUCCESS) {
                 m_isInitialized.set(false);

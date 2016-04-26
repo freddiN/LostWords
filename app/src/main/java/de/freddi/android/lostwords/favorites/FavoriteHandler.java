@@ -1,4 +1,4 @@
-package de.freddi.android.lostwords;
+package de.freddi.android.lostwords.favorites;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -13,14 +13,18 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import de.freddi.android.lostwords.Helper;
+import de.freddi.android.lostwords.MainActivity;
+import de.freddi.android.lostwords.R;
 import de.freddi.android.lostwords.widget.FavoritesWidget;
+import de.freddi.android.lostwords.words.LostWord;
 
 /**
  * Created by freddi on 27.03.2016.
  * 
  * Habdles everything about the drawer's favorities
  */
-class FavoriteHandler {
+public class FavoriteHandler {
     private final FloatingActionButton m_fabFav;
     private final Set<String> m_setFavs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 

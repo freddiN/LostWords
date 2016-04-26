@@ -1,4 +1,4 @@
-package de.freddi.android.lostwords;
+package de.freddi.android.lostwords.words;
 
 import android.app.SearchManager;
 import android.content.ContentResolver;
@@ -14,10 +14,12 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+import de.freddi.android.lostwords.Helper;
+
 /**
  * Created by freddi on 27.03.2016.
  */
-class WordHandler {
+public class WordHandler {
 
     private final Random m_rnd = new Random(System.nanoTime());
     private final ContentResolver m_resolver;

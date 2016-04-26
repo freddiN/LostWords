@@ -1,4 +1,4 @@
-package de.freddi.android.lostwords;
+package de.freddi.android.lostwords.words;
 
 /**
  * Created by freddi on 25.03.2016.

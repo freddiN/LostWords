@@ -25,14 +25,14 @@
                 android:resource="@xml/searchable"/>
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".settings.SettingsActivity"
             android:label="Einstellungen"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <provider
-            android:name="de.freddi.android.lostwords.WordContentProvider"
+            android:name=".words.WordContentProvider"
             android:authorities="de.freddi.android.lostwords.Wordprovider"/>
 
         <receiver android:name=".widget.FavoritesWidget">

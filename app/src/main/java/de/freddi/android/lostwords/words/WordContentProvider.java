@@ -1,4 +1,4 @@
-package de.freddi.android.lostwords;
+package de.freddi.android.lostwords.words;
 
 import android.app.SearchManager;
 import android.content.ContentProvider;

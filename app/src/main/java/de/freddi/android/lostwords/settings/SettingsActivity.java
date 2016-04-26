@@ -1,4 +1,4 @@
-package de.freddi.android.lostwords;
+package de.freddi.android.lostwords.settings;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,6 +12,9 @@ import android.text.TextUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import de.freddi.android.lostwords.Helper;
+import de.freddi.android.lostwords.R;
 
 /**
  * Created by freddi on 02.04.2016.

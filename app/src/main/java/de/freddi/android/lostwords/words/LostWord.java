@@ -1,4 +1,4 @@
-package de.freddi.android.lostwords;
+package de.freddi.android.lostwords.words;
 
 import android.support.annotation.NonNull;
 

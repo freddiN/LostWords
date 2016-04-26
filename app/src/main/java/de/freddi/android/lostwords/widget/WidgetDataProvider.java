@@ -20,10 +20,10 @@ import de.freddi.android.lostwords.R;
 
 public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory {
     private List<String> m_listFavorites = new ArrayList();
-    private Context mContext = null;
+    private Context m_context = null;
 
-    public WidgetDataProvider(Context context, Intent intent) {
-        mContext = context;
+    public WidgetDataProvider(final Context context, final Intent intent) {
+        m_context = context;
     }
 
     @Override
@@ -32,8 +32,8 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
     }
 
     @Override
-    public long getItemId(int position) {
-        return position;
+    public long getItemId(final int nPosition) {
+        return nPosition;
     }
 
     @Override
@@ -42,15 +42,15 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
     }
 
     @Override
-    public RemoteViews getViewAt(int position) {
-        RemoteViews mView = new RemoteViews(mContext.getPackageName(), android.R.layout.simple_list_item_1);
-        mView.setTextViewText(android.R.id.text1, m_listFavorites.get(position));
+    public RemoteViews getViewAt(final int nPosition) {
+        RemoteViews mView = new RemoteViews(m_context.getPackageName(), android.R.layout.simple_list_item_1);
+        mView.setTextViewText(android.R.id.text1, m_listFavorites.get(nPosition));
         mView.setTextColor(android.R.id.text1, Color.BLACK);
         
         final Intent fillInIntent = new Intent();
         fillInIntent.setAction(FavoritesWidget.ACTION_CLICK);
         final Bundle bundle = new Bundle();
-        bundle.putString(FavoritesWidget.ITEM_CLICK, m_listFavorites.get(position));
+        bundle.putString(FavoritesWidget.ITEM_CLICK, m_listFavorites.get(nPosition));
         fillInIntent.putExtras(bundle);
         mView.setOnClickFillInIntent(android.R.id.text1, fillInIntent);
         
@@ -80,8 +80,8 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
     private void initData() {
         m_listFavorites.clear();
 
-        final Set<String> setSavedFavoriters = mContext.getSharedPreferences("MainActivity", 0).
-                 getStringSet(mContext.getResources().getString(R.string.settings_fav), new HashSet<String>());
+        final Set<String> setSavedFavoriters = m_context.getSharedPreferences("MainActivity", 0).
+                 getStringSet(m_context.getResources().getString(R.string.settings_fav), new HashSet<String>());
         if (setSavedFavoriters.size() > 0) {
             Set<String> setSavedFavoritersSorted = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
             setSavedFavoritersSorted.addAll(setSavedFavoriters);
@@ -90,7 +90,7 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
                 m_listFavorites.add(strFav);
             }
         } else {
-            m_listFavorites.add(mContext.getString(R.string.widget_click_empty));
+            m_listFavorites.add(m_context.getString(R.string.widget_click_empty));
         }
     }
 

@@ -31,12 +31,12 @@ public class FavoritesWidget extends AppWidgetProvider {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
-    private RemoteViews initViews(Context context, int widgetId) {
+    private RemoteViews initViews(final Context context, final int nWidgetId) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.favorites_widget);
 
         /** Adapter zur Listenverwaltung an die ListView anhängen */
         Intent intent = new Intent(context, WidgetService.class);
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, nWidgetId);
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
         views.setRemoteAdapter(R.id.widgetCollectionList, intent);
 
@@ -48,30 +48,31 @@ public class FavoritesWidget extends AppWidgetProvider {
         /** Klick auf ein ListItem: ACTION_CLICK an FavoritesWidget */
         Intent clickIntent = new Intent(context, FavoritesWidget.class);
         clickIntent.setAction(FavoritesWidget.ACTION_CLICK);
-        clickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
-        PendingIntent toastPendingIntent = PendingIntent.getBroadcast(context, 0, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        views.setPendingIntentTemplate(R.id.widgetCollectionList, toastPendingIntent);
+        clickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, nWidgetId);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setPendingIntentTemplate(R.id.widgetCollectionList, pendingIntent);
 
         return views;
     }
 
     @Override
-    public void onEnabled(Context context) {
+    public void onEnabled(final Context context) {
     }
 
     @Override
-    public void onDisabled(Context context) {
+    public void onDisabled(final Context context) {
       }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
-         if (intent.getAction().equals(ACTION_CLICK)) {
+    public void onReceive(final Context context, final Intent intent) {
+        final String strAction = intent.getAction();
+         if (ACTION_CLICK.equals(strAction)) {
             final String item = intent.getExtras().getString(ITEM_CLICK, "");
             
             if (!item.equals(context.getString(R.string.widget_click_empty))) {
-                Helper.invokeSpeechService(SpeechService.EXTRA_ACTION_SPEAK, item,context );
+                Helper.invokeSpeechService(SpeechService.EXTRA_ACTION_SPEAK, item, context );
             }
-         } else if (intent.getAction().equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
+         } else if (AppWidgetManager.ACTION_APPWIDGET_UPDATE.equals(strAction)) {
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             final int appWidgetIds[] = appWidgetManager.getAppWidgetIds(new ComponentName(context, FavoritesWidget.class));
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widgetCollectionList);
