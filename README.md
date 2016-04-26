@@ -24,6 +24,9 @@ Beenden: Schliesst die Applikation
 
 Die in den Einstellungen konfigurierbare Sprechweise (z.B. französisch, niederländisch ...) hängt von den auf dem Gerät installierten Text-To-Speech Sprachen ab.
 
+Das Widget zeigt die Favoriten-Wörter an. Ein Klick auf das Wort spricht dieses mit den aktuellen Einstellungen aus.  
+Ein Klick auf den Widget-Titel startet die Applikation. 
+
 #### Berechtigungen
 Es werden keine Berechtigungen benötigt.
 
