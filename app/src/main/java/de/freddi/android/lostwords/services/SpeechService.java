@@ -38,8 +38,8 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
             m_tts = new TextToSpeech(getApplicationContext(), this);
         }
         
-        final String strAction = intent.getStringExtra(SpeechService.EXTRA_ACTION);
-        final String strParam  = intent.getStringExtra(SpeechService.EXTRA_PARAM);
+        final String strAction = intent != null ? intent.getStringExtra(SpeechService.EXTRA_ACTION) : "";
+        final String strParam  = intent != null ? intent.getStringExtra(SpeechService.EXTRA_PARAM) : "";
         if (EXTRA_ACTION_CONFIGURE.equals(strAction)) {
             doReconfigure();
         } else if (EXTRA_ACTION_SHUTDOWN.equals(strAction)) {
@@ -50,7 +50,7 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
         } else if (m_isInitialized.get() && EXTRA_ACTION_TTSCOMMAND.equals(strAction)) {
             doTTSCommand(strParam);
         } else {
-            Helper.doLog("unbekannte Aktion=" + strAction + " m_isInitialized=" + m_isInitialized);
+            Helper.doLog("unbekannte Aktion=" + strAction + " m_isInitialized=" + m_isInitialized + " intent=" + intent);
         }
 
         return SpeechService.START_STICKY;
