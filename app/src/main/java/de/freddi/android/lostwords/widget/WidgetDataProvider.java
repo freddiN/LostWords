@@ -4,6 +4,7 @@ package de.freddi.android.lostwords.widget;
  * Created by freddi on 24.04.2016.
  */
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,7 +20,7 @@ import android.widget.RemoteViewsService;
 import de.freddi.android.lostwords.R;
 
 public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory {
-    private List<String> m_listFavorites = new ArrayList();
+    private List<String> m_listFavorites = Collections.synchronizedList(new ArrayList());
     private Context m_context = null;
 
     public WidgetDataProvider(final Context context, final Intent intent) {
@@ -44,6 +45,12 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
     @Override
     public RemoteViews getViewAt(final int nPosition) {
         RemoteViews mView = new RemoteViews(m_context.getPackageName(), android.R.layout.simple_list_item_1);
+        if (nPosition < 0) {
+            return mView;
+        } else if (nPosition >= m_listFavorites.size()) {
+            initData();
+        }
+ 
         mView.setTextViewText(android.R.id.text1, m_listFavorites.get(nPosition));
         mView.setTextColor(android.R.id.text1, Color.BLACK);
         
@@ -85,11 +92,8 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
         if (setSavedFavoriters.size() > 0) {
             Set<String> setSavedFavoritersSorted = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
             setSavedFavoritersSorted.addAll(setSavedFavoriters);
-
-            for (String strFav: setSavedFavoritersSorted) {
-                m_listFavorites.add(strFav);
-            }
-        } else {
+            m_listFavorites.addAll(setSavedFavoritersSorted);
+         } else {
             m_listFavorites.add(m_context.getString(R.string.widget_click_empty));
         }
     }
