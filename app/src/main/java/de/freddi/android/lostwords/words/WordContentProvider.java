@@ -68,11 +68,10 @@ public class WordContentProvider extends ContentProvider {
         }
 
         MatrixCursor matrixCursor = new MatrixCursor(COLUMNS);
-        int nCounter = 0;
-
+    
         final Pattern matchPattern = Pattern.compile(Pattern.quote(query), Pattern.CASE_INSENSITIVE);
  
-        int nPosition = 0;
+        int nPosition = 0, nCounter = 0;
         for (LostWord lw: m_setWords) {
            if (matchPattern.matcher(lw.getWord() + lw.getMeaning()).find()) {
                 /** Aufbau siehe hier: http://developer.android.com/guide/topics/search/adding-custom-suggestions.html */

@@ -35,9 +35,9 @@ public class Helper {
     /**
      * check if a touch event happened within a given list of buttons
      * 
-     * @param pTouch coordinates of the touch
+     * @param pTouch touch-position-coordinates
      * @param buttons list of buttons
-     * @return true if touch fro within one of the buttons, false otherwise
+     * @return true if touch from within one of the buttons, false otherwise
      */
     public static boolean isTouchWithinButtons(final Point pTouch, final View... buttons) {
         int[] location = new int[2];

@@ -22,7 +22,7 @@ import de.freddi.android.lostwords.words.LostWord;
 /**
  * Created by freddi on 27.03.2016.
  * 
- * Habdles everything about the drawer's favorities
+ * Handles everything about the drawer's favorites
  */
 public class FavoriteHandler {
     private final FloatingActionButton m_fabFav;

@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 /**
  * Created by freddi on 25.03.2016.
  * 
- * represents a word: the word, its meanign and an ID
+ * represents a word: the word, its' meaning and thbe information, if it's a an "own word"
  */
 public class LostWord implements Comparable<LostWord> {
     private final String m_strWord;
